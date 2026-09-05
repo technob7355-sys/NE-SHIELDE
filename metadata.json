@@ -1,0 +1,7 @@
+{
+  "name": "NE-SHIELD",
+  "description": "AI-Powered Landslide Early Warning System for Northeast India",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
