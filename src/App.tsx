@@ -21,6 +21,7 @@ const TABS: { id: TabId; label: string; title: string; icon: typeof LayoutDashbo
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<TabId>('overview')
+  const [tabDir, setTabDir] = useState<'fwd' | 'back'>('fwd')
   const [zones, setZones] = useState<ZoneWithScore[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
@@ -89,6 +90,18 @@ export default function App() {
     setSelectedId(zone.location.id)
   }, [])
 
+  const handleTabChange = useCallback(
+    (tab: TabId) => {
+      const currentIdx = TABS.findIndex((t) => t.id === activeTab)
+      const nextIdx = TABS.findIndex((t) => t.id === tab)
+      if (nextIdx !== currentIdx) {
+        setTabDir(nextIdx > currentIdx ? 'fwd' : 'back')
+      }
+      setActiveTab(tab)
+    },
+    [activeTab],
+  )
+
   const selectedZone = useMemo(
     () => zones.find((z) => z.location.id === selectedId) ?? null,
     [zones, selectedId],
@@ -115,7 +128,7 @@ export default function App() {
   const clockText = `${formatTimeWithSecondsIST(now.toISOString())} IST`
 
   const navButtonClass = (tab: TabId) =>
-    `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-medium whitespace-nowrap ${
+    `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-medium whitespace-nowrap transition-colors duration-300 ${
       activeTab === tab ? 'bg-[#16233C] text-[#E8EEF7]' : 'text-[#8CA0B8] hover:bg-[#16233C]'
     }`
 
@@ -138,7 +151,7 @@ export default function App() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={navButtonClass(tab.id)}
                 aria-current={activeTab === tab.id ? 'page' : undefined}
               >
@@ -179,7 +192,7 @@ export default function App() {
                 <button
                   key={tab.id}
                   type="button"
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => handleTabChange(tab.id)}
                   className={navButtonClass(tab.id)}
                   aria-current={activeTab === tab.id ? 'page' : undefined}
                 >
@@ -198,7 +211,9 @@ export default function App() {
         <main className="min-w-0 flex-1 p-6">
           <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
             <div className="min-w-0">
-              <h1 className="text-[20px] font-bold text-[#E8EEF7]">{activeTabMeta.title}</h1>
+              <h1 key={activeTab} className="title-in text-[20px] font-bold text-[#E8EEF7]">
+                {activeTabMeta.title}
+              </h1>
               <p className="mt-0.5 hidden text-[13px] whitespace-nowrap text-[#8CA0B8] md:block">
                 {clockText}
               </p>
@@ -208,19 +223,21 @@ export default function App() {
             </div>
           </div>
 
-          {activeTab === 'overview' ? (
-            <Overview zones={zones} loading={loading} onSelectZone={handleSelectZone} />
-          ) : null}
-          {activeTab === 'map' ? (
-            <MapView
-              zones={zones}
-              loading={loading}
-              onSelectZone={handleSelectZone}
-              selectedZone={selectedZone}
-            />
-          ) : null}
-          {activeTab === 'accuracy' ? <AccuracyView /> : null}
-          {activeTab === 'report' ? <ReportView /> : null}
+          <div key={activeTab} className={tabDir === 'fwd' ? 'tab-in-fwd' : 'tab-in-back'}>
+            {activeTab === 'overview' ? (
+              <Overview zones={zones} loading={loading} onSelectZone={handleSelectZone} />
+            ) : null}
+            {activeTab === 'map' ? (
+              <MapView
+                zones={zones}
+                loading={loading}
+                onSelectZone={handleSelectZone}
+                selectedZone={selectedZone}
+              />
+            ) : null}
+            {activeTab === 'accuracy' ? <AccuracyView /> : null}
+            {activeTab === 'report' ? <ReportView /> : null}
+          </div>
         </main>
 
         {panelZone ? (
