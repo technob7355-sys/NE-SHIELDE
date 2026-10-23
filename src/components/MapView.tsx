@@ -1,4 +1,4 @@
-import { CircleMarker, MapContainer, Popup, TileLayer } from 'react-leaflet'
+import { Circle, CircleMarker, LayerGroup, MapContainer, Popup, TileLayer } from 'react-leaflet'
 import type { ZoneWithScore } from './types'
 import { LevelBadge, RiskDot, riskColor } from './risk'
 
@@ -26,21 +26,33 @@ export default function MapView({ zones, loading, onSelectZone }: MapViewProps) 
           className="h-[360px] w-full md:h-[520px]"
         >
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            attribution="Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
+          />
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+            attribution="&copy; OpenStreetMap contributors"
           />
           {zones.map((zone) => {
             const color = zone.prediction ? riskColor(zone.prediction.level) : '#8CA0B8'
             return (
-              <CircleMarker
-                key={zone.location.id}
-                center={[zone.location.lat, zone.location.lng]}
-                radius={9}
-                pathOptions={{ fillColor: color, fillOpacity: 0.85, color: '#0B1220', weight: 1 }}
-                eventHandlers={{
-                  click: () => onSelectZone(zone),
-                }}
-              >
+              <LayerGroup key={zone.location.id}>
+                <Circle
+                  center={[zone.location.lat, zone.location.lng]}
+                  radius={25000}
+                  pathOptions={{ fillColor: color, fillOpacity: 0.25, color, weight: 1.5, opacity: 0.8 }}
+                  eventHandlers={{
+                    click: () => onSelectZone(zone),
+                  }}
+                />
+                <CircleMarker
+                  center={[zone.location.lat, zone.location.lng]}
+                  radius={9}
+                  pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#0B1220', weight: 1 }}
+                  eventHandlers={{
+                    click: () => onSelectZone(zone),
+                  }}
+                >
                 <Popup>
                   <div>
                     <p className="font-bold text-[#E8EEF7]">{zone.location.name}</p>
@@ -54,7 +66,8 @@ export default function MapView({ zones, loading, onSelectZone }: MapViewProps) 
                     </p>
                   </div>
                 </Popup>
-              </CircleMarker>
+                </CircleMarker>
+              </LayerGroup>
             )
           })}
         </MapContainer>
@@ -64,15 +77,21 @@ export default function MapView({ zones, loading, onSelectZone }: MapViewProps) 
         {LEGEND.map((item) => (
           <span key={item.level} className="inline-flex items-center gap-2">
             <span
-              className="h-2.5 w-2.5 rounded-full"
-              style={{ backgroundColor: riskColor(item.level) }}
+              className="h-4 w-4 rounded-full border-2"
+              style={{
+                backgroundColor: `color-mix(in srgb, ${riskColor(item.level)} 30%, transparent)`,
+                borderColor: riskColor(item.level),
+              }}
               aria-hidden="true"
             />
-            <span className="text-[13px] text-[#E8EEF7]">{item.label}</span>
+            <span className="text-[13px] text-[#E8EEF7]">{item.label} zone</span>
           </span>
         ))}
         <span className="inline-flex items-center gap-2">
-          <span className="h-2.5 w-2.5 rounded-full bg-[#8CA0B8]" aria-hidden="true" />
+          <span
+            className="h-4 w-4 rounded-full border-2 border-[#8CA0B8] bg-[#8CA0B8]/30"
+            aria-hidden="true"
+          />
           <span className="text-[13px] text-[#8CA0B8]">Data unavailable</span>
         </span>
       </div>
