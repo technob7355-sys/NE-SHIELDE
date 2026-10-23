@@ -1,4 +1,4 @@
-import { Circle, CircleMarker, LayerGroup, MapContainer, Popup, TileLayer } from 'react-leaflet'
+import { Circle, CircleMarker, LayerGroup, MapContainer, Popup, ScaleControl, TileLayer } from 'react-leaflet'
 import type { ZoneWithScore } from './types'
 import { LevelBadge, RiskDot, riskColor } from './risk'
 
@@ -23,24 +23,43 @@ export default function MapView({ zones, loading, onSelectZone }: MapViewProps) 
           center={[26.8, 92.5]}
           zoom={7}
           scrollWheelZoom
+          zoomSnap={0.25}
+          zoomDelta={0.5}
+          wheelPxPerZoomLevel={110}
+          zoomAnimation
+          fadeAnimation
+          markerZoomAnimation
+          inertia
+          inertiaDeceleration={2600}
+          easeLinearity={0.15}
           className="h-[360px] w-full md:h-[520px]"
         >
           <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-            attribution="Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+            attribution="Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics"
           />
           <TileLayer
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}"
+            attribution=""
+          />
+          <TileLayer
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
             attribution="&copy; OpenStreetMap contributors"
           />
+          <ScaleControl position="bottomleft" imperial={false} />
           {zones.map((zone) => {
             const color = zone.prediction ? riskColor(zone.prediction.level) : '#8CA0B8'
             return (
               <LayerGroup key={zone.location.id}>
                 <Circle
                   center={[zone.location.lat, zone.location.lng]}
+                  radius={38000}
+                  pathOptions={{ fillColor: color, fillOpacity: 0.1, stroke: false }}
+                />
+                <Circle
+                  center={[zone.location.lat, zone.location.lng]}
                   radius={25000}
-                  pathOptions={{ fillColor: color, fillOpacity: 0.25, color, weight: 1.5, opacity: 0.8 }}
+                  pathOptions={{ fillColor: color, fillOpacity: 0.28, color, weight: 1.5, opacity: 0.85 }}
                   eventHandlers={{
                     click: () => onSelectZone(zone),
                   }}

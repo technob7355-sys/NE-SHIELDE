@@ -45,6 +45,17 @@ body {
 .leaflet-container {
   background: #0b1220;
   font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
+  outline: none;
+}
+
+/* Cinematic grade on satellite tiles so terrain reads rich, not flat */
+.leaflet-tile-pane {
+  filter: saturate(1.15) contrast(1.05) brightness(0.92);
+}
+
+/* Buttery tile crossfade while panning/zooming */
+.leaflet-fade-anim .leaflet-tile {
+  transition: opacity 0.3s ease-in-out;
 }
 
 .leaflet-popup-content-wrapper {
