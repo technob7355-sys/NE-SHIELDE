@@ -1,48 +1,83 @@
 @import "tailwindcss";
 
-@layer base {
-  body {
-    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background-color: #080d1a;
-    color: #f8fafc;
-  }
-
-  code, pre, .font-mono {
-    font-family: 'JetBrains Mono', monospace;
-  }
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
+  --color-app-bg: #0b1220;
+  --color-app-surface: #101a2e;
+  --color-app-surface2: #16233c;
+  --color-app-border: #1e2d47;
+  --color-app-text: #e8eef7;
+  --color-app-muted: #8ca0b8;
+  --color-app-accent: #3b82f6;
+  --color-risk-low: #34d399;
+  --color-risk-moderate: #fbbf24;
+  --color-risk-high: #fb923c;
+  --color-risk-critical: #f87171;
 }
 
-/* Custom dark scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #080d1a;
-}
-::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+:root {
+  --bg: #0b1220;
+  --surface: #101a2e;
+  --surface-2: #16233c;
+  --border: #1e2d47;
+  --text: #e8eef7;
+  --muted: #8ca0b8;
+  --accent: #3b82f6;
 }
 
-@keyframes pulse-ring {
-  0% {
-    transform: scale(0.95);
-    opacity: 0.9;
-  }
-  50% {
-    transform: scale(1.6);
-    opacity: 0.2;
-  }
-  100% {
-    transform: scale(2.1);
-    opacity: 0;
-  }
+html,
+body {
+  background: #0b1220;
+  color: #e8eef7;
+  font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
 }
 
-.animate-pulse-ring {
-  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100vh;
+  background: #0b1220;
+}
+
+/* Leaflet dark adjustments — flat styling only */
+.leaflet-container {
+  background: #0b1220;
+  font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #101a2e;
+  color: #e8eef7;
+  border: 1px solid #1e2d47;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.leaflet-popup-tip {
+  background: #101a2e;
+  border: 1px solid #1e2d47;
+}
+
+.leaflet-popup-content {
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 12px 14px;
+}
+
+.leaflet-bar a {
+  background: #101a2e;
+  color: #e8eef7;
+  border-bottom: 1px solid #1e2d47;
+}
+
+.leaflet-control-attribution {
+  background: #101a2e !important;
+  color: #8ca0b8 !important;
+  font-size: 12px;
+}
+
+.leaflet-control-attribution a {
+  color: #8ca0b8 !important;
 }

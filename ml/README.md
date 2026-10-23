@@ -1,66 +1,48 @@
-# NE-SHIELD — AI Landslide Risk Model (Random Forest)
+# NE-SHIELD V4 — Data + ML Pipeline
 
-Ye folder NE-SHIELD website ke liye banaya gaya pehla AI/ML model hai.
+One clean pipeline. **API data only** (Open-Meteo Archive, ERA5) — no ISRO
+files, no synthetic rows, no old datasets. The 20 zone definitions (name /
+state / lat / lng / slope) live in `../src/data/locations.ts` and are mirrored
+in `fetch_data.py`.
 
-## Model kya karta hai?
+## Steps
 
-4 cheezein dekh ke kisi bhi jagah ka **Risk Score (0–100)** batata hai —
-wahi score jo website `src/types.ts` me use hota hai. Risk level isi
-score se banta hai: 80+ Critical, 65+ High, 40+ Moderate, usse kam Low.
+| Step | Script | Output |
+|---|---|---|
+| 1. Fetch | `fetch_data.py` | `raw/*.json` cache, `dataset_features.csv` |
+| 2. Label + train | `train.py` | `dataset.csv` (features + `risk_score`/`risk_level`), `model.pkl`, `metrics.json` |
+| 3. Backtest | `backtest.py` | `backtest_results.csv`, `../src/data/backtest.ts` |
 
-| Input | Matlab |
-|---|---|
-| `rainfall` | 24 ghante ki baarish (mm) |
-| `soil_moisture` | Mitti me nami (%) |
-| `slope` | Dhalan (degrees) |
-| `historical_risk` | Purana risk — Low=1, Moderate=2, High=3, Extreme=4 |
-
-**Output:** `risk_score` (0–100) + usse bana `risk_level`
-
-## Kyun Random Forest?
-
-Beginner ke liye sabse best hai — code chhota hai, samajhna easy hai
-(100 trees apna-apna andaz lagate hain, sabka average final score),
-aur chhote data par bhi achha kaam karta hai. Baad me isi code me
-XGBoost lagana bhi easy hoga, sirf model wali line badlegi.
-
-## Data kahan se aaya?
-
-`ne_shield_data.csv` me website ke **real 20 risk zones** hain
-(`src/data/mockData.ts` se liye gaye — Sikkim, Meghalaya,
-Arunachal Pradesh, Assam ke zones), unke asli risk scores ke saath.
-
-## Kaise chalaye?
+## How to re-run
 
 ```bash
 cd ml
-pip install -r requirements.txt
-python train_model.py    # model train hoga, galti (MAE) dikhegi, model save hoga
-python predict.py        # nayi jagah ka risk check karo
+python3 fetch_data.py   # ~3 min first time; raw JSON cached in ml/raw/
+python3 train.py        # rewrites dataset.csv with labels; prints both models
+python3 backtest.py     # 14 archive fetches (cached in ml/raw/backtest/)
 ```
 
-## Test result (21 Oct 2026 ko check kiya gaya)
+After re-training, copy the new values from `metrics.json` into
+`MODEL_INFO` in both `../src/ml/model.ts` and `../src/data/modelInfo.ts`
+(the latter carries a "generated from ml/metrics.json" note).
 
-- Test zones par model ki **average galti sirf ~4.15 points** hai (100 me se)
-- Sabse important cheez model ke hisaab se: **soil moisture (~41%)**, phir slope (~25%), phir rainfall (~19%)
+## Method notes (honesty)
 
-`predict.py` me upar ki 4 values badal ke kisi bhi nayi jagah ka
-risk test kar sakte ho.
-
-## Sach baat — data abhi kam hai
-
-20 rows ek **starter model** ke liye hai. Asli model ke liye aur
-data chahiye hoga. Aage ka plan simple hai:
-
-1. `ne_shield_data.csv` me aur zones / purane landslide records ki rows jodo
-   (ISRO Landslide Atlas ka data `src/data/isroLandslideAtlas.ts` me pehle se hai)
-2. `python train_model.py` dobara chalao
-3. Galti pehle se kam milegi
-
-## Files
-
-- `ne_shield_data.csv` — training data (website ke 20 real zones + unke risk scores)
-- `train_model.py` — model train karne ki file (step-by-step comments ke saath)
-- `predict.py` — nayi jagah ka risk score + level predict karne ki file
-- `requirements.txt` — zaroori libraries
-- `landslide_model.pkl` — train hone ke baad banta hai (save kiya hua model, git me nahi jata — train karne se dobara ban jata hai)
+- **Fetch window:** per zone-year we fetch **May 2 – Sep 30** and emit only
+  weeks ending Sunday inside Jun 1 – Sep 30, so `rainfall_30d` is complete
+  even for early-June weeks.
+- **Weekly features:** `rainfall` = rain on the week's last day;
+  `rainfall_3d` / `rainfall_30d` = trailing 3 / 30-day sums ending that day;
+  `soil_moisture` = week's average ERA5 `soil_moisture_0_to_7cm`, converted
+  `min(raw / 0.45 * 100, 100)` % (0.45 m³/m³ treated as saturation).
+- **Labels are formula-derived**, not observed landslides — see the full
+  formula + ISRO-coefficient scaling note in `formula.py` / `train.py`
+  headers. Training metrics therefore measure how well the ML regressors
+  reproduce the formula on unseen years (temporal split: train ≤ 2020,
+  test 2021–2022), **not** real-world skill.
+- **Real-world skill** is measured by `backtest.py`: 7 documented events +
+  7 January controls, scored with the *same formula the UI uses*
+  (`formula.py` ≡ `src/ml/model.ts`, verified identical on sample inputs).
+- **Live weather** (`../src/services/weather.ts`) uses the forecast API,
+  whose soil variable is `soil_moisture_0_to_1cm` (archive used 0–7 cm);
+  the same /0.45 conversion is applied.

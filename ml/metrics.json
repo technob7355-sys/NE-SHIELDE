@@ -1,0 +1,27 @@
+{
+  "bestModel": "GradientBoosting",
+  "mae": 0.73,
+  "r2": 0.99,
+  "levelAccuracy": 97.5,
+  "trainRows": 1060,
+  "testRows": 680,
+  "featureImportance": {
+    "rainfall": 27.1,
+    "rainfall_3d": 52.2,
+    "rainfall_30d": 19.6,
+    "soil_moisture": 0.1,
+    "slope": 1.0
+  },
+  "allModels": {
+    "RandomForest": {
+      "mae": 0.91,
+      "r2": 0.9835,
+      "levelAccuracy": 96.9
+    },
+    "GradientBoosting": {
+      "mae": 0.73,
+      "r2": 0.99,
+      "levelAccuracy": 97.5
+    }
+  }
+}
