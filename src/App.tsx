@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   INITIAL_RISK_ZONES,
   INITIAL_ROADS,
@@ -13,6 +13,15 @@ import { AlertsView } from './components/AlertsView';
 import { ReportHazardView } from './components/ReportHazardView';
 import { AiRiskScoreModal } from './components/AiRiskScoreModal';
 import { IsroLandslideAtlasModal } from './components/IsroLandslideAtlasModal';
+import { SimpleRiskCard } from './components/SimpleRiskCard';
+import { WhatToDo } from './components/WhatToDo';
+import { LiveWeatherBadge } from './components/LiveWeatherBadge';
+import { PredictionAudit } from './components/PredictionAudit';
+import { ModelScoreboard } from './components/ModelScoreboard';
+import { ApiConnectorStatus } from './components/ApiConnectorStatus';
+import { BacktestView } from './components/BacktestView';
+import { fetchWithProvenance, type Provenance } from './services/provenance';
+import { predictRiskV3 } from './ml/riskModelV3';
 import {
   AlertTriangle,
   ArrowRight,
@@ -41,6 +50,14 @@ export default function App() {
   const [alerts, setAlerts] = useState<AlertItem[]>(INITIAL_ALERTS);
   const [hazardReports, setHazardReports] = useState<HazardReport[]>(INITIAL_HAZARD_REPORTS);
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>('rz-1'); // Default to NH-10
+  // Citizen-first view: 'simple' = aasan bhasha (default), 'expert' = pura technical dashboard
+  const [viewMode, setViewMode] = useState<'simple' | 'expert'>('simple');
+
+  // V3: Top zones ke liye ASLI live data + provenance (Open-Meteo se).
+  // Key = zone id. Value aane par hi card par LIVE stamp lagega;
+  // fail (isLive=false) par card par MOCK DATA stamp lagega — jhooth nahi.
+  const [liveProv, setLiveProv] = useState<Record<string, Provenance>>({});
+  const [liveLoaded, setLiveLoaded] = useState<boolean>(false);
 
   // AI Risk Score Model Modal state
   const [isAiModalOpen, setIsAiModalOpen] = useState<boolean>(false);
@@ -56,10 +73,11 @@ export default function App() {
   // Top 3 Risk Areas (Only three as strictly mandated)
   const top3RiskAreas = [...zones].sort((a, b) => b.riskScore - a.riskScore).slice(0, 3);
 
-  // Four small statistics explicitly requested in prompt:
-  // Critical Zones: 7, High Risk Zones: 18, Roads at Risk: 5, Active Alerts: 12
+  // Four small statistics — chaaro zones/alerts/roads data se computed hain
+  // V3 RULE: Saare counts zones data se USI TIME gin (compute) kar ke aate hain.
+  // Pehle wala pehle-se-likha number wala bug V3 me khatm hai.
   const criticalZonesCount = zones.filter((z) => z.riskLevel === 'Critical').length;
-  const highRiskZonesCount = 18; // Stat specified in prompt
+  const highRiskZonesCount = zones.filter((z) => z.riskLevel === 'High').length;
   const roadsAtRiskCount = INITIAL_ROADS.filter((r) => r.status === 'ROAD AT RISK').length;
   const activeAlertsCount = alerts.length;
 
@@ -67,6 +85,90 @@ export default function App() {
   const totalPopulationAtRisk = zones
     .filter((z) => z.riskLevel === 'Critical' || z.riskLevel === 'High')
     .reduce((sum, z) => sum + (z.estimatedPopulationAtRisk || 0), 0);
+
+  const selectedZone = zones.find((z) => z.id === selectedZoneId) || highestRiskZone;
+  const selectedProvenance: Provenance | null = liveProv[selectedZone.id] ?? null;
+
+  // Top-3 zones ke liye live fetch (ek baar, mount par)
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const top3 = [...INITIAL_RISK_ZONES].sort((a, b) => b.riskScore - a.riskScore).slice(0, 3);
+      const entries = await Promise.all(
+        top3.map(async (z) => [z.id, await fetchWithProvenance(z.lat, z.lng)] as const)
+      );
+      if (cancelled) return;
+      setLiveProv((prev) => {
+        const next = { ...prev };
+        for (const [id, prov] of entries) next[id] = prov;
+        return next;
+      });
+      setLiveLoaded(true);
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
+  // Jo zone select ho aur uska provenance na ho, uska bhi live fetch kar lo
+  useEffect(() => {
+    if (!selectedZoneId || liveProv[selectedZoneId]) return;
+    let cancelled = false;
+    (async () => {
+      const z = zones.find((zz) => zz.id === selectedZoneId);
+      if (!z) return;
+      const prov = await fetchWithProvenance(z.lat, z.lng);
+      if (cancelled) return;
+      setLiveProv((prev) => ({ ...prev, [z.id]: prov }));
+    })();
+    return () => { cancelled = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedZoneId]);
+
+  /**
+   * Card par dikhane wala zone banao:
+   * LIVE provenance hai -> values live wale, score V3 model se dobara computed.
+   * LIVE nahi hai -> zone jaisa hai waisa (MOCK stamp ke saath dikhega).
+   */
+  const buildDisplayZone = (zone: RiskZone): RiskZone => {
+    const prov = liveProv[zone.id];
+    if (!prov || !prov.isLive) return zone;
+    const pred = predictRiskV3({
+      rainfall: prov.rawRainfallMm,
+      soilMoisture: prov.convertedSoilPct,
+      slope: zone.slope,
+      historicalRisk: zone.historicalRisk,
+      threeDayRainfall: prov.threeDayRainfallMm,
+      antecedentRainfall: prov.antecedentRainfallMm,
+    });
+    const level: RiskZone['riskLevel'] =
+      pred.score >= 80 ? 'Critical' : pred.score >= 65 ? 'High' : pred.score >= 40 ? 'Moderate' : 'Low';
+    return {
+      ...zone,
+      rainfall: prov.rawRainfallMm,
+      soilMoisture: prov.convertedSoilPct,
+      threeDayCumulativeRainfall: prov.threeDayRainfallMm,
+      thirtyDayAntecedentRainfall: prov.antecedentRainfallMm,
+      riskScore: pred.score,
+      riskLevel: level,
+    };
+  };
+
+  const top3DisplayZones = useMemo(
+    () => top3RiskAreas.map((z) => buildDisplayZone(z)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [liveProv, zones]
+  );
+
+  const provenanceLineFor = (zone: RiskZone): string => {
+    const prov = liveProv[zone.id];
+    if (!liveLoaded && !prov) return 'Source: Live data load ho raha hai… (tab tak ye number MOCK samjho)';
+    if (prov && prov.isLive) {
+      return `Source: ${prov.sourceName} • ${new Date(prov.fetchedAtISO).toLocaleString('en-IN')} • hash ${prov.hash}`;
+    }
+    if (prov && !prov.isLive) {
+      return `Source: MOCK — website ka purana static data • Live fetch fail hua: ${prov.error}`;
+    }
+    return 'Source: MOCK — website ka purana static data (live fetch is zone ke liye nahi hua)';
+  };
 
   // Handlers
   const handleSelectZone = (zone: RiskZone | null) => {
@@ -134,6 +236,8 @@ export default function App() {
         {/* ========================================================================= */}
         {activeTab === 'overview' && (
           <div className="space-y-6 animate-in fade-in duration-300">
+            {/* V3: API Connector Status — sabse upar, taaki pehle pata chale data LIVE hai ya nahi */}
+            <ApiConnectorStatus selectedZone={selectedZone} provenance={selectedProvenance} />
             {/* 1. Header is located in the top bar + subheader banner */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-4">
               <div>
@@ -149,6 +253,91 @@ export default function App() {
               </div>
             </div>
 
+            {/* Aaj ka haal — Simple / Expert View Toggle (Citizen-first) */}
+            <div id="view-mode-toggle" className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 rounded-2xl bg-[#0b1326] border border-slate-700 shadow-md">
+              <div>
+                <h2 className="text-base font-black text-white">Aaj ka haal — Today at a Glance</h2>
+                <p className="text-xs text-slate-400">Simple View = aasan bhasha, koi bhi samjhe. Expert View = pura technical data.</p>
+              </div>
+              <div className="flex items-center gap-1.5 bg-slate-900 p-1 rounded-xl border border-slate-700 shrink-0">
+                <button onClick={() => setViewMode('simple')} className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${viewMode === 'simple' ? 'bg-emerald-600 text-white shadow' : 'text-slate-300 hover:text-white'}`}>🟢 Simple View</button>
+                <button onClick={() => setViewMode('expert')} className={`px-4 py-2 rounded-lg text-xs font-black transition-all ${viewMode === 'expert' ? 'bg-blue-600 text-white shadow' : 'text-slate-300 hover:text-white'}`}>🔬 Expert View</button>
+              </div>
+            </div>
+
+            {viewMode === 'simple' && (
+              <div id="simple-view-aaj-ka-haal" className="space-y-4">
+                <LiveWeatherBadge lat={highestRiskZone.lat} lng={highestRiskZone.lng} slope={highestRiskZone.slope} historicalRisk={highestRiskZone.historicalRisk} placeName={highestRiskZone.name} />
+                <div>
+                  <h2 className="text-sm font-bold uppercase tracking-wider font-mono text-slate-300 mb-3">Sabse Zyada Khatre Wali 3 Jagah — Top 3 Risky Places Today</h2>
+                  <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                    {top3DisplayZones.map((zone) => {
+                      const prov = liveProv[zone.id];
+                      const label: 'LIVE' | 'MOCK' | undefined = !liveLoaded && !prov
+                        ? undefined
+                        : prov && prov.isLive
+                          ? 'LIVE'
+                          : 'MOCK';
+                      return (
+                        <SimpleRiskCard
+                          key={zone.id}
+                          zone={zone}
+                          dataLabel={label}
+                          provenanceLine={provenanceLineFor(zone)}
+                        />
+                      );
+                    })}
+                  </div>
+                  <p className="text-[11px] text-slate-500">
+                    Upar ke card LIVE hain to unka score V3 model se live mausam par dobara gin (compute) karke
+                    aaya hai. LIVE na mile to card par <strong className="text-amber-300">MOCK DATA</strong> stamp
+                    lagega — purana number live bolke kabhi nahi dikhega.
+                  </p>
+                </div>
+                {/* Bharosa wala hissa: number real hai ya fake, model sahi hai ya galat — saboot ke saath */}
+                <div className="space-y-3">
+                  <label className="flex flex-col sm:flex-row sm:items-center gap-2 text-xs text-slate-300">
+                    <span className="font-bold text-white">Khula Hisaab kis jagah ka dekho? Zone chuno:</span>
+                    <select
+                      value={selectedZone.id}
+                      onChange={(e) => setSelectedZoneId(e.target.value)}
+                      className="px-3 py-2 rounded-lg bg-slate-900 border border-slate-700 text-slate-100 text-xs font-semibold"
+                    >
+                      {zones.map((z) => (
+                        <option key={z.id} value={z.id}>
+                          {z.name} — {z.state} (Score {z.riskScore})
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <PredictionAudit zone={selectedZone} />
+                </div>
+                <ModelScoreboard />
+                <p className="text-center text-xs text-slate-400">Aur gehra technical data dekhna hai? Upar <button onClick={() => setViewMode('expert')} className="text-blue-400 font-bold underline">Expert View</button> dabao — neeche pura dashboard bhi maujood hai.</p>
+              </div>
+            )}
+
+            {viewMode === 'expert' && (
+              <div id="expert-trust-section" className="space-y-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-3.5 rounded-2xl bg-[#0b1326] border border-cyan-800">
+                  <p className="text-xs text-slate-300">
+                    <strong className="text-white">🔍 Bharosa check (Expert):</strong> Model ke asli test number aur
+                    LIVE / MOCK / SYNTHETIC ka poora sach neeche scoreboard me hai. Kisi ek zone ka khula hisaab
+                    (3-way cross-check + audit JSON) Simple View me milega.
+                  </p>
+                  <button
+                    onClick={() => setViewMode('simple')}
+                    className="px-3.5 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-black shrink-0"
+                  >
+                    Khula Hisaab (Prediction Audit) Dekho
+                  </button>
+                </div>
+                <ModelScoreboard />
+              </div>
+            )}
+
+            {viewMode === 'expert' && (
+            <div className="space-y-6">
             {/* 2. Critical Alert Banner */}
             <div
               id="critical-alert-banner"
@@ -641,7 +830,7 @@ export default function App() {
                   </button>
 
                   <span className="text-[11px] font-mono text-slate-500">
-                    Last Sensor Sync: 2m ago
+                    Data source: upar wale API Connector bar me live status dekho
                   </span>
                 </div>
               </div>
@@ -730,6 +919,11 @@ export default function App() {
                 </div>
               </div>
             </div>
+            </div>
+            )}
+
+            {/* Overview ke sabse neeche: emergency guide — Simple/Expert dono me dikhega */}
+            <WhatToDo />
           </div>
         )}
 
@@ -766,14 +960,56 @@ export default function App() {
               onOpenAiModel={handleOpenAiModel}
               isFullScreen={true}
             />
-          </div>
-        )}
 
-        {/* ========================================================================= */}
-        {/* TAB 3: ALERTS                                                             */}
-        {/* ========================================================================= */}
-        {activeTab === 'alerts' && (
-          <div className="animate-in fade-in duration-300">
+            {/* Selected zone detail + provenance */}
+            <div className="p-5 rounded-2xl bg-[#0b1326] border border-slate-800 shadow-xl space-y-3">
+              <h2 className="text-base font-black text-white">
+                Selected Zone — {selectedZone.name}
+                <span className="text-xs font-mono font-normal text-slate-400 ml-2">
+                  {selectedZone.state} • {selectedZone.lat}, {selectedZone.lng}
+                </span>
+              </h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 text-center text-xs">
+                <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <span className="text-slate-400 block">Risk Score (zones data)</span>
+                  <strong className="text-white text-base font-mono">{selectedZone.riskScore}/100 • {selectedZone.riskLevel}</strong>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <span className="text-slate-400 block">Rainfall</span>
+                  <strong className="text-white text-base font-mono">{selectedZone.rainfall} mm / 24h</strong>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <span className="text-slate-400 block">Soil Moisture</span>
+                  <strong className="text-white text-base font-mono">{selectedZone.soilMoisture}%</strong>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                  <span className="text-slate-400 block">Slope / Status</span>
+                  <strong className="text-white text-base font-mono">{selectedZone.slope}° • {selectedZone.status}</strong>
+                </div>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                <strong className="text-white">Recommended Action:</strong> {selectedZone.recommendedAction}
+              </p>
+              <p className="text-[11px] font-mono text-slate-400">{provenanceLineFor(selectedZone)}</p>
+              {selectedProvenance && selectedProvenance.isLive ? (
+                <p className="text-[11px] text-emerald-300">
+                  🟢 LIVE provenance mila hai — raw baarish {selectedProvenance.rawRainfallMm} mm, mitti{' '}
+                  {selectedProvenance.rawSoilRaw} m³/m³ → {selectedProvenance.convertedSoilPct}%, hash{' '}
+                  <span className="font-mono">{selectedProvenance.hash}</span>. Poora stamp neeche connector bar me hai.
+                </p>
+              ) : (
+                <p className="text-[11px] text-amber-300">
+                  🟠 Is zone ka LIVE provenance abhi nahi hai — upar ke number MOCK (zones data) hain.
+                </p>
+              )}
+            </div>
+
+            <ApiConnectorStatus selectedZone={selectedZone} provenance={selectedProvenance} />
+
+            {/* Prediction Audit summary — selected zone, V3 model + provenance inputs */}
+            <PredictionAudit zone={selectedZone} />
+
+            {/* Alerts — pehle alag tab tha, V3 me Live Map ke saath rakha hai */}
             <AlertsView
               alerts={alerts}
               onAcknowledge={handleAcknowledgeAlert}
@@ -783,10 +1019,25 @@ export default function App() {
         )}
 
         {/* ========================================================================= */}
+        {/* TAB 3: BACKTEST (V3 — asli ghatnaon par imtihaan)                          */}
+        {/* ========================================================================= */}
+        {activeTab === 'backtest' && (
+          <div className="animate-in fade-in duration-300">
+            <BacktestView />
+          </div>
+        )}
+
+        {/* ========================================================================= */}
         {/* TAB 4: REPORT HAZARD                                                      */}
         {/* ========================================================================= */}
         {activeTab === 'report' && (
-          <div className="animate-in fade-in duration-300">
+          <div className="animate-in fade-in duration-300 space-y-4">
+            <div className="p-3.5 rounded-2xl bg-amber-950/40 border-2 border-amber-600/70 text-xs text-amber-100 leading-relaxed">
+              <strong className="text-white">⚠️ DEMO FALLBACK — saaf label:</strong> Report ki AI photo
+              analysis agar server / Gemini se na ho paye to <strong>DEMO mode</strong> me chalti hai —
+              result card par "DEMO FALLBACK" saaf likha dikhega. Demo analysis ko asli AI mat samajhna.
+              Report submit karna aur list me dikhna demo data ke saath bhi kaam karta hai.
+            </div>
             <ReportHazardView
               reports={hazardReports}
               onSubmitNewReport={handleSubmitNewReport}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavTab } from '../types';
-import { Shield, Map, Bell, PlusCircle, Info, Satellite } from 'lucide-react';
+import { Shield, Map, Target, PlusCircle, Info, Satellite } from 'lucide-react';
 
 interface NavbarProps {
   activeTab: NavTab;
@@ -69,7 +69,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Desktop 4-Item Nav */}
+            {/* Desktop 4-Item Nav (Overview, Live Map, Backtest, Report Hazard) */}
             <nav className="hidden md:flex items-center gap-1.5 bg-[#0e1629] p-1 rounded-xl border border-slate-800">
               <button
                 id="nav-overview"
@@ -91,20 +91,23 @@ export const Navbar: React.FC<NavbarProps> = ({
                     : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
-                Risk Map
+                Live Map
               </button>
               <button
-                id="nav-alerts"
-                onClick={() => onTabChange('alerts')}
+                id="nav-backtest"
+                onClick={() => onTabChange('backtest')}
                 className={`px-4 py-2 rounded-lg text-xs font-semibold transition-all flex items-center gap-1.5 ${
-                  activeTab === 'alerts'
+                  activeTab === 'backtest'
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'text-slate-300 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
-                <span>Alerts</span>
+                <span>Backtest</span>
                 {unreadAlertsCount > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full bg-red-500 text-white text-[10px] font-mono font-bold">
+                  <span
+                    title={`${unreadAlertsCount} unread alerts — Overview par dikhte hain`}
+                    className="px-1.5 py-0.2 rounded-full bg-red-500 text-white text-[10px] font-mono font-bold"
+                  >
                     {unreadAlertsCount}
                   </span>
                 )}
@@ -125,7 +128,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
       </header>
 
-      {/* Mobile Bottom Navigation (Overview, Map, Alerts, Report) */}
+      {/* Mobile Bottom Navigation (Overview, Map, Backtest, Report) */}
       <nav
         id="mobile-bottom-nav"
         className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#080d1a]/95 backdrop-blur-xl border-t border-slate-800 px-4 py-2 flex items-center justify-around shadow-2xl"
@@ -151,13 +154,13 @@ export const Navbar: React.FC<NavbarProps> = ({
         </button>
 
         <button
-          onClick={() => onTabChange('alerts')}
+          onClick={() => onTabChange('backtest')}
           className={`relative flex flex-col items-center gap-1 p-1.5 text-[11px] font-semibold transition-colors ${
-            activeTab === 'alerts' ? 'text-blue-400' : 'text-slate-400 hover:text-slate-200'
+            activeTab === 'backtest' ? 'text-blue-400' : 'text-slate-400 hover:text-slate-200'
           }`}
         >
-          <Bell className="w-5 h-5" />
-          <span>Alerts</span>
+          <Target className="w-5 h-5" />
+          <span>Backtest</span>
           {unreadAlertsCount > 0 && (
             <span className="absolute top-0 right-1 w-2 h-2 rounded-full bg-red-500" />
           )}

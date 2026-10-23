@@ -110,4 +110,4 @@ export interface HazardReport {
   status: 'Received' | 'Field Inspected' | 'SDRF Dispatched' | 'Cleared';
 }
 
-export type NavTab = 'overview' | 'map' | 'alerts' | 'report';
+export type NavTab = 'overview' | 'map' | 'backtest' | 'report';

@@ -228,7 +228,7 @@ export const ReportHazardView: React.FC<ReportHazardViewProps> = ({
                   <span>AI GEOLOGICAL SCREENING</span>
                 </div>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-950/80 border border-blue-800 text-blue-300">
-                  {submissionResult.aiAnalysis.mode === 'gemini' ? 'Gemini 3.8 Vision' : 'Automated Analysis'}
+                  {submissionResult.aiAnalysis.mode === 'gemini' ? 'Gemini Vision (Live AI)' : 'DEMO FALLBACK — asli AI analysis nahi, demo mode hai'}
                 </span>
               </div>
 
