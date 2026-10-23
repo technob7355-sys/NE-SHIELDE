@@ -1,4 +1,5 @@
-import { Circle, CircleMarker, LayerGroup, MapContainer, Popup, ScaleControl, TileLayer } from 'react-leaflet'
+import { useEffect } from 'react'
+import { Circle, CircleMarker, LayerGroup, MapContainer, ScaleControl, TileLayer, useMap } from 'react-leaflet'
 import type { ZoneWithScore } from './types'
 import { LevelBadge, RiskDot, riskColor } from './risk'
 
@@ -6,6 +7,37 @@ interface MapViewProps {
   zones: ZoneWithScore[]
   loading: boolean
   onSelectZone: (zone: ZoneWithScore) => void
+  selectedZone: ZoneWithScore | null
+}
+
+/** Keeps Leaflet sized to its container while the detail panel animates open/closed. */
+function MapAutoResize() {
+  const map = useMap()
+  useEffect(() => {
+    const container = map.getContainer()
+    if (!('ResizeObserver' in window)) return
+    const ro = new ResizeObserver(() => {
+      map.invalidateSize({ animate: true })
+    })
+    ro.observe(container)
+    return () => ro.disconnect()
+  }, [map])
+  return null
+}
+
+/** Smoothly flies the map to the selected zone on every selection change. */
+function FlyToSelected({ zone }: { zone: ZoneWithScore | null }) {
+  const map = useMap()
+  const zoneId = zone?.location.id
+  useEffect(() => {
+    if (!zone) return
+    map.flyTo([zone.location.lat, zone.location.lng], Math.max(map.getZoom(), 8), {
+      duration: 1.1,
+    })
+    // Fly only when the selection changes, not on every zone-data refresh.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoneId])
+  return null
 }
 
 const LEGEND: { level: string; label: string }[] = [
@@ -15,7 +47,7 @@ const LEGEND: { level: string; label: string }[] = [
   { level: 'Critical', label: 'Critical' },
 ]
 
-export default function MapView({ zones, loading, onSelectZone }: MapViewProps) {
+export default function MapView({ zones, loading, onSelectZone, selectedZone }: MapViewProps) {
   return (
     <div className="flex flex-col gap-5">
       <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
@@ -47,6 +79,8 @@ export default function MapView({ zones, loading, onSelectZone }: MapViewProps) 
             attribution="&copy; OpenStreetMap contributors"
           />
           <ScaleControl position="bottomleft" imperial={false} />
+          <MapAutoResize />
+          <FlyToSelected zone={selectedZone} />
           {zones.map((zone) => {
             const color = zone.prediction ? riskColor(zone.prediction.level) : '#8CA0B8'
             return (
@@ -71,21 +105,7 @@ export default function MapView({ zones, loading, onSelectZone }: MapViewProps) 
                   eventHandlers={{
                     click: () => onSelectZone(zone),
                   }}
-                >
-                <Popup>
-                  <div>
-                    <p className="font-bold text-[#E8EEF7]">{zone.location.name}</p>
-                    <p className="text-[#8CA0B8]">{zone.location.state}</p>
-                    <p className="mt-1 text-[#E8EEF7]">
-                      Score: {zone.prediction ? Math.round(zone.prediction.score) : '—'}
-                      {zone.prediction ? ` • ${zone.prediction.level}` : ''}
-                    </p>
-                    <p className="text-[#E8EEF7]">
-                      Rain 24h: {zone.weather ? `${zone.weather.rainfall.toFixed(1)} mm` : '—'}
-                    </p>
-                  </div>
-                </Popup>
-                </CircleMarker>
+                />
               </LayerGroup>
             )
           })}

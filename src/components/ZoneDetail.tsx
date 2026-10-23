@@ -28,14 +28,7 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
   ]
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
-      <button
-        type="button"
-        aria-label="Close zone detail"
-        onClick={onClose}
-        className="absolute inset-0 h-full w-full cursor-default bg-[#0B1220] opacity-70"
-      />
-      <aside className="relative flex h-full w-[380px] max-w-[92vw] flex-col overflow-y-auto border-l border-[#1E2D47] bg-[#101A2E]">
+    <div className="flex h-full flex-col bg-[#101A2E]">
         <div className="flex items-start justify-between gap-3 border-b border-[#1E2D47] p-5">
           <div className="min-w-0">
             <p className="truncate text-[20px] font-bold text-[#E8EEF7]">{location.name}</p>
@@ -51,7 +44,7 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
           </button>
         </div>
 
-        <div className="flex flex-col gap-5 p-5">
+        <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
           <div className="flex flex-wrap items-center gap-3">
             <span className="text-[28px] leading-none font-bold text-[#E8EEF7]">
               {prediction ? Math.round(prediction.score) : '—'}
@@ -103,7 +96,7 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
                       </div>
                       <div className="h-2 w-full overflow-hidden rounded-full bg-[#16233C]">
                         <div
-                          className="h-full rounded-full bg-[#3B82F6]"
+                          className="bar-grow h-full rounded-full bg-[#3B82F6]"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -130,7 +123,6 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
             Emergency: 112 • Ambulance: 108 • Disaster: 1077
           </p>
         </div>
-      </aside>
     </div>
   )
 }

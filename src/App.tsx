@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ClipboardList, Gauge, LayoutDashboard, Map as MapIcon, Shield } from 'lucide-react'
 import { LOCATIONS } from './data/locations'
 import { predictRisk } from './ml/model'
@@ -24,6 +24,8 @@ export default function App() {
   const [zones, setZones] = useState<ZoneWithScore[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [panelZone, setPanelZone] = useState<ZoneWithScore | null>(null)
+  const closeTimer = useRef<number | undefined>(undefined)
   const [now, setNow] = useState(() => new Date())
 
   useEffect(() => {
@@ -91,6 +93,23 @@ export default function App() {
     () => zones.find((z) => z.location.id === selectedId) ?? null,
     [zones, selectedId],
   )
+
+  const panelOpen = selectedZone !== null
+
+  useEffect(() => {
+    if (selectedZone) {
+      window.clearTimeout(closeTimer.current)
+      setPanelZone(selectedZone)
+    }
+  }, [selectedZone])
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), [])
+
+  const handleClosePanel = useCallback(() => {
+    setSelectedId(null)
+    window.clearTimeout(closeTimer.current)
+    closeTimer.current = window.setTimeout(() => setPanelZone(null), 560)
+  }, [])
 
   const activeTabMeta = TABS.find((t) => t.id === activeTab) ?? TABS[0]
   const clockText = `${formatTimeWithSecondsIST(now.toISOString())} IST`
@@ -175,7 +194,8 @@ export default function App() {
           </nav>
         </div>
 
-        <main className="p-6">
+        <div className="flex items-start">
+        <main className="min-w-0 flex-1 p-6">
           <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
             <div className="min-w-0">
               <h1 className="text-[20px] font-bold text-[#E8EEF7]">{activeTabMeta.title}</h1>
@@ -192,16 +212,37 @@ export default function App() {
             <Overview zones={zones} loading={loading} onSelectZone={handleSelectZone} />
           ) : null}
           {activeTab === 'map' ? (
-            <MapView zones={zones} loading={loading} onSelectZone={handleSelectZone} />
+            <MapView
+              zones={zones}
+              loading={loading}
+              onSelectZone={handleSelectZone}
+              selectedZone={selectedZone}
+            />
           ) : null}
           {activeTab === 'accuracy' ? <AccuracyView /> : null}
           {activeTab === 'report' ? <ReportView /> : null}
         </main>
-      </div>
 
-      {selectedZone ? (
-        <ZoneDetail zone={selectedZone} onClose={() => setSelectedId(null)} />
-      ) : null}
+        {panelZone ? (
+          <aside
+            aria-hidden={!panelOpen}
+            className="sticky top-0 h-screen shrink-0 overflow-hidden bg-[#101A2E] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl"
+            style={{
+              width: panelOpen ? 'min(380px, 92vw)' : '0px',
+              borderLeft: panelOpen ? '1px solid #1E2D47' : '1px solid transparent',
+            }}
+          >
+            <div
+              key={panelZone.location.id}
+              className="panel-content-in flex h-full w-[380px] max-w-[92vw] flex-col transition-opacity duration-500"
+              style={{ opacity: panelOpen ? 1 : 0 }}
+            >
+              <ZoneDetail zone={panelZone} onClose={handleClosePanel} />
+            </div>
+          </aside>
+        ) : null}
+        </div>
+      </div>
     </div>
   )
 }
