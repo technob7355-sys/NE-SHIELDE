@@ -1,5 +1,7 @@
 import { BACKTEST_ACCURACY, BACKTEST_CASES } from '../data/backtest'
+import { BACKTEST_METHOD, CONTROL_NOTE, EVENT_NOTES } from '../data/backtestNotes'
 import { MODEL_INFO } from '../data/modelInfo'
+import { LevelBadge } from './risk'
 
 function isGoodVerdict(verdict: string): boolean {
   const v = verdict.toUpperCase()
@@ -56,6 +58,19 @@ export default function AccuracyView() {
     return n <= 1 ? `${(n * 100).toFixed(1)}%` : `${n.toFixed(1)}%`
   }
 
+  const events = BACKTEST_CASES.filter((c) => c.type === 'event')
+  const controls = BACKTEST_CASES.filter((c) => c.type === 'control')
+  const eventHits = events.filter((c) => c.verdict === 'HIT').length
+  const controlCorrect = controls.filter((c) => c.verdict === 'CORRECT-REJECT').length
+  const falseAlarms = BACKTEST_CASES.filter((c) => c.verdict === 'FALSE-ALARM').length
+
+  const summaryCards = [
+    { value: String(BACKTEST_CASES.length), label: 'Total cases test kiye gaye' },
+    { value: `${eventHits}/${events.length}`, label: 'Asli events pakde gaye (HIT)' },
+    { value: `${controlCorrect}/${controls.length}`, label: 'Controls sahi mane gaye' },
+    { value: String(falseAlarms), label: 'Galat alarms (false alarms)' },
+  ]
+
   return (
     <div className="flex flex-col gap-5">
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
@@ -66,6 +81,29 @@ export default function AccuracyView() {
         <p className="mt-1 text-[12px] text-[#8CA0B8]">
           {BACKTEST_CASES.length} backtest cases • events + controls dono shamil hain
         </p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {summaryCards.map((card) => (
+          <div key={card.label} className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+            <p className="text-[28px] leading-none font-bold text-[#E8EEF7]">{card.value}</p>
+            <p className="mt-2 text-[13px] leading-relaxed text-[#8CA0B8]">{card.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+        <p className="mb-4 text-[20px] font-bold text-[#E8EEF7]">Ye test kaise hua</p>
+        <ol className="flex flex-col gap-3">
+          {BACKTEST_METHOD.map((step, i) => (
+            <li key={step} className="flex items-start gap-3 text-[14px] leading-relaxed text-[#8CA0B8]">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[12px] font-bold text-[#60A5FA]">
+                {i + 1}
+              </span>
+              <span>{step}</span>
+            </li>
+          ))}
+        </ol>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
@@ -80,7 +118,10 @@ export default function AccuracyView() {
           <ModelRow label="Best model" value={MODEL_INFO.bestModel} />
           <ModelRow label="MAE" value={fmtMetric(MODEL_INFO.mae, 2)} />
           <ModelRow label="R²" value={fmtMetric(MODEL_INFO.r2, 4)} />
-          <ModelRow label="Level accuracy" value={fmtAccuracy(MODEL_INFO.levelAccuracy)} />
+          <ModelRow
+            label="Level accuracy (formula test only — asli duniya ki skill nahi)"
+            value={fmtAccuracy(MODEL_INFO.levelAccuracy)}
+          />
           <ModelRow label="Train rows" value={String(MODEL_INFO.trainRows)} />
           <ModelRow label="Test rows" value={String(MODEL_INFO.testRows)} />
         </div>
@@ -126,8 +167,11 @@ export default function AccuracyView() {
                 <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Rain 24h</th>
                 <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Rain 3d</th>
                 <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Rain 30d</th>
+                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Soil</th>
                 <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Score</th>
+                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Level</th>
                 <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Verdict</th>
+                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Kyun? (analysis note)</th>
                 <th className="pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Source</th>
               </tr>
             </thead>
@@ -147,11 +191,18 @@ export default function AccuracyView() {
                   <td className="py-3 pr-3 whitespace-nowrap text-[#E8EEF7]">{c.rain24}</td>
                   <td className="py-3 pr-3 whitespace-nowrap text-[#E8EEF7]">{c.rain3d}</td>
                   <td className="py-3 pr-3 whitespace-nowrap text-[#E8EEF7]">{c.rain30d}</td>
+                  <td className="py-3 pr-3 whitespace-nowrap text-[#E8EEF7]">{c.soil}</td>
                   <td className="py-3 pr-3 font-bold whitespace-nowrap text-[#E8EEF7]">
                     {Math.round(c.score)}
                   </td>
                   <td className="py-3 pr-3 whitespace-nowrap">
+                    <LevelBadge level={c.level} />
+                  </td>
+                  <td className="py-3 pr-3 whitespace-nowrap">
                     <VerdictBadge verdict={c.verdict} />
+                  </td>
+                  <td className="min-w-[260px] max-w-[360px] py-3 pr-3 text-[13px] leading-relaxed text-[#8CA0B8]">
+                    {c.type === 'event' ? (EVENT_NOTES[c.name] ?? '—') : CONTROL_NOTE}
                   </td>
                   <td className="py-3 whitespace-nowrap">
                     {c.sourceUrl ? (
