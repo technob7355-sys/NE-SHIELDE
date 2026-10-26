@@ -232,6 +232,7 @@ export default function App() {
                 loading={loading}
                 onOpenDashboard={() => handleTabChange('overview')}
                 onOpenAccuracy={() => handleTabChange('accuracy')}
+                onOpenMap={() => handleTabChange('map')}
               />
             ) : null}
             {activeTab === 'overview' ? (

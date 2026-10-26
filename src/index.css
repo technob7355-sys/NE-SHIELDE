@@ -136,6 +136,28 @@ body {
   animation: title-in 0.3s ease both;
 }
 
+/* Landing page: gradient accent for the hero's key phrase */
+.text-gradient {
+  background: linear-gradient(90deg, #60a5fa, #34d399);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Landing cards: gentle lift on hover so the page feels alive, not flat */
+.card-hover {
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.3s,
+    box-shadow 0.3s;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  border-color: #3b82f6;
+  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.18);
+}
+
 .leaflet-popup-content-wrapper {
   background: #101a2e;
   color: #e8eef7;
