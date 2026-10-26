@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ClipboardList, Gauge, Home, LayoutDashboard, Map as MapIcon, Shield } from 'lucide-react'
+import {
+  ArrowLeft,
+  ClipboardList,
+  Gauge,
+  Home,
+  LayoutDashboard,
+  Map as MapIcon,
+  Shield,
+} from 'lucide-react'
 import { LOCATIONS } from './data/locations'
 import { predictRisk } from './ml/model'
 import { fetchZoneWeather } from './services/weather'
@@ -92,17 +100,58 @@ export default function App() {
     setSelectedId(zone.location.id)
   }, [])
 
+  const [tabHistory, setTabHistory] = useState<TabId[]>([])
+
   const handleTabChange = useCallback(
     (tab: TabId) => {
+      if (tab === activeTab) return
       const currentIdx = TABS.findIndex((t) => t.id === activeTab)
       const nextIdx = TABS.findIndex((t) => t.id === tab)
+      setTabDir(nextIdx > currentIdx ? 'fwd' : 'back')
+      const nextStack = [...tabHistory, activeTab]
+      setTabHistory(nextStack)
+      setActiveTab(tab)
+      window.history.pushState({ tab, stack: nextStack }, '')
+    },
+    [activeTab, tabHistory],
+  )
+
+  const handleBack = useCallback(() => {
+    if (tabHistory.length === 0) {
+      setTabDir('back')
+      setActiveTab('home')
+      window.history.replaceState({ tab: 'home', stack: [] }, '')
+      return
+    }
+    // The popstate handler below performs the actual navigation,
+    // so the browser back button and this button stay in sync.
+    window.history.back()
+  }, [tabHistory])
+
+  const activeTabRef = useRef<TabId>(activeTab)
+  useEffect(() => {
+    activeTabRef.current = activeTab
+  }, [activeTab])
+
+  // Seed the first history entry, and restore tab + stack on browser back/forward.
+  useEffect(() => {
+    if (!window.history.state || !window.history.state.tab) {
+      window.history.replaceState({ tab: 'home', stack: [] }, '')
+    }
+    const onPopState = (event: PopStateEvent) => {
+      const state = event.state as { tab?: TabId; stack?: TabId[] } | null
+      const nextTab = state?.tab ?? 'home'
+      const currentIdx = TABS.findIndex((t) => t.id === activeTabRef.current)
+      const nextIdx = TABS.findIndex((t) => t.id === nextTab)
       if (nextIdx !== currentIdx) {
         setTabDir(nextIdx > currentIdx ? 'fwd' : 'back')
       }
-      setActiveTab(tab)
-    },
-    [activeTab],
-  )
+      setTabHistory(state?.stack ?? [])
+      setActiveTab(nextTab)
+    }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
+  }, [])
 
   const selectedZone = useMemo(
     () => zones.find((z) => z.location.id === selectedId) ?? null,
@@ -130,14 +179,19 @@ export default function App() {
   const clockText = `${formatTimeWithSecondsIST(now.toISOString())} IST`
 
   const navButtonClass = (tab: TabId) =>
-    `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-medium whitespace-nowrap transition-colors duration-300 ${
+    `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-medium whitespace-nowrap transition-all duration-300 active:scale-[0.97] ${
       activeTab === tab ? 'bg-[#16233C] text-[#E8EEF7]' : 'text-[#8CA0B8] hover:bg-[#16233C]'
     }`
 
   return (
     <div className="min-h-screen bg-[#0B1220] text-[#E8EEF7]">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[232px] flex-col border-r border-[#1E2D47] bg-[#101A2E] md:flex">
-        <div className="flex items-center gap-2.5 border-b border-[#1E2D47] px-5 py-5">
+        <button
+          type="button"
+          onClick={() => handleTabChange('home')}
+          className="flex items-center gap-2.5 border-b border-[#1E2D47] px-5 py-5 text-left transition-all duration-300 hover:bg-[#16233C] active:scale-[0.98]"
+          aria-label="Go to home"
+        >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
             <Shield className="h-5 w-5 text-white" aria-hidden="true" />
           </span>
@@ -145,7 +199,7 @@ export default function App() {
             <span className="block truncate text-[16px] font-bold text-[#E8EEF7]">NE-SHIELD</span>
             <span className="block truncate text-[12px] text-[#8CA0B8]">Landslide Early Warning</span>
           </span>
-        </div>
+        </button>
         <nav className="flex flex-col gap-1 p-3" aria-label="Main">
           {TABS.map((tab) => {
             const Icon = tab.icon
@@ -176,10 +230,17 @@ export default function App() {
       <div className="md:pl-[232px]">
         <div className="border-b border-[#1E2D47] bg-[#101A2E] md:hidden">
           <div className="flex items-center gap-2.5 px-4 py-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
-              <Shield className="h-4 w-4 text-white" aria-hidden="true" />
-            </span>
-            <span className="truncate text-[16px] font-bold text-[#E8EEF7]">NE-SHIELD</span>
+            <button
+              type="button"
+              onClick={() => handleTabChange('home')}
+              className="flex shrink-0 items-center gap-2.5 transition-all duration-300 active:scale-[0.97]"
+              aria-label="Go to home"
+            >
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
+                <Shield className="h-4 w-4 text-white" aria-hidden="true" />
+              </span>
+              <span className="truncate text-[16px] font-bold text-[#E8EEF7]">NE-SHIELD</span>
+            </button>
             <span className="ml-auto shrink-0 text-[13px] whitespace-nowrap text-[#8CA0B8]">
               {clockText}
             </span>
@@ -212,13 +273,26 @@ export default function App() {
         <div className="flex items-start">
         <main className="min-w-0 flex-1 p-6">
           <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
-            <div className="min-w-0">
-              <h1 key={activeTab} className="title-in text-[20px] font-bold text-[#E8EEF7]">
-                {activeTabMeta.title}
-              </h1>
-              <p className="mt-0.5 hidden text-[13px] whitespace-nowrap text-[#8CA0B8] md:block">
-                {clockText}
-              </p>
+            <div className="flex min-w-0 items-start gap-3">
+              {activeTab !== 'home' ? (
+                <button
+                  type="button"
+                  onClick={handleBack}
+                  className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
+                  aria-label="Go back"
+                >
+                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                  Back
+                </button>
+              ) : null}
+              <div className="min-w-0">
+                <h1 key={activeTab} className="title-in text-[20px] font-bold text-[#E8EEF7]">
+                  {activeTabMeta.title}
+                </h1>
+                <p className="mt-0.5 hidden text-[13px] whitespace-nowrap text-[#8CA0B8] md:block">
+                  {clockText}
+                </p>
+              </div>
             </div>
             <div className="min-w-0">
               <ApiStatus />

@@ -144,7 +144,7 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
               key={zone.location.id}
               type="button"
               onClick={() => onSelectZone(zone)}
-              className="flex w-full items-center gap-3 border-b border-[#1E2D47] py-3 text-left last:border-b-0 last:pb-0 first:pt-0"
+              className="flex w-full items-center gap-3 border-b border-[#1E2D47] py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-[#16233C]/50 active:bg-[#1E2D47]"
             >
               <RiskDot level={zone.prediction?.level} />
               <span className="min-w-0 flex-1">
