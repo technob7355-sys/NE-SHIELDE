@@ -16,7 +16,7 @@ npm run preview    # serve the production build
 - **20 zones** (`src/data/locations.ts`): name, state, lat/lng, slope (terrain attribute).
 - **Live risk:** `src/services/weather.ts` fetches the Open-Meteo forecast API per zone (last 31 days), computes rainfall 24h / 3-day / 30-day and soil moisture, and `src/ml/model.ts` (`predictRisk`) scores it. Every number shows its provenance ("Open-Meteo • fetched HH:MM"); if the API fails, the UI says so and shows no invented numbers.
 - **API status:** the top bar checks the Open-Meteo forecast + archive endpoints live on every page (latency, last-checked time, source links).
-- **Tabs:** Overview (stats, top-risk list, all-zones table, zone detail drawer) · Live Map (Leaflet, CARTO dark tiles) · Accuracy (model card + backtest) · Report Hazard (demo form, saves to browser localStorage only).
+- **Tabs:** Home (landing page for visitors, partners and investors) · Overview (stats, top-risk list, all-zones table, zone detail drawer) · Live Map (Leaflet, Esri satellite imagery + reference overlays) · Accuracy (model card + backtest) · Report Hazard (demo form, saves to browser localStorage only).
 
 ## Data & model pipeline (`ml/`)
 

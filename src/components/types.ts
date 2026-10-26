@@ -36,4 +36,4 @@ export interface ZoneWithScore {
   error: string | null
 }
 
-export type TabId = 'overview' | 'map' | 'accuracy' | 'report'
+export type TabId = 'home' | 'overview' | 'map' | 'accuracy' | 'report'

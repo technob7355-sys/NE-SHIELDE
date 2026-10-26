@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { ClipboardList, Gauge, LayoutDashboard, Map as MapIcon, Shield } from 'lucide-react'
+import { ClipboardList, Gauge, Home, LayoutDashboard, Map as MapIcon, Shield } from 'lucide-react'
 import { LOCATIONS } from './data/locations'
 import { predictRisk } from './ml/model'
 import { fetchZoneWeather } from './services/weather'
 import ApiStatus from './components/ApiStatus'
+import Landing from './components/Landing'
 import Overview from './components/Overview'
 import MapView from './components/MapView'
 import AccuracyView from './components/AccuracyView'
@@ -13,6 +14,7 @@ import type { TabId, ZoneLocation, ZoneWeather, ZoneWithScore } from './componen
 import { formatTimeWithSecondsIST } from './components/risk'
 
 const TABS: { id: TabId; label: string; title: string; icon: typeof LayoutDashboard }[] = [
+  { id: 'home', label: 'Home', title: 'Home', icon: Home },
   { id: 'overview', label: 'Overview', title: 'Overview', icon: LayoutDashboard },
   { id: 'map', label: 'Live Map', title: 'Live Map', icon: MapIcon },
   { id: 'accuracy', label: 'Accuracy', title: 'Model Accuracy', icon: Gauge },
@@ -20,7 +22,7 @@ const TABS: { id: TabId; label: string; title: string; icon: typeof LayoutDashbo
 ]
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<TabId>('overview')
+  const [activeTab, setActiveTab] = useState<TabId>('home')
   const [tabDir, setTabDir] = useState<'fwd' | 'back'>('fwd')
   const [zones, setZones] = useState<ZoneWithScore[]>([])
   const [loading, setLoading] = useState(true)
@@ -224,6 +226,14 @@ export default function App() {
           </div>
 
           <div key={activeTab} className={tabDir === 'fwd' ? 'tab-in-fwd' : 'tab-in-back'}>
+            {activeTab === 'home' ? (
+              <Landing
+                zones={zones}
+                loading={loading}
+                onOpenDashboard={() => handleTabChange('overview')}
+                onOpenAccuracy={() => handleTabChange('accuracy')}
+              />
+            ) : null}
             {activeTab === 'overview' ? (
               <Overview zones={zones} loading={loading} onSelectZone={handleSelectZone} />
             ) : null}
