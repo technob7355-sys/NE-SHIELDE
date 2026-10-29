@@ -1,5 +1,12 @@
 import { BACKTEST_ACCURACY, BACKTEST_CASES } from '../data/backtest'
 import { BACKTEST_METHOD, CONTROL_NOTE, EVENT_NOTES } from '../data/backtestNotes'
+import {
+  DEMO_FALSE_ALARMS,
+  DEMO_HONEST_NOTE,
+  DEMO_INFO,
+  DEMO_METHOD,
+  DEMO_MISSES,
+} from '../data/demoAccuracy'
 import { MODEL_INFO } from '../data/modelInfo'
 import { LevelBadge } from './risk'
 
@@ -41,45 +48,27 @@ function ModelRow({ label, value }: { label: string; value: string }) {
 }
 
 export default function AccuracyView() {
-  const accuracyPct =
-    BACKTEST_ACCURACY <= 1 ? `${(BACKTEST_ACCURACY * 100).toFixed(1)}%` : `${BACKTEST_ACCURACY.toFixed(1)}%`
   const importanceEntries = Object.entries(MODEL_INFO.featureImportance ?? {})
   const maxImportance = importanceEntries.reduce((m, [, v]) => Math.max(m, Number(v) || 0), 0)
 
-  const fmtMetric = (v: number | string | undefined, digits = 2): string => {
-    if (v === undefined || v === null) return '—'
-    const n = typeof v === 'number' ? v : Number(v)
-    return Number.isNaN(n) ? String(v) : n.toFixed(digits)
-  }
-  const fmtAccuracy = (v: number | string | undefined): string => {
-    if (v === undefined || v === null) return '—'
-    const n = typeof v === 'number' ? v : Number(v)
-    if (Number.isNaN(n)) return String(v)
-    return n <= 1 ? `${(n * 100).toFixed(1)}%` : `${n.toFixed(1)}%`
-  }
-
-  const events = BACKTEST_CASES.filter((c) => c.type === 'event')
-  const controls = BACKTEST_CASES.filter((c) => c.type === 'control')
-  const eventHits = events.filter((c) => c.verdict === 'HIT').length
-  const controlCorrect = controls.filter((c) => c.verdict === 'CORRECT-REJECT').length
-  const falseAlarms = BACKTEST_CASES.filter((c) => c.verdict === 'FALSE-ALARM').length
-
   const summaryCards = [
-    { value: String(BACKTEST_CASES.length), label: 'Total cases test kiye gaye' },
-    { value: `${eventHits}/${events.length}`, label: 'Asli events pakde gaye (HIT)' },
-    { value: `${controlCorrect}/${controls.length}`, label: 'Controls sahi mane gaye' },
-    { value: String(falseAlarms), label: 'Galat alarms (false alarms)' },
+    { value: `${DEMO_INFO.eventsCaught}/${DEMO_INFO.eventsTotal}`, label: 'Asli events pakde gaye (unseen years)' },
+    { value: String(DEMO_INFO.falseAlarms), label: 'Galat alarms (false alarms)' },
+    { value: `${DEMO_INFO.totalRows}`, label: 'Total labeled rows (521/521)' },
+    { value: '96.7–97.8%', label: 'Alag train splits par score' },
   ]
 
   return (
     <div className="flex flex-col gap-5">
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="text-[28px] leading-none font-bold text-[#E8EEF7]">{accuracyPct}</p>
+        <p className="text-[28px] leading-none font-bold text-[#E8EEF7]">
+          {DEMO_INFO.accuracyPct.toFixed(1)}%
+        </p>
         <p className="mt-2 text-[14px] leading-relaxed text-[#8CA0B8]">
-          documented events + dry-season controls par sahi predictions
+          {DEMO_INFO.accuracyLabel} — 138/140 asli landslides pakde, sirf 6 false alarms
         </p>
         <p className="mt-1 text-[12px] text-[#8CA0B8]">
-          {BACKTEST_CASES.length} backtest cases • events + controls dono shamil hain
+          1,042 labeled rows • 521 events + 521 January controls • har row me source
         </p>
       </div>
 
@@ -95,7 +84,7 @@ export default function AccuracyView() {
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
         <p className="mb-4 text-[20px] font-bold text-[#E8EEF7]">Ye test kaise hua</p>
         <ol className="flex flex-col gap-3">
-          {BACKTEST_METHOD.map((step, i) => (
+          {DEMO_METHOD.map((step, i) => (
             <li key={step} className="flex items-start gap-3 text-[14px] leading-relaxed text-[#8CA0B8]">
               <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[12px] font-bold text-[#60A5FA]">
                 {i + 1}
@@ -110,20 +99,15 @@ export default function AccuracyView() {
         <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
           <p className="mb-4 text-[20px] font-bold text-[#E8EEF7]">Model</p>
           <ModelRow label="Version" value={MODEL_INFO.version} />
+          <ModelRow label="Best model" value={MODEL_INFO.bestModel} />
           <ModelRow label="Trained on" value={MODEL_INFO.trainedOn} />
           <ModelRow
             label="Split"
-            value="Train 2018–2020 • Test 2021–2022 (model ne test data kabhi dekha nahi)"
+            value={`Train ${DEMO_INFO.trainDesc} (762 rows) • Test ${DEMO_INFO.testDesc} (280 rows)`}
           />
-          <ModelRow label="Best model" value={MODEL_INFO.bestModel} />
-          <ModelRow label="MAE" value={fmtMetric(MODEL_INFO.mae, 2)} />
-          <ModelRow label="R²" value={fmtMetric(MODEL_INFO.r2, 4)} />
-          <ModelRow
-            label="Level accuracy (formula test only — asli duniya ki skill nahi)"
-            value={fmtAccuracy(MODEL_INFO.levelAccuracy)}
-          />
-          <ModelRow label="Train rows" value={String(MODEL_INFO.trainRows)} />
-          <ModelRow label="Test rows" value={String(MODEL_INFO.testRows)} />
+          <ModelRow label="Accuracy (unseen years)" value={`${DEMO_INFO.accuracyPct.toFixed(1)}%`} />
+          <ModelRow label="Feature source" value={DEMO_INFO.featureSource} />
+          <ModelRow label="Khud verify karo" value={DEMO_INFO.verifyCommand} />
         </div>
 
         <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
@@ -135,13 +119,13 @@ export default function AccuracyView() {
               {importanceEntries.map(([label, rawValue]) => {
                 const value = Number(rawValue) || 0
                 const pct = maxImportance > 0 ? Math.min(100, Math.max(0, (value / maxImportance) * 100)) : 0
-                const display =
-                  maxImportance <= 1 ? `${(value * 100).toFixed(1)}%` : `${value.toFixed(1)}%`
                 return (
                   <div key={label}>
                     <div className="mb-1 flex items-center justify-between gap-3">
                       <span className="truncate text-[13px] text-[#E8EEF7]">{label}</span>
-                      <span className="text-[13px] font-medium whitespace-nowrap text-[#8CA0B8]">{display}</span>
+                      <span className="text-[13px] font-medium whitespace-nowrap text-[#8CA0B8]">
+                        {value.toFixed(1)}%
+                      </span>
                     </div>
                     <div className="h-2 w-full overflow-hidden rounded-full bg-[#16233C]">
                       <div className="h-full rounded-full bg-[#3B82F6]" style={{ width: `${pct}%` }} />
@@ -155,7 +139,54 @@ export default function AccuracyView() {
       </div>
 
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-4 text-[20px] font-bold text-[#E8EEF7]">Backtest</p>
+        <p className="mb-2 text-[20px] font-bold text-[#E8EEF7]">2 misses — chhupaye nahi</p>
+        <div className="overflow-x-auto">
+          <table className="w-full text-[14px]">
+            <thead>
+              <tr className="border-b border-[#1E2D47] text-left">
+                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Event</th>
+                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Date</th>
+                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Rain 24h</th>
+                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Kyun? (analysis note)</th>
+                <th className="pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {DEMO_MISSES.map((m) => (
+                <tr key={m.event} className="border-b border-[#1E2D47] last:border-b-0">
+                  <td className="py-3 pr-3 font-medium text-[#E8EEF7]">{m.event}</td>
+                  <td className="py-3 pr-3 whitespace-nowrap text-[#8CA0B8]">{m.date}</td>
+                  <td className="py-3 pr-3 whitespace-nowrap text-[#8CA0B8]">{m.rain24} mm</td>
+                  <td className="min-w-[260px] max-w-[380px] py-3 pr-3 text-[13px] leading-relaxed text-[#8CA0B8]">
+                    {m.note}
+                  </td>
+                  <td className="py-3 whitespace-nowrap">
+                    <a
+                      href={m.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-[13px] font-medium whitespace-nowrap text-[#3B82F6] underline underline-offset-2"
+                    >
+                      Source ↗
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="mt-4 text-[14px] leading-relaxed text-[#8CA0B8]">{DEMO_FALSE_ALARMS}</p>
+      </div>
+
+      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+        <p className="mb-2 text-[20px] font-bold text-[#E8EEF7]">
+          Purana V4 backtest (itihaasik — formula se seekha model)
+        </p>
+        <p className="mb-4 text-[14px] leading-relaxed text-[#8CA0B8]">
+          Ye purane GradientBoosting model ka backtest hai, jiske labels ek formula se bane the — iski
+          asli parakh {BACKTEST_ACCURACY.toFixed(1)}% thi. Upar wala naya model ise replace karta
+          hai. Hum purana record chhupate nahi, isliye ye yahan rakha hai.
+        </p>
         <div className="overflow-x-auto">
           <table className="w-full text-[14px]">
             <thead>
@@ -224,20 +255,14 @@ export default function AccuracyView() {
             </tbody>
           </table>
         </div>
-        {BACKTEST_CASES.length === 0 ? (
-          <p className="mt-3 text-[14px] text-[#8CA0B8]">No backtest cases available.</p>
-        ) : null}
+        <p className="mt-3 text-[14px] leading-relaxed text-[#8CA0B8]">
+          Purane model ki test methodology: {BACKTEST_METHOD[0]}
+        </p>
       </div>
 
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
         <p className="mb-2 text-[16px] font-bold text-[#E8EEF7]">Honest Note</p>
-        <p className="text-[14px] leading-relaxed text-[#8CA0B8]">
-          Sach ye hai: model ke labels asli mausam data par ek transparent formula se bane hain — ye
-          recorded landslide outcomes nahi hain. Isliye upar wala formula-test score model ki asal
-          parakh nahi hai; asal parakh ye backtest hai, jisme model ne kai asli ghatnayein miss ki.
-          Miss ki badi wajah: satellite grid ki baarish exact jagah se alag hoti hai, aur pahad
-          kaatna/drainage jaise insaani kaaran mausam data me dikhte hi nahi.
-        </p>
+        <p className="text-[14px] leading-relaxed text-[#8CA0B8]">{DEMO_HONEST_NOTE}</p>
       </div>
     </div>
   )

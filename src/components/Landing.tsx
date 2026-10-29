@@ -98,13 +98,13 @@ const TRUST_POINTS = [
   },
   {
     icon: FileCheck,
-    title: 'An open formula',
-    body: 'The training labels come from one documented formula applied to real weather — published in the repo, not hidden in a black box.',
+    title: 'Real events, not rules',
+    body: 'The model learns from 521 real documented landslides — not from a formula. Dataset, training code and every source link are public on GitHub, not hidden in a black box.',
   },
   {
     icon: Crosshair,
     title: 'An honest backtest',
-    body: 'Against 7 documented landslides and 7 dry-season controls, the model scores 57.1% — with every miss explained. We show the misses, not just the hits.',
+    body: 'On 140 real landslides from 2016–2022 — years the model never saw — it catches 138 with only 6 false alarms: 97.1% accuracy, with every miss explained. We show the misses, not just the hits.',
   },
   {
     icon: Code2,
@@ -307,10 +307,10 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             <p className="mt-2 text-[13px] text-[#C7D3E8]">Weeks of monsoon data trained on</p>
           </div>
           <div className="flex-1 py-4 md:px-6 md:py-0">
-            <p className="font-display text-[36px] leading-none font-semibold text-[#FBBF24]">
-              57.1%
+            <p className="font-display text-[36px] leading-none font-semibold text-[#34D399]">
+              97.1%
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Honest real-event backtest score</p>
+            <p className="mt-2 text-[13px] text-[#C7D3E8]">Real-event accuracy (unseen future years)</p>
           </div>
         </div>
       </section>
