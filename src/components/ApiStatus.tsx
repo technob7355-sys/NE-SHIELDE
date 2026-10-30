@@ -79,18 +79,18 @@ export default function ApiStatus() {
       <div className="flex items-center gap-2">
         <span
           className="h-2.5 w-2.5 shrink-0 rounded-full"
-          style={{ backgroundColor: checking && !status.checkedAt ? 'var(--muted)' : dotColor }}
+          style={{ backgroundColor: checking && !status.checkedAt ? '#8CA0B8' : dotColor }}
           aria-hidden="true"
         />
-        <span className="text-[13px] font-medium text-(--text)">
+        <span className="text-[13px] font-medium text-[#E8EEF7]">
           {checking && !status.checkedAt ? 'Checking API…' : status.ok ? 'API Connected' : 'API Failed'}
         </span>
       </div>
       {status.latencyMs !== null ? (
-        <span className="text-[12px] text-(--muted) whitespace-nowrap">{status.latencyMs} ms</span>
+        <span className="text-[12px] text-[#8CA0B8] whitespace-nowrap">{status.latencyMs} ms</span>
       ) : null}
       {status.checkedAt ? (
-        <span className="text-[12px] text-(--muted) whitespace-nowrap">
+        <span className="text-[12px] text-[#8CA0B8] whitespace-nowrap">
           Checked {formatTimeWithSecondsIST(status.checkedAt)} IST
         </span>
       ) : null}
@@ -98,7 +98,7 @@ export default function ApiStatus() {
         href={FORECAST_URL}
         target="_blank"
         rel="noreferrer"
-        className="text-[12px] text-(--muted) underline underline-offset-2"
+        className="text-[12px] text-[#8CA0B8] underline underline-offset-2"
       >
         Forecast API
       </a>
@@ -106,7 +106,7 @@ export default function ApiStatus() {
         href={ARCHIVE_URL}
         target="_blank"
         rel="noreferrer"
-        className="text-[12px] text-(--muted) underline underline-offset-2"
+        className="text-[12px] text-[#8CA0B8] underline underline-offset-2"
       >
         Archive API
       </a>
@@ -114,7 +114,7 @@ export default function ApiStatus() {
         type="button"
         onClick={() => void runCheck()}
         disabled={checking}
-        className="inline-flex items-center gap-1 rounded-lg border border-(--border) bg-(--surface-2) px-2 py-1 text-[12px] font-medium text-(--text) disabled:opacity-50"
+        className="inline-flex items-center gap-1 rounded-lg border border-[#1E2D47] bg-[#16233C] px-2 py-1 text-[12px] font-medium text-[#E8EEF7] disabled:opacity-50"
       >
         <RefreshCw className="h-3 w-3" aria-hidden="true" />
         {checking ? 'Checking…' : 'Refresh'}

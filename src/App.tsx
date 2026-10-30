@@ -18,7 +18,6 @@ import MapView from './components/MapView'
 import AccuracyView from './components/AccuracyView'
 import ReportView from './components/ReportView'
 import ZoneDetail from './components/ZoneDetail'
-import { ThemeToggle } from './theme'
 import type { TabId, ZoneLocation, ZoneWeather, ZoneWithScore } from './components/types'
 import { formatTimeWithSecondsIST } from './components/risk'
 
@@ -181,24 +180,24 @@ export default function App() {
 
   const navButtonClass = (tab: TabId) =>
     `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-medium whitespace-nowrap transition-all duration-300 active:scale-[0.97] ${
-      activeTab === tab ? 'bg-(--surface-2) text-(--text)' : 'text-(--muted) hover:bg-(--surface-2)'
+      activeTab === tab ? 'bg-[#16233C] text-[#E8EEF7]' : 'text-[#8CA0B8] hover:bg-[#16233C]'
     }`
 
   return (
-    <div className="min-h-screen bg-transparent text-(--text)">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[232px] flex-col border-r border-(--border) bg-(--surface) md:flex">
+    <div className="min-h-screen bg-[#0B1220] text-[#E8EEF7]">
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[232px] flex-col border-r border-[#1E2D47] bg-[#101A2E] md:flex">
         <button
           type="button"
           onClick={() => handleTabChange('home')}
-          className="flex items-center gap-2.5 border-b border-(--border) px-5 py-5 text-left transition-all duration-300 hover:bg-(--surface-2) active:scale-[0.98]"
+          className="flex items-center gap-2.5 border-b border-[#1E2D47] px-5 py-5 text-left transition-all duration-300 hover:bg-[#16233C] active:scale-[0.98]"
           aria-label="Go to home"
         >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-(--accent)">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
             <Shield className="h-5 w-5 text-white" aria-hidden="true" />
           </span>
           <span className="min-w-0">
-            <span className="block truncate text-[16px] font-bold text-(--text)">NE-SHIELD</span>
-            <span className="block truncate text-[12px] text-(--muted)">Landslide Early Warning</span>
+            <span className="block truncate text-[16px] font-bold text-[#E8EEF7]">NE-SHIELD</span>
+            <span className="block truncate text-[12px] text-[#8CA0B8]">Landslide Early Warning</span>
           </span>
         </button>
         <nav className="flex flex-col gap-1 p-3" aria-label="Main">
@@ -213,7 +212,7 @@ export default function App() {
                 aria-current={activeTab === tab.id ? 'page' : undefined}
               >
                 <Icon
-                  className={`h-4 w-4 shrink-0 ${activeTab === tab.id ? 'text-(--accent)' : 'text-(--muted)'}`}
+                  className={`h-4 w-4 shrink-0 ${activeTab === tab.id ? 'text-[#3B82F6]' : 'text-[#8CA0B8]'}`}
                   aria-hidden="true"
                 />
                 {tab.label}
@@ -221,15 +220,15 @@ export default function App() {
             )
           })}
         </nav>
-        <div className="mt-auto border-t border-(--border) p-5">
-          <p className="text-[12px] leading-relaxed text-(--muted)">
+        <div className="mt-auto border-t border-[#1E2D47] p-5">
+          <p className="text-[12px] leading-relaxed text-[#8CA0B8]">
             Live weather: Open-Meteo • 20 zones, Northeast India
           </p>
         </div>
       </aside>
 
       <div className="md:pl-[232px]">
-        <div className="border-b border-(--border) bg-(--surface) md:hidden">
+        <div className="border-b border-[#1E2D47] bg-[#101A2E] md:hidden">
           <div className="flex items-center gap-2.5 px-4 py-3">
             <button
               type="button"
@@ -237,15 +236,12 @@ export default function App() {
               className="flex shrink-0 items-center gap-2.5 transition-all duration-300 active:scale-[0.97]"
               aria-label="Go to home"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-(--accent)">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
                 <Shield className="h-4 w-4 text-white" aria-hidden="true" />
               </span>
-              <span className="truncate text-[16px] font-bold text-(--text)">NE-SHIELD</span>
+              <span className="truncate text-[16px] font-bold text-[#E8EEF7]">NE-SHIELD</span>
             </button>
-            <span className="ml-auto md:hidden">
-              <ThemeToggle />
-            </span>
-            <span className="shrink-0 text-[13px] whitespace-nowrap text-(--muted)">
+            <span className="ml-auto shrink-0 text-[13px] whitespace-nowrap text-[#8CA0B8]">
               {clockText}
             </span>
           </div>
@@ -264,7 +260,7 @@ export default function App() {
                   aria-current={activeTab === tab.id ? 'page' : undefined}
                 >
                   <Icon
-                    className={`h-4 w-4 shrink-0 ${activeTab === tab.id ? 'text-(--accent)' : 'text-(--muted)'}`}
+                    className={`h-4 w-4 shrink-0 ${activeTab === tab.id ? 'text-[#3B82F6]' : 'text-[#8CA0B8]'}`}
                     aria-hidden="true"
                   />
                   {tab.label}
@@ -282,7 +278,7 @@ export default function App() {
                 <button
                   type="button"
                   onClick={handleBack}
-                  className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-(--border) bg-(--surface-2) px-3 py-1.5 text-[13px] font-medium text-(--text) transition-all duration-300 hover:bg-(--border) active:scale-[0.95]"
+                  className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
                   aria-label="Go back"
                 >
                   <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -290,18 +286,15 @@ export default function App() {
                 </button>
               ) : null}
               <div className="min-w-0">
-                <h1 key={activeTab} className="title-in text-[20px] font-bold text-(--text)">
+                <h1 key={activeTab} className="title-in text-[20px] font-bold text-[#E8EEF7]">
                   {activeTabMeta.title}
                 </h1>
-                <p className="mt-0.5 hidden text-[13px] whitespace-nowrap text-(--muted) md:block">
+                <p className="mt-0.5 hidden text-[13px] whitespace-nowrap text-[#8CA0B8] md:block">
                   {clockText}
                 </p>
               </div>
             </div>
-            <div className="flex min-w-0 flex-wrap items-center gap-2">
-              <span className="hidden md:inline-flex">
-                <ThemeToggle />
-              </span>
+            <div className="min-w-0">
               <ApiStatus />
             </div>
           </div>
@@ -335,10 +328,10 @@ export default function App() {
         {panelZone ? (
           <aside
             aria-hidden={!panelOpen}
-            className="sticky top-0 h-screen shrink-0 overflow-hidden bg-(--surface) transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl"
+            className="sticky top-0 h-screen shrink-0 overflow-hidden bg-[#101A2E] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl"
             style={{
               width: panelOpen ? 'min(380px, 92vw)' : '0px',
-              borderLeft: panelOpen ? '1px solid var(--border)' : '1px solid transparent',
+              borderLeft: panelOpen ? '1px solid #1E2D47' : '1px solid transparent',
             }}
           >
             <div

@@ -2,78 +2,48 @@
 
 @theme {
   --font-sans: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
-  --color-app-bg: var(--bg);
-  --color-app-surface: var(--surface);
-  --color-app-surface2: var(--surface-2);
-  --color-app-border: var(--border);
-  --color-app-text: var(--text);
-  --color-app-muted: var(--muted);
-  --color-app-accent: var(--accent);
+  --color-app-bg: #0b1220;
+  --color-app-surface: #101a2e;
+  --color-app-surface2: #16233c;
+  --color-app-border: #1e2d47;
+  --color-app-text: #e8eef7;
+  --color-app-muted: #8ca0b8;
+  --color-app-accent: #3b82f6;
   --color-risk-low: #34d399;
   --color-risk-moderate: #fbbf24;
   --color-risk-high: #fb923c;
   --color-risk-critical: #f87171;
 }
 
-/* Darkest theme is the default. Light via <html data-theme="light">. */
-:root,
-:root[data-theme='dark'],
-[data-theme='dark'] {
-  --bg: #04070d;
-  --surface: #090e1a;
-  --surface-2: #0f1830;
-  --border: #1b2947;
-  --text: #eef3fb;
-  --muted: #8fa1bd;
-  --text-soft: #c4d2e8;
+:root {
+  --bg: #0b1220;
+  --surface: #101a2e;
+  --surface-2: #16233c;
+  --border: #1e2d47;
+  --text: #e8eef7;
+  --muted: #8ca0b8;
   --accent: #3b82f6;
-  --accent-soft: #60a5fa;
-  --faint: #16203a;
-  --body-bg: radial-gradient(1100px 520px at 85% -8%, rgba(59, 130, 246, 0.09), transparent 62%),
-    #04070d;
-  color-scheme: dark;
-}
-
-:root[data-theme='light'],
-[data-theme='light'] {
-  --bg: #ffffff;
-  --surface: #f8fafc;
-  --surface-2: #edf2f7;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --muted: #64748b;
-  --text-soft: #334155;
-  --accent: #2563eb;
-  --accent-soft: #1d4ed8;
-  --faint: #e2e8f0;
-  --body-bg: #ffffff;
-  color-scheme: light;
-}
-
-html {
-  background: var(--bg);
 }
 
 html,
 body {
-  color: var(--text);
+  background: #0b1220;
+  color: #e8eef7;
   font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
 }
 
 body {
   margin: 0;
-  background: var(--body-bg);
-  background-attachment: fixed;
 }
 
 #root {
   min-height: 100vh;
-  background: transparent;
+  background: #0b1220;
 }
 
 /* Leaflet dark adjustments — flat styling only */
 .leaflet-container {
-  background: var(--bg);
+  background: #0b1220;
   font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
   outline: none;
 }
