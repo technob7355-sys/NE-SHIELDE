@@ -31,6 +31,8 @@ export interface ZoneWeather {
   rainfall3d: number
   rainfall30d: number
   soilMoisture: number
+  currentTempC: number | null
+  recentHourlyRain: number[]
   history: DayRain[]
   forecast: ForecastDay[]
   fetchedAt: string

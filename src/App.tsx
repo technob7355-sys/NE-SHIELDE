@@ -11,15 +11,18 @@ import {
 import { LOCATIONS } from './data/locations'
 import { predictForecast, predictRisk } from './ml/model'
 import { fetchZoneWeather } from './services/weather'
+import { buildAlerts } from './services/alerts'
 import ApiStatus from './components/ApiStatus'
 import Landing from './components/Landing'
-import Overview from './components/Overview'
 import MapView from './components/MapView'
 import AccuracyView from './components/AccuracyView'
 import ReportView from './components/ReportView'
 import ZoneDetail from './components/ZoneDetail'
+import TopBar from './components/dashboard/TopBar'
+import SideNav from './components/dashboard/SideNav'
+import OverviewDashboard from './components/dashboard/OverviewDashboard'
 import type { TabId, ZoneLocation, ZoneWeather, ZoneWithScore } from './components/types'
-import { formatTimeWithSecondsIST } from './components/risk'
+import { formatTimeIST, formatTimeWithSecondsIST } from './components/risk'
 
 const TABS: { id: TabId; label: string; title: string; icon: typeof LayoutDashboard }[] = [
   { id: 'home', label: 'Home', title: 'Home', icon: Home },
@@ -112,6 +115,14 @@ export default function App() {
     setSelectedId(zone.location.id)
   }, [])
 
+  const handleSelectZoneId = useCallback(
+    (zoneId: string) => {
+      const zone = zones.find((z) => z.location.id === zoneId)
+      if (zone) handleSelectZone(zone)
+    },
+    [zones, handleSelectZone],
+  )
+
   const [tabHistory, setTabHistory] = useState<TabId[]>([])
 
   const handleTabChange = useCallback(
@@ -127,6 +138,13 @@ export default function App() {
     },
     [activeTab, tabHistory],
   )
+
+  const goToAlerts = useCallback(() => {
+    if (activeTab !== 'overview') handleTabChange('overview')
+    window.setTimeout(() => {
+      document.getElementById('alerts')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 350)
+  }, [activeTab, handleTabChange])
 
   const handleBack = useCallback(() => {
     if (tabHistory.length === 0) {
@@ -170,6 +188,40 @@ export default function App() {
     [zones, selectedId],
   )
 
+  const alerts = useMemo(() => buildAlerts(zones), [zones])
+
+  const focusZone = useMemo(() => {
+    if (selectedZone) return selectedZone
+    const scored = zones.filter((z) => z.prediction)
+    return (
+      [...scored].sort((a, b) => (b.prediction?.score ?? 0) - (a.prediction?.score ?? 0))[0] ?? null
+    )
+  }, [selectedZone, zones])
+
+  const lastUpdated = useMemo(() => {
+    const t = zones
+      .map((z) => z.weather?.fetchedAt)
+      .filter((v): v is string => Boolean(v))
+      .sort()
+      .at(-1)
+    return t ? `${formatTimeIST(t)} IST` : '—'
+  }, [zones])
+
+  const avgTempC = useMemo(() => {
+    const temps = zones
+      .map((z) => z.weather?.currentTempC)
+      .filter((v): v is number => v != null)
+    return temps.length > 0 ? temps.reduce((a, b) => a + b, 0) / temps.length : null
+  }, [zones])
+
+  const condition = useMemo(() => {
+    const maxRain = Math.max(0, ...zones.map((z) => z.weather?.rainfall ?? 0))
+    if (maxRain > 50) return 'Heavy Rain'
+    if (maxRain > 10) return 'Rain'
+    if (maxRain > 0.5) return 'Light Rain'
+    return 'Clear'
+  }, [zones])
+
   const panelOpen = selectedZone !== null
 
   useEffect(() => {
@@ -197,49 +249,22 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#0B1220] text-[#E8EEF7]">
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-[232px] flex-col border-r border-[#1E2D47] bg-[#101A2E] md:flex">
-        <button
-          type="button"
-          onClick={() => handleTabChange('home')}
-          className="flex items-center gap-2.5 border-b border-[#1E2D47] px-5 py-5 text-left transition-all duration-300 hover:bg-[#16233C] active:scale-[0.98]"
-          aria-label="Go to home"
-        >
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
-            <Shield className="h-5 w-5 text-white" aria-hidden="true" />
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate text-[16px] font-bold text-[#E8EEF7]">NE-SHIELD</span>
-            <span className="block truncate text-[12px] text-[#8CA0B8]">Landslide Early Warning</span>
-          </span>
-        </button>
-        <nav className="flex flex-col gap-1 p-3" aria-label="Main">
-          {TABS.map((tab) => {
-            const Icon = tab.icon
-            return (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => handleTabChange(tab.id)}
-                className={navButtonClass(tab.id)}
-                aria-current={activeTab === tab.id ? 'page' : undefined}
-              >
-                <Icon
-                  className={`h-4 w-4 shrink-0 ${activeTab === tab.id ? 'text-[#3B82F6]' : 'text-[#8CA0B8]'}`}
-                  aria-hidden="true"
-                />
-                {tab.label}
-              </button>
-            )
-          })}
-        </nav>
-        <div className="mt-auto border-t border-[#1E2D47] p-5">
-          <p className="text-[12px] leading-relaxed text-[#8CA0B8]">
-            Live weather: Open-Meteo • 20 zones, Northeast India
-          </p>
-        </div>
-      </aside>
+      <TopBar
+        lastUpdated={lastUpdated}
+        avgTempC={avgTempC}
+        condition={condition}
+        alertCount={alerts.length}
+        onAlertsClick={goToAlerts}
+        onHome={() => handleTabChange('home')}
+      />
+      <SideNav
+        activeTab={activeTab}
+        alertCount={alerts.length}
+        onTab={handleTabChange}
+        onAlerts={goToAlerts}
+      />
 
-      <div className="md:pl-[232px]">
+      <div className="md:pl-[232px] md:pt-16">
         <div className="border-b border-[#1E2D47] bg-[#101A2E] md:hidden">
           <div className="flex items-center gap-2.5 px-4 py-3">
             <button
@@ -283,78 +308,86 @@ export default function App() {
         </div>
 
         <div className="flex items-start">
-        <main className="min-w-0 flex-1 p-6">
-          <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
-            <div className="flex min-w-0 items-start gap-3">
-              {activeTab !== 'home' ? (
-                <button
-                  type="button"
-                  onClick={handleBack}
-                  className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
-                  aria-label="Go back"
-                >
-                  <ArrowLeft className="h-4 w-4" aria-hidden="true" />
-                  Back
-                </button>
-              ) : null}
+          <main className="min-w-0 flex-1 p-4 md:p-6">
+            <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
+              <div className="flex min-w-0 items-start gap-3">
+                {activeTab !== 'home' ? (
+                  <button
+                    type="button"
+                    onClick={handleBack}
+                    className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
+                    aria-label="Go back"
+                  >
+                    <ArrowLeft className="h-4 w-4" aria-hidden="true" />
+                    Back
+                  </button>
+                ) : null}
+                <div className="min-w-0">
+                  <h1 key={activeTab} className="title-in text-[20px] font-bold text-[#E8EEF7]">
+                    {activeTabMeta.title}
+                  </h1>
+                </div>
+              </div>
               <div className="min-w-0">
-                <h1 key={activeTab} className="title-in text-[20px] font-bold text-[#E8EEF7]">
-                  {activeTabMeta.title}
-                </h1>
-                <p className="mt-0.5 hidden text-[13px] whitespace-nowrap text-[#8CA0B8] md:block">
-                  {clockText}
-                </p>
+                <ApiStatus />
               </div>
             </div>
-            <div className="min-w-0">
-              <ApiStatus />
+
+            <div key={activeTab} className={tabDir === 'fwd' ? 'tab-in-fwd' : 'tab-in-back'}>
+              {activeTab === 'home' ? (
+                <Landing
+                  zones={zones}
+                  loading={loading}
+                  onOpenDashboard={() => handleTabChange('overview')}
+                  onOpenAccuracy={() => handleTabChange('accuracy')}
+                  onOpenMap={() => handleTabChange('map')}
+                />
+              ) : null}
+              {activeTab === 'overview' ? (
+                <OverviewDashboard
+                  zones={zones}
+                  loading={loading}
+                  alerts={alerts}
+                  focusZone={focusZone}
+                  onSelectZone={handleSelectZone}
+                  onSelectZoneId={handleSelectZoneId}
+                  onOpenMap={() => {
+                    if (focusZone) handleSelectZone(focusZone)
+                    handleTabChange('map')
+                  }}
+                />
+              ) : null}
+              {activeTab === 'map' ? (
+                <MapView
+                  zones={zones}
+                  loading={loading}
+                  onSelectZone={handleSelectZone}
+                  selectedZone={selectedZone}
+                />
+              ) : null}
+              {activeTab === 'accuracy' ? <AccuracyView /> : null}
+              {activeTab === 'report' ? <ReportView /> : null}
             </div>
-          </div>
+          </main>
 
-          <div key={activeTab} className={tabDir === 'fwd' ? 'tab-in-fwd' : 'tab-in-back'}>
-            {activeTab === 'home' ? (
-              <Landing
-                zones={zones}
-                loading={loading}
-                onOpenDashboard={() => handleTabChange('overview')}
-                onOpenAccuracy={() => handleTabChange('accuracy')}
-                onOpenMap={() => handleTabChange('map')}
-              />
-            ) : null}
-            {activeTab === 'overview' ? (
-              <Overview zones={zones} loading={loading} onSelectZone={handleSelectZone} onOpenMap={() => handleTabChange('map')} />
-            ) : null}
-            {activeTab === 'map' ? (
-              <MapView
-                zones={zones}
-                loading={loading}
-                onSelectZone={handleSelectZone}
-                selectedZone={selectedZone}
-              />
-            ) : null}
-            {activeTab === 'accuracy' ? <AccuracyView /> : null}
-            {activeTab === 'report' ? <ReportView /> : null}
-          </div>
-        </main>
-
-        {panelZone ? (
-          <aside
-            aria-hidden={!panelOpen}
-            className="sticky top-0 h-screen shrink-0 overflow-hidden bg-[#101A2E] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl"
-            style={{
-              width: panelOpen ? 'min(380px, 92vw)' : '0px',
-              borderLeft: panelOpen ? '1px solid #1E2D47' : '1px solid transparent',
-            }}
-          >
-            <div
-              key={panelZone.location.id}
-              className="panel-content-in flex h-full w-[380px] max-w-[92vw] flex-col transition-opacity duration-500"
-              style={{ opacity: panelOpen ? 1 : 0 }}
+          {panelZone ? (
+            <aside
+              aria-hidden={!panelOpen}
+              className="sticky top-0 h-screen shrink-0 overflow-hidden bg-[#101A2E] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:top-16 md:h-[calc(100vh-4rem)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl"
+              style={{
+                width: panelOpen ? 'min(380px, 92vw)' : '0px',
+                borderLeft: panelOpen ? '1px solid #1E2D47' : '1px solid transparent',
+              }}
             >
-              <ZoneDetail zone={panelZone} onClose={handleClosePanel} />
-            </div>
-          </aside>
-        ) : null}
+              <div
+                key={panelZone.location.id}
+                className="panel-content-in flex h-full w-[380px] max-w-[92vw] flex-col transition-opacity duration-500"
+                style={{ opacity: panelOpen ? 1 : 0 }}
+              >
+                <ZoneDetail zone={panelZone} onClose={handleClosePanel} />
+              </div>
+            </aside>
+          ) : null}
         </div>
       </div>
     </div>

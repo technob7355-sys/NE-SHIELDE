@@ -27,6 +27,10 @@ export interface ZoneWeather {
   rainfall30d: number;
   /** Average soil moisture over the last 24 hours, % of saturation. */
   soilMoisture: number;
+  /** Latest hourly temperature (°C). */
+  currentTempC: number | null;
+  /** Last 24 hourly rainfall values (mm), oldest → newest. */
+  recentHourlyRain: number[];
   /** Past complete days, oldest → newest (for rolling the formula forward). */
   history: DayRain[];
   /** Next 3 calendar days (forecast). */
@@ -40,7 +44,7 @@ const round1 = (n: number) => Math.round(n * 10) / 10;
 export async function fetchZoneWeather(loc: ZoneLocation): Promise<ZoneWeather> {
   const sourceUrl =
     `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lng}` +
-    `&hourly=precipitation,soil_moisture_0_to_1cm&past_days=31&forecast_days=4` +
+    `&hourly=precipitation,soil_moisture_0_to_1cm,temperature_2m&past_days=31&forecast_days=4` +
     `&timezone=Asia%2FKolkata`;
   const res = await fetch(sourceUrl);
   if (!res.ok) {
@@ -50,6 +54,7 @@ export async function fetchZoneWeather(loc: ZoneLocation): Promise<ZoneWeather> 
   const times: string[] = data.hourly.time;
   const precip: (number | null)[] = data.hourly.precipitation;
   const soilRaw: (number | null)[] = data.hourly.soil_moisture_0_to_1cm;
+  const tempRaw: (number | null)[] = data.hourly.temperature_2m ?? [];
 
   // "Complete days" = full calendar days (Asia/Kolkata) strictly before
   // today. rainfall = the most recent complete day. Today (incomplete) is
@@ -106,6 +111,14 @@ export async function fetchZoneWeather(loc: ZoneLocation): Promise<ZoneWeather> 
     rainfall3d: round1(lastDays(3)),
     rainfall30d: round1(lastDays(30)),
     soilMoisture: round1(soilMoisture),
+    currentTempC:
+      tempRaw.length > 0
+        ? (() => {
+            const valid = tempRaw.filter((v): v is number => v != null);
+            return valid.length > 0 ? round1(valid[valid.length - 1]) : null;
+          })()
+        : null,
+    recentHourlyRain: precip.slice(-24).map((v) => round1(v ?? 0)),
     history,
     forecast,
     fetchedAt: new Date().toISOString(),
