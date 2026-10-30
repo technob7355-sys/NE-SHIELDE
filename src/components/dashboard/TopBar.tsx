@@ -81,11 +81,11 @@ export default function TopBar({
 
         <span className="flex shrink-0 items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3B82F6]/20 text-[13px] font-bold text-[#60A5FA]">
-            BS
+            CR
           </span>
           <span className="hidden text-left leading-tight xl:block">
-            <span className="block text-[13px] font-medium text-[#E8EEF7]">Bhim Singh</span>
-            <span className="block text-[11px] text-[#8CA0B8]">Student</span>
+            <span className="block text-[13px] font-medium text-[#E8EEF7]">Control Room</span>
+            <span className="block text-[11px] text-[#8CA0B8]">Operator</span>
           </span>
           <ChevronDown className="hidden h-4 w-4 text-[#8CA0B8] xl:block" aria-hidden="true" />
         </span>
