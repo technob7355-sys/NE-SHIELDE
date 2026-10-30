@@ -56,7 +56,24 @@ export default function OverviewDashboard({
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <DashboardMap zones={zones} onSelectZone={onSelectZone} />
+          <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1E2D47] bg-[#101A2E] px-5 py-4">
+              <div>
+                <p className="text-[16px] font-bold text-[#E8EEF7]">Live Risk Map</p>
+                <p className="mt-0.5 text-[12px] text-[#8CA0B8]">
+                  Satellite view • 20 zones • tap a zone for details
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={onOpenMap}
+                className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
+              >
+                Open full live map →
+              </button>
+            </div>
+            <DashboardMap zones={zones} onSelectZone={onSelectZone} />
+          </div>
         </div>
         <LocationDetails zone={focusZone} onViewOnMap={onOpenMap} />
       </div>
