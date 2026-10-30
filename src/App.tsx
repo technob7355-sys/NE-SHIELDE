@@ -185,7 +185,7 @@ export default function App() {
     }`
 
   return (
-    <div className="min-h-screen bg-(--bg) text-(--text)">
+    <div className="min-h-screen bg-transparent text-(--text)">
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-[232px] flex-col border-r border-(--border) bg-(--surface) md:flex">
         <button
           type="button"

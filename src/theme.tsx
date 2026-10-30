@@ -13,15 +13,15 @@ export type Theme = 'light' | 'dark'
 const STORAGE_KEY = 'ne-shield-theme'
 
 const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
-  theme: 'light',
+  theme: 'dark',
   toggle: () => {},
 })
 
 function readStoredTheme(): Theme {
   try {
-    return window.localStorage.getItem(STORAGE_KEY) === 'dark' ? 'dark' : 'light'
+    return window.localStorage.getItem(STORAGE_KEY) === 'light' ? 'light' : 'dark'
   } catch {
-    return 'light'
+    return 'dark'
   }
 }
 

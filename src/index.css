@@ -15,8 +15,27 @@
   --color-risk-critical: #f87171;
 }
 
-/* Light theme is the default (white). Dark mode via <html data-theme="dark">. */
-:root {
+/* Darkest theme is the default. Light via <html data-theme="light">. */
+:root,
+:root[data-theme='dark'],
+[data-theme='dark'] {
+  --bg: #04070d;
+  --surface: #090e1a;
+  --surface-2: #0f1830;
+  --border: #1b2947;
+  --text: #eef3fb;
+  --muted: #8fa1bd;
+  --text-soft: #c4d2e8;
+  --accent: #3b82f6;
+  --accent-soft: #60a5fa;
+  --faint: #16203a;
+  --body-bg: radial-gradient(1100px 520px at 85% -8%, rgba(59, 130, 246, 0.09), transparent 62%),
+    #04070d;
+  color-scheme: dark;
+}
+
+:root[data-theme='light'],
+[data-theme='light'] {
   --bg: #ffffff;
   --surface: #f8fafc;
   --surface-2: #edf2f7;
@@ -27,38 +46,29 @@
   --accent: #2563eb;
   --accent-soft: #1d4ed8;
   --faint: #e2e8f0;
+  --body-bg: #ffffff;
   color-scheme: light;
 }
 
-:root[data-theme='dark'],
-[data-theme='dark'] {
-  --bg: #0b1220;
-  --surface: #101a2e;
-  --surface-2: #16233c;
-  --border: #1e2d47;
-  --text: #e8eef7;
-  --muted: #8ca0b8;
-  --text-soft: #c7d3e8;
-  --accent: #3b82f6;
-  --accent-soft: #60a5fa;
-  --faint: #233452;
-  color-scheme: dark;
+html {
+  background: var(--bg);
 }
 
 html,
 body {
-  background: var(--bg);
   color: var(--text);
   font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
 }
 
 body {
   margin: 0;
+  background: var(--body-bg);
+  background-attachment: fixed;
 }
 
 #root {
   min-height: 100vh;
-  background: var(--bg);
+  background: transparent;
 }
 
 /* Leaflet dark adjustments — flat styling only */
