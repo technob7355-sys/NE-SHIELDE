@@ -4,8 +4,9 @@ import {
   DEMO_FALSE_ALARMS,
   DEMO_HONEST_NOTE,
   DEMO_INFO,
+  DEMO_JOURNEY,
   DEMO_METHOD,
-  DEMO_MISSES,
+  DEMO_MISS_PATTERN,
 } from '../data/demoAccuracy'
 import { MODEL_INFO } from '../data/modelInfo'
 import { LevelBadge } from './risk'
@@ -52,10 +53,10 @@ export default function AccuracyView() {
   const maxImportance = importanceEntries.reduce((m, [, v]) => Math.max(m, Number(v) || 0), 0)
 
   const summaryCards = [
-    { value: `${DEMO_INFO.eventsCaught}/${DEMO_INFO.eventsTotal}`, label: 'Asli events pakde gaye (unseen years)' },
-    { value: String(DEMO_INFO.falseAlarms), label: 'Galat alarms (false alarms)' },
-    { value: `${DEMO_INFO.totalRows}`, label: 'Total labeled rows (521/521)' },
-    { value: '96.7–97.8%', label: 'Alag train splits par score' },
+    { value: `${DEMO_INFO.eventsCaught}/${DEMO_INFO.eventsTotal}`, label: 'Asli events pakde (naye 40% groups, geele din)' },
+    { value: String(DEMO_INFO.falseAlarms), label: `Galat alarms (${DEMO_INFO.negativesTotal} geele non-event dino me)` },
+    { value: `${DEMO_INFO.totalRows}`, label: 'Total rows — sukhe (January) din: zero' },
+    { value: '17.6%', label: 'Slope (DEM) ka signal — sabse naya feature' },
   ]
 
   return (
@@ -65,10 +66,10 @@ export default function AccuracyView() {
           {DEMO_INFO.accuracyPct.toFixed(1)}%
         </p>
         <p className="mt-2 text-[14px] leading-relaxed text-[#8CA0B8]">
-          {DEMO_INFO.accuracyLabel} — 138/140 asli landslides pakde, sirf 6 false alarms
+          {DEMO_INFO.accuracyLabel} — {DEMO_INFO.eventsCaught}/{DEMO_INFO.eventsTotal} asli landslides pakde, {DEMO_INFO.falseAlarms} false alarms
         </p>
         <p className="mt-1 text-[12px] text-[#8CA0B8]">
-          1,042 labeled rows • 521 events + 521 January controls • har row me source
+          {DEMO_INFO.totalRows.toLocaleString('en-IN')} rows • {DEMO_INFO.eventRows} events + {DEMO_INFO.hardNegRows} wet-day non-events • January controls: 0 • har row me source
         </p>
       </div>
 
@@ -103,9 +104,9 @@ export default function AccuracyView() {
           <ModelRow label="Trained on" value={MODEL_INFO.trainedOn} />
           <ModelRow
             label="Split"
-            value={`Train ${DEMO_INFO.trainDesc} (762 rows) • Test ${DEMO_INFO.testDesc} (280 rows)`}
+            value={`Train ${DEMO_INFO.trainDesc} (${DEMO_INFO.trainRows} rows) • Test ${DEMO_INFO.testDesc} (${DEMO_INFO.testRows} rows)`}
           />
-          <ModelRow label="Accuracy (unseen years)" value={`${DEMO_INFO.accuracyPct.toFixed(1)}%`} />
+          <ModelRow label="Accuracy (honest wet-day test)" value={`${DEMO_INFO.accuracyPct.toFixed(1)}%`} />
           <ModelRow label="Feature source" value={DEMO_INFO.featureSource} />
           <ModelRow label="Khud verify karo" value={DEMO_INFO.verifyCommand} />
         </div>
@@ -139,43 +140,26 @@ export default function AccuracyView() {
       </div>
 
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-2 text-[20px] font-bold text-[#E8EEF7]">2 misses — chhupaye nahi</p>
-        <div className="overflow-x-auto">
-          <table className="w-full text-[14px]">
-            <thead>
-              <tr className="border-b border-[#1E2D47] text-left">
-                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Event</th>
-                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Date</th>
-                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Rain 24h</th>
-                <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Kyun? (analysis note)</th>
-                <th className="pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Source</th>
-              </tr>
-            </thead>
-            <tbody>
-              {DEMO_MISSES.map((m) => (
-                <tr key={m.event} className="border-b border-[#1E2D47] last:border-b-0">
-                  <td className="py-3 pr-3 font-medium text-[#E8EEF7]">{m.event}</td>
-                  <td className="py-3 pr-3 whitespace-nowrap text-[#8CA0B8]">{m.date}</td>
-                  <td className="py-3 pr-3 whitespace-nowrap text-[#8CA0B8]">{m.rain24} mm</td>
-                  <td className="min-w-[260px] max-w-[380px] py-3 pr-3 text-[13px] leading-relaxed text-[#8CA0B8]">
-                    {m.note}
-                  </td>
-                  <td className="py-3 whitespace-nowrap">
-                    <a
-                      href={m.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[13px] font-medium whitespace-nowrap text-[#3B82F6] underline underline-offset-2"
-                    >
-                      Source ↗
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <p className="mt-4 text-[14px] leading-relaxed text-[#8CA0B8]">{DEMO_FALSE_ALARMS}</p>
+        <p className="mb-2 text-[20px] font-bold text-[#E8EEF7]">97.1% se 68.3% tak — poori kahani</p>
+        <p className="mb-4 text-[14px] leading-relaxed text-[#8CA0B8]">
+          Humne purana 97.1% wala number hataya nahi — uski kahani yahan hai, taaki koi ye na kahe
+          ki humne achcha number chhupaya. Par ab headline wahi hai jo asli test par tikta hai.
+        </p>
+        <ol className="flex flex-col gap-3">
+          {DEMO_JOURNEY.map((step, i) => (
+            <li key={step.title} className="flex items-start gap-3 text-[14px] leading-relaxed">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[12px] font-bold text-[#60A5FA]">
+                {i + 1}
+              </span>
+              <span>
+                <span className="font-medium text-[#E8EEF7]">{step.title}. </span>
+                <span className="text-[#8CA0B8]">{step.body}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="mt-4 text-[14px] leading-relaxed text-[#8CA0B8]">{DEMO_MISS_PATTERN}</p>
+        <p className="mt-3 text-[14px] leading-relaxed text-[#8CA0B8]">{DEMO_FALSE_ALARMS}</p>
       </div>
 
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">

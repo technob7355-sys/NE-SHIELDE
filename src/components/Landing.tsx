@@ -104,7 +104,7 @@ const TRUST_POINTS = [
   {
     icon: Crosshair,
     title: 'An honest backtest',
-    body: 'On 140 real landslides from 2016–2022 — years the model never saw — it catches 138 with only 6 false alarms: 97.1% accuracy, with every miss explained. We show the misses, not just the hits.',
+    body: 'We removed dry-season days from training AND testing. On 208 real landslides and 416 wet non-event days the model never saw, it scores 68.3% — 60 events caught, 50 false alarms. An earlier 97.1% looked better but was tested on easy dry days. We publish the honest number, not the flattering one.',
   },
   {
     icon: Code2,
@@ -308,9 +308,9 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
           </div>
           <div className="flex-1 py-4 md:px-6 md:py-0">
             <p className="font-display text-[36px] leading-none font-semibold text-[#34D399]">
-              97.1%
+              68.3%
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Real-event accuracy (unseen future years)</p>
+            <p className="mt-2 text-[13px] text-[#C7D3E8]">Honest wet-day accuracy (train + test: wet days only)</p>
           </div>
         </div>
       </section>
