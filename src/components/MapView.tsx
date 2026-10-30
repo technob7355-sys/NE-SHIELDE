@@ -50,7 +50,7 @@ const LEGEND: { level: string; label: string }[] = [
 export default function MapView({ zones, loading, onSelectZone, selectedZone }: MapViewProps) {
   return (
     <div className="flex flex-col gap-5">
-      <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
+      <div className="overflow-hidden rounded-xl border border-(--border)">
         <MapContainer
           center={[26.8, 92.5]}
           zoom={7}
@@ -112,7 +112,7 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
         </MapContainer>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-(--border) bg-(--surface) p-5">
         {LEGEND.map((item) => (
           <span key={item.level} className="inline-flex items-center gap-2">
             <span
@@ -123,37 +123,37 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
               }}
               aria-hidden="true"
             />
-            <span className="text-[13px] text-[#E8EEF7]">{item.label} zone</span>
+            <span className="text-[13px] text-(--text)">{item.label} zone</span>
           </span>
         ))}
         <span className="inline-flex items-center gap-2">
           <span
-            className="h-4 w-4 rounded-full border-2 border-[#8CA0B8] bg-[#8CA0B8]/30"
+            className="h-4 w-4 rounded-full border-2 border-(--muted) bg-(--muted)/30"
             aria-hidden="true"
           />
-          <span className="text-[13px] text-[#8CA0B8]">Data unavailable</span>
+          <span className="text-[13px] text-(--muted)">Data unavailable</span>
         </span>
       </div>
 
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-4 text-[16px] font-bold text-[#E8EEF7]">Zones</p>
-        {loading ? <p className="mb-3 text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
+      <div className="rounded-xl border border-(--border) bg-(--surface) p-5">
+        <p className="mb-4 text-[16px] font-bold text-(--text)">Zones</p>
+        {loading ? <p className="mb-3 text-[14px] text-(--muted)">Loading live data…</p> : null}
         <div className="flex flex-col">
           {zones.map((zone) => (
             <button
               key={zone.location.id}
               type="button"
               onClick={() => onSelectZone(zone)}
-              className="flex w-full items-center gap-3 border-b border-[#1E2D47] py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-[#16233C]/50 active:bg-[#1E2D47]"
+              className="flex w-full items-center gap-3 border-b border-(--border) py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-(--surface-2)/50 active:bg-(--border)"
             >
               <RiskDot level={zone.prediction?.level} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[14px] font-medium text-[#E8EEF7]">
+                <span className="block truncate text-[14px] font-medium text-(--text)">
                   {zone.location.name}
                 </span>
-                <span className="block truncate text-[12px] text-[#8CA0B8]">{zone.location.state}</span>
+                <span className="block truncate text-[12px] text-(--muted)">{zone.location.state}</span>
               </span>
-              <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-[#E8EEF7]">
+              <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-(--text)">
                 {zone.prediction ? Math.round(zone.prediction.score) : '—'}
               </span>
               {zone.prediction ? (
@@ -161,13 +161,13 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
                   <LevelBadge level={zone.prediction.level} />
                 </span>
               ) : (
-                <span className="shrink-0 text-[12px] font-medium text-[#8CA0B8]">Data unavailable</span>
+                <span className="shrink-0 text-[12px] font-medium text-(--muted)">Data unavailable</span>
               )}
             </button>
           ))}
         </div>
         {zones.length === 0 && !loading ? (
-          <p className="text-[14px] text-[#8CA0B8]">No zones available.</p>
+          <p className="text-[14px] text-(--muted)">No zones available.</p>
         ) : null}
       </div>
     </div>

@@ -9,9 +9,9 @@ interface OverviewProps {
 
 function StatCard({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-      <p className="text-[28px] leading-none font-bold text-[#E8EEF7]">{value}</p>
-      <p className="mt-2 text-[12px] font-medium tracking-wide text-[#8CA0B8] uppercase">{label}</p>
+    <div className="rounded-xl border border-(--border) bg-(--surface) p-5">
+      <p className="text-[28px] leading-none font-bold text-(--text)">{value}</p>
+      <p className="mt-2 text-[12px] font-medium tracking-wide text-(--muted) uppercase">{label}</p>
     </div>
   )
 }
@@ -40,7 +40,7 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
 
   return (
     <div className="flex flex-col gap-5">
-      {loading ? <p className="text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
+      {loading ? <p className="text-[14px] text-(--muted)">Loading live data…</p> : null}
 
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Zones Monitored" value="20" />
@@ -50,10 +50,10 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
-        <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5 lg:col-span-2">
-          <p className="mb-4 text-[16px] font-bold text-[#E8EEF7]">Top Risk Zones</p>
+        <div className="rounded-xl border border-(--border) bg-(--surface) p-5 lg:col-span-2">
+          <p className="mb-4 text-[16px] font-bold text-(--text)">Top Risk Zones</p>
           {topZones.length === 0 ? (
-            <p className="text-[14px] text-[#8CA0B8]">
+            <p className="text-[14px] text-(--muted)">
               {loading ? 'Loading live data…' : 'No live scores available right now.'}
             </p>
           ) : (
@@ -63,19 +63,19 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
                   key={zone.location.id}
                   type="button"
                   onClick={() => onSelectZone(zone)}
-                  className="flex w-full items-center gap-3 border-b border-[#1E2D47] py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-[#16233C]/50 active:bg-[#1E2D47]"
+                  className="flex w-full items-center gap-3 border-b border-(--border) py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-(--surface-2)/50 active:bg-(--border)"
                 >
                   <RiskDot level={zone.prediction?.level} />
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[14px] font-medium text-[#E8EEF7]">
+                    <span className="block truncate text-[14px] font-medium text-(--text)">
                       {zone.location.name}
                     </span>
-                    <span className="block truncate text-[12px] text-[#8CA0B8]">
+                    <span className="block truncate text-[12px] text-(--muted)">
                       {zone.location.state}
                     </span>
                   </span>
                   <span className="flex shrink-0 items-center gap-2">
-                    <span className="text-[16px] font-bold whitespace-nowrap text-[#E8EEF7]">
+                    <span className="text-[16px] font-bold whitespace-nowrap text-(--text)">
                       {zone.prediction ? Math.round(zone.prediction.score) : '—'}
                     </span>
                     {zone.prediction ? <LevelBadge level={zone.prediction.level} /> : null}
@@ -84,23 +84,23 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
               ))}
             </div>
           )}
-          <p className="mt-4 text-[12px] text-[#8CA0B8]">
+          <p className="mt-4 text-[12px] text-(--muted)">
             Source: Open-Meteo • fetched {provenanceTime}
           </p>
         </div>
 
-        <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5 lg:col-span-3">
-          <p className="mb-4 text-[16px] font-bold text-[#E8EEF7]">All Zones</p>
+        <div className="rounded-xl border border-(--border) bg-(--surface) p-5 lg:col-span-3">
+          <p className="mb-4 text-[16px] font-bold text-(--text)">All Zones</p>
           <div className="overflow-x-auto">
             <table className="w-full text-[14px]">
               <thead>
-                <tr className="border-b border-[#1E2D47] text-left">
-                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Zone</th>
-                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">State</th>
-                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Rain 24h</th>
-                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Soil %</th>
-                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Score</th>
-                  <th className="pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Level</th>
+                <tr className="border-b border-(--border) text-left">
+                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-(--muted)">Zone</th>
+                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-(--muted)">State</th>
+                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-(--muted)">Rain 24h</th>
+                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-(--muted)">Soil %</th>
+                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-(--muted)">Score</th>
+                  <th className="pb-3 font-medium whitespace-nowrap text-(--muted)">Level</th>
                 </tr>
               </thead>
               <tbody>
@@ -108,28 +108,28 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
                   <tr
                     key={zone.location.id}
                     onClick={() => onSelectZone(zone)}
-                    className="cursor-pointer border-b border-[#1E2D47] last:border-b-0 hover:bg-[#16233C]"
+                    className="cursor-pointer border-b border-(--border) last:border-b-0 hover:bg-(--surface-2)"
                   >
-                    <td className="max-w-[180px] truncate py-3 pr-3 font-medium text-[#E8EEF7]">
+                    <td className="max-w-[180px] truncate py-3 pr-3 font-medium text-(--text)">
                       {zone.location.name}
                     </td>
-                    <td className="max-w-[140px] truncate py-3 pr-3 whitespace-nowrap text-[#8CA0B8]">
+                    <td className="max-w-[140px] truncate py-3 pr-3 whitespace-nowrap text-(--muted)">
                       {zone.location.state}
                     </td>
-                    <td className="py-3 pr-3 whitespace-nowrap text-[#E8EEF7]">
+                    <td className="py-3 pr-3 whitespace-nowrap text-(--text)">
                       {zone.weather ? `${zone.weather.rainfall.toFixed(1)} mm` : '—'}
                     </td>
-                    <td className="py-3 pr-3 whitespace-nowrap text-[#E8EEF7]">
+                    <td className="py-3 pr-3 whitespace-nowrap text-(--text)">
                       {zone.weather ? zone.weather.soilMoisture.toFixed(1) : '—'}
                     </td>
-                    <td className="py-3 pr-3 font-bold whitespace-nowrap text-[#E8EEF7]">
+                    <td className="py-3 pr-3 font-bold whitespace-nowrap text-(--text)">
                       {zone.prediction ? Math.round(zone.prediction.score) : '—'}
                     </td>
                     <td className="py-3 whitespace-nowrap">
                       {zone.prediction ? (
                         <LevelBadge level={zone.prediction.level} />
                       ) : (
-                        <span className="text-[12px] font-medium whitespace-nowrap text-[#8CA0B8]">No data</span>
+                        <span className="text-[12px] font-medium whitespace-nowrap text-(--muted)">No data</span>
                       )}
                     </td>
                   </tr>
@@ -138,7 +138,7 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
             </table>
           </div>
           {zones.length === 0 && !loading ? (
-            <p className="mt-3 text-[14px] text-[#8CA0B8]">No zones available.</p>
+            <p className="mt-3 text-[14px] text-(--muted)">No zones available.</p>
           ) : null}
         </div>
       </div>

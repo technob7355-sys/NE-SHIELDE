@@ -62,8 +62,8 @@ function Reveal({ children, className }: { children: ReactNode; className?: stri
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-center gap-3 text-[12px] font-bold tracking-[0.18em] text-[#60A5FA] uppercase">
-      <span className="h-px w-8 bg-[#3B82F6]" aria-hidden="true" />
+    <p className="flex items-center gap-3 text-[12px] font-bold tracking-[0.18em] text-(--accent-soft) uppercase">
+      <span className="h-px w-8 bg-(--accent)" aria-hidden="true" />
       {children}
     </p>
   )
@@ -72,7 +72,7 @@ function SectionLabel({ children }: { children: ReactNode }) {
 const STEPS = [
   {
     icon: CloudRain,
-    chip: 'bg-[#3B82F6]/15 text-[#60A5FA]',
+    chip: 'bg-(--accent)/15 text-(--accent-soft)',
     title: 'Live weather, every zone',
     body: 'Rainfall (24h, 3-day, 30-day) and soil moisture are fetched live from Open-Meteo for each monitored slope — no hand-entered numbers, no estimates.',
   },
@@ -145,13 +145,13 @@ const ROADMAP = [
   },
   {
     phase: 'Next',
-    dot: 'bg-[#60A5FA]',
+    dot: 'bg-(--accent-soft)',
     title: 'Alerts that reach people',
     body: 'SMS and WhatsApp alerts when a zone turns High or Critical, 72-hour forecast risk, and trend charts per zone.',
   },
   {
     phase: 'Then',
-    dot: 'bg-[#8CA0B8]',
+    dot: 'bg-(--muted)',
     title: 'Scale across the hills',
     body: 'IMD rain-gauge and GSI landslide-inventory data in the model, all Northeast districts, and an API for government systems.',
   },
@@ -169,14 +169,15 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
     <div className="flex flex-col gap-16 pb-4 md:gap-20">
       {/* Hero — real satellite imagery of the Northeast behind the headline */}
       <section
-        className="overflow-hidden rounded-2xl border border-[#1E2D47] bg-[#101A2E] bg-cover bg-center p-6 md:p-10"
+        data-theme="dark"
+        className="overflow-hidden rounded-2xl border border-(--border) bg-(--surface) bg-cover bg-center p-6 md:p-10"
         style={{
           backgroundImage: `linear-gradient(rgba(8,13,26,0.82), rgba(8,13,26,0.9)), url("${HERO_IMAGE}")`,
         }}
       >
         <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="min-w-0">
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[12px] font-medium text-[#E8EEF7] backdrop-blur-sm">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[12px] font-medium text-(--text) backdrop-blur-sm">
               <span className="relative flex h-2 w-2" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#34D399] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34D399]" />
@@ -187,7 +188,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
               Before the slope fails,{' '}
               <span className="text-gradient">people should know.</span>
             </h2>
-            <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-[#C7D3E8] md:text-[17px]">
+            <p className="mt-5 max-w-xl text-[16px] leading-relaxed text-(--text-soft) md:text-[17px]">
               NE-SHIELD watches the rain and the soil on the Northeast&apos;s most vulnerable slopes
               and turns them into a live landslide risk score — so warnings reach people{' '}
               <span className="font-medium text-white">before</span> disaster, not after it.
@@ -196,7 +197,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
               <button
                 type="button"
                 onClick={onOpenDashboard}
-                className="inline-flex items-center gap-2 rounded-lg bg-[#3B82F6] px-6 py-3.5 text-[14px] font-bold text-white shadow-[0_8px_30px_rgba(59,130,246,0.35)] transition-all duration-300 hover:bg-[#2563EB] hover:shadow-[0_8px_36px_rgba(59,130,246,0.5)] active:scale-[0.98]"
+                className="inline-flex items-center gap-2 rounded-lg bg-(--accent) px-6 py-3.5 text-[14px] font-bold text-white shadow-[0_8px_30px_rgba(59,130,246,0.35)] transition-all duration-300 hover:bg-[#2563EB] hover:shadow-[0_8px_36px_rgba(59,130,246,0.5)] active:scale-[0.98]"
               >
                 View the live dashboard
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -209,7 +210,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                 See how we prove accuracy
               </button>
             </div>
-            <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-[#C7D3E8]">
+            <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-(--text-soft)">
               <span className="inline-flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-[#34D399]" aria-hidden="true" /> No fake numbers
               </span>
@@ -223,12 +224,12 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
           </div>
 
           {/* Live product snapshot — glass card over the imagery */}
-          <div className="min-w-0 rounded-2xl border border-white/15 bg-[#0B1220]/85 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)] backdrop-blur-md">
+          <div className="min-w-0 rounded-2xl border border-white/15 bg-(--bg)/85 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)] backdrop-blur-md">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[13px] font-bold tracking-wide text-[#E8EEF7] uppercase">
+              <p className="text-[13px] font-bold tracking-wide text-(--text) uppercase">
                 Live risk snapshot
               </p>
-              <span className="inline-flex items-center gap-1.5 text-[12px] text-[#8CA0B8]">
+              <span className="inline-flex items-center gap-1.5 text-[12px] text-(--muted)">
                 <span className="h-2 w-2 rounded-full bg-[#34D399]" aria-hidden="true" />
                 Open-Meteo
               </span>
@@ -241,7 +242,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                     key={zone.location.id}
                     type="button"
                     onClick={onOpenMap}
-                    className="flex items-center gap-3 border-b border-[#1E2D47] py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-[#16233C]/50 active:bg-[#1E2D47]"
+                    className="flex items-center gap-3 border-b border-(--border) py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-(--surface-2)/50 active:bg-(--border)"
                   >
                     <span
                       className="h-3 w-3 shrink-0 rounded-full"
@@ -249,14 +250,14 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                       aria-hidden="true"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[14px] font-medium text-[#E8EEF7]">
+                      <span className="block truncate text-[14px] font-medium text-(--text)">
                         {zone.location.name}
                       </span>
-                      <span className="block truncate text-[12px] text-[#8CA0B8]">
+                      <span className="block truncate text-[12px] text-(--muted)">
                         {zone.location.state}
                       </span>
                     </span>
-                    <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-[#E8EEF7]">
+                    <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-(--text)">
                       {zone.prediction ? Math.round(zone.prediction.score) : '—'}
                     </span>
                     {zone.prediction ? (
@@ -264,7 +265,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                         <LevelBadge level={zone.prediction.level} />
                       </span>
                     ) : (
-                      <span className="shrink-0 text-[12px] text-[#8CA0B8]">
+                      <span className="shrink-0 text-[12px] text-(--muted)">
                         {loading ? 'Loading…' : 'Waiting for live data'}
                       </span>
                     )}
@@ -275,13 +276,13 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             <button
               type="button"
               onClick={onOpenMap}
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2.5 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-(--border) bg-(--surface-2) px-4 py-2.5 text-[13px] font-medium text-(--text) transition-all duration-300 hover:bg-(--border) active:scale-[0.98]"
             >
               Open the full live map
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
             {topZone?.prediction ? (
-              <p className="mt-3 text-center text-[12px] text-[#8CA0B8]">
+              <p className="mt-3 text-center text-[12px] text-(--muted)">
                 Highest risk right now: {topZone.location.name} —{' '}
                 {Math.round(topZone.prediction.score)} ({topZone.prediction.level})
               </p>
@@ -291,26 +292,26 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
 
         <div className="mt-10 flex flex-col divide-y divide-white/10 border-t border-white/10 pt-6 md:flex-row md:divide-x md:divide-y-0">
           <div className="flex-1 py-4 pr-4 md:py-0">
-            <p className="font-display text-[36px] leading-none font-semibold text-[#60A5FA]">
+            <p className="font-display text-[36px] leading-none font-semibold text-(--accent-soft)">
               {zones.length || 20}
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Zones monitored live</p>
+            <p className="mt-2 text-[13px] text-(--text-soft)">Zones monitored live</p>
           </div>
           <div className="flex-1 py-4 pr-4 md:px-6 md:py-0">
             <p className="font-display text-[36px] leading-none font-semibold text-white">
               {states || 4}
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">States covered</p>
+            <p className="mt-2 text-[13px] text-(--text-soft)">States covered</p>
           </div>
           <div className="flex-1 py-4 pr-4 md:px-6 md:py-0">
             <p className="font-display text-[36px] leading-none font-semibold text-white">1,740</p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Weeks of monsoon data trained on</p>
+            <p className="mt-2 text-[13px] text-(--text-soft)">Weeks of monsoon data trained on</p>
           </div>
           <div className="flex-1 py-4 md:px-6 md:py-0">
             <p className="font-display text-[36px] leading-none font-semibold text-[#34D399]">
               97.1%
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Real-event accuracy (unseen future years)</p>
+            <p className="mt-2 text-[13px] text-(--text-soft)">Real-event accuracy (unseen future years)</p>
           </div>
         </div>
       </section>
@@ -318,10 +319,10 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
       {/* The problem — numbers that hit first */}
       <Reveal>
         <SectionLabel>The problem</SectionLabel>
-        <h3 className="font-display mt-4 max-w-3xl text-[28px] leading-[1.1] font-semibold text-[#E8EEF7] md:text-[40px]">
+        <h3 className="font-display mt-4 max-w-3xl text-[28px] leading-[1.1] font-semibold text-(--text) md:text-[40px]">
           374 landslides. 63 lives. One monsoon.
         </h3>
-        <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-[#8CA0B8]">
+        <p className="mt-4 max-w-3xl text-[15px] leading-relaxed text-(--muted)">
           Fragile young Himalayan geology, steep slopes and intense monsoon rain make the Northeast
           exceptionally slide-prone — while road-cutting and construction keep adding pressure. And
           most warnings today are generic district weather alerts: not slope-by-slope, and not in
@@ -330,35 +331,35 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
         <div className="mt-8 grid gap-6 md:grid-cols-3">
           <div>
             <span className="block h-1 w-12 rounded-full bg-[#F87171]" aria-hidden="true" />
-            <p className="font-display mt-4 text-[48px] leading-none font-semibold text-[#E8EEF7]">
+            <p className="font-display mt-4 text-[48px] leading-none font-semibold text-(--text)">
               374
             </p>
-            <p className="mt-3 text-[14px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-3 text-[14px] leading-relaxed text-(--muted)">
               Landslide incidents documented across the Northeast in 2025 alone.
             </p>
           </div>
           <div>
             <span className="block h-1 w-12 rounded-full bg-[#FB923C]" aria-hidden="true" />
-            <p className="font-display mt-4 text-[48px] leading-none font-semibold text-[#E8EEF7]">
+            <p className="font-display mt-4 text-[48px] leading-none font-semibold text-(--text)">
               63
             </p>
-            <p className="mt-3 text-[14px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-3 text-[14px] leading-relaxed text-(--muted)">
               Lives lost to those landslides in 2025 — 30 in Assam, 12 each in Arunachal Pradesh and
               Sikkim.
             </p>
           </div>
           <div>
             <span className="block h-1 w-12 rounded-full bg-[#FBBF24]" aria-hidden="true" />
-            <p className="font-display mt-4 text-[48px] leading-none font-semibold text-[#E8EEF7]">
+            <p className="font-display mt-4 text-[48px] leading-none font-semibold text-(--text)">
               42%
             </p>
-            <p className="mt-3 text-[14px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-3 text-[14px] leading-relaxed text-(--muted)">
               Of India&apos;s total landslide hazard zone lies in the Northeast, per Geological Survey
               of India figures.
             </p>
           </div>
         </div>
-        <p className="mt-6 text-[12px] text-[#8CA0B8]">
+        <p className="mt-6 text-[12px] text-(--muted)">
           Sources: NESAC Seasonal Landslide Inventory for the North Eastern Region, 2025; GSI
           landslide-prone area figures.
         </p>
@@ -367,7 +368,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
       {/* How it works */}
       <Reveal>
         <SectionLabel>How it works</SectionLabel>
-        <h3 className="font-display mt-4 text-[28px] font-semibold text-[#E8EEF7] md:text-[40px]">
+        <h3 className="font-display mt-4 text-[28px] font-semibold text-(--text) md:text-[40px]">
           Live weather in. Risk out. No black box.
         </h3>
         <div className="mt-8 grid gap-3 md:grid-cols-3">
@@ -376,7 +377,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             return (
               <div
                 key={step.title}
-                className="card-hover rounded-xl border border-[#1E2D47] bg-[#101A2E] p-6"
+                className="card-hover rounded-xl border border-(--border) bg-(--surface) p-6"
               >
                 <div className="flex items-center justify-between">
                   <span
@@ -384,12 +385,12 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                   >
                     <Icon className="h-5 w-5" aria-hidden="true" />
                   </span>
-                  <span className="font-display text-[44px] leading-none font-semibold text-[#233452]">
+                  <span className="font-display text-[44px] leading-none font-semibold text-(--faint)">
                     {`0${i + 1}`}
                   </span>
                 </div>
-                <p className="mt-5 text-[17px] font-bold text-[#E8EEF7]">{step.title}</p>
-                <p className="mt-2 text-[14px] leading-relaxed text-[#8CA0B8]">{step.body}</p>
+                <p className="mt-5 text-[17px] font-bold text-(--text)">{step.title}</p>
+                <p className="mt-2 text-[14px] leading-relaxed text-(--muted)">{step.body}</p>
               </div>
             )
           })}
@@ -399,7 +400,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
       {/* Why trust us */}
       <Reveal>
         <SectionLabel>Why it can be trusted</SectionLabel>
-        <h3 className="font-display mt-4 text-[28px] font-semibold text-[#E8EEF7] md:text-[40px]">
+        <h3 className="font-display mt-4 text-[28px] font-semibold text-(--text) md:text-[40px]">
           We publish our misses, not just our hits.
         </h3>
         <div className="mt-8 grid gap-3 md:grid-cols-2">
@@ -408,15 +409,15 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             return (
               <div
                 key={point.title}
-                className="card-hover rounded-xl border border-[#1E2D47] bg-[#101A2E] p-6"
+                className="card-hover rounded-xl border border-(--border) bg-(--surface) p-6"
               >
-                <p className="flex items-center gap-3 text-[17px] font-bold text-[#E8EEF7]">
+                <p className="flex items-center gap-3 text-[17px] font-bold text-(--text)">
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#34D399]/15">
                     <Icon className="h-4.5 w-4.5 text-[#34D399]" aria-hidden="true" />
                   </span>
                   {point.title}
                 </p>
-                <p className="mt-3 text-[14px] leading-relaxed text-[#8CA0B8]">{point.body}</p>
+                <p className="mt-3 text-[14px] leading-relaxed text-(--muted)">{point.body}</p>
               </div>
             )
           })}
@@ -424,7 +425,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
         <button
           type="button"
           onClick={onOpenAccuracy}
-          className="group mt-6 inline-flex items-center gap-2 text-[14px] font-medium text-[#60A5FA] transition-all duration-300 hover:text-[#93C5FD] active:scale-[0.98]"
+          className="group mt-6 inline-flex items-center gap-2 text-[14px] font-medium text-(--accent-soft) transition-all duration-300 hover:text-(--accent) active:scale-[0.98]"
         >
           Read the full accuracy audit, misses included
           <ArrowRight
@@ -437,25 +438,25 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
       {/* Who it serves — editorial list, not another card grid */}
       <Reveal>
         <SectionLabel>Who it serves</SectionLabel>
-        <h3 className="font-display mt-4 text-[28px] font-semibold text-[#E8EEF7] md:text-[40px]">
+        <h3 className="font-display mt-4 text-[28px] font-semibold text-(--text) md:text-[40px]">
           Built for the people who have to decide.
         </h3>
-        <div className="mt-8 divide-y divide-[#1E2D47] border-y border-[#1E2D47]">
+        <div className="mt-8 divide-y divide-(--border) border-y border-(--border)">
           {CUSTOMERS.map((customer) => {
             const Icon = customer.icon
             return (
               <div key={customer.title} className="group flex items-start gap-4 py-6">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]/15 transition-colors duration-300 group-hover:bg-[#3B82F6]/25">
-                  <Icon className="h-5 w-5 text-[#60A5FA]" aria-hidden="true" />
+                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-(--accent)/15 transition-colors duration-300 group-hover:bg-(--accent)/25">
+                  <Icon className="h-5 w-5 text-(--accent-soft)" aria-hidden="true" />
                 </span>
                 <div className="min-w-0 flex-1">
-                  <p className="text-[17px] font-bold text-[#E8EEF7]">{customer.title}</p>
-                  <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-[#8CA0B8]">
+                  <p className="text-[17px] font-bold text-(--text)">{customer.title}</p>
+                  <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-(--muted)">
                     {customer.body}
                   </p>
                 </div>
                 <ArrowRight
-                  className="mt-2 h-5 w-5 shrink-0 text-[#1E2D47] transition-all duration-300 group-hover:translate-x-1 group-hover:text-[#60A5FA]"
+                  className="mt-2 h-5 w-5 shrink-0 text-(--border) transition-all duration-300 group-hover:translate-x-1 group-hover:text-(--accent-soft)"
                   aria-hidden="true"
                 />
               </div>
@@ -467,26 +468,26 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
       {/* Roadmap — timeline, not cards */}
       <Reveal>
         <SectionLabel>Roadmap</SectionLabel>
-        <h3 className="font-display mt-4 text-[28px] font-semibold text-[#E8EEF7] md:text-[40px]">
+        <h3 className="font-display mt-4 text-[28px] font-semibold text-(--text) md:text-[40px]">
           Where this goes next.
         </h3>
         <div className="relative mt-8 flex flex-col gap-8">
           <span
-            className="absolute top-2 bottom-2 left-[7px] w-0.5 bg-[#1E2D47]"
+            className="absolute top-2 bottom-2 left-[7px] w-0.5 bg-(--border)"
             aria-hidden="true"
           />
           {ROADMAP.map((item) => (
             <div key={item.title} className="flex gap-4">
               <span
-                className={`mt-1.5 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-[#0B1220] ${item.dot}`}
+                className={`mt-1.5 h-3.5 w-3.5 shrink-0 rounded-full border-2 border-(--bg) ${item.dot}`}
                 aria-hidden="true"
               />
               <div className="min-w-0">
-                <p className="text-[12px] font-bold tracking-wide text-[#8CA0B8] uppercase">
+                <p className="text-[12px] font-bold tracking-wide text-(--muted) uppercase">
                   {item.phase}
                 </p>
-                <p className="mt-1 text-[17px] font-bold text-[#E8EEF7]">{item.title}</p>
-                <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-[#8CA0B8]">
+                <p className="mt-1 text-[17px] font-bold text-(--text)">{item.title}</p>
+                <p className="mt-1 max-w-2xl text-[14px] leading-relaxed text-(--muted)">
                   {item.body}
                 </p>
               </div>
@@ -498,20 +499,21 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
       {/* Partner CTA — imagery-backed band */}
       <Reveal>
         <section
-          className="overflow-hidden rounded-2xl border border-[#1E2D47] bg-[#101A2E] bg-cover bg-bottom p-6 md:p-10"
+          data-theme="dark"
+          className="overflow-hidden rounded-2xl border border-(--border) bg-(--surface) bg-cover bg-bottom p-6 md:p-10"
           style={{
             backgroundImage: `linear-gradient(rgba(8,13,26,0.88), rgba(8,13,26,0.94)), url("${HERO_IMAGE}")`,
           }}
         >
           <div className="flex items-start gap-4">
-            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#3B82F6] shadow-[0_8px_30px_rgba(59,130,246,0.4)] sm:flex">
+            <span className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-(--accent) shadow-[0_8px_30px_rgba(59,130,246,0.4)] sm:flex">
               <Siren className="h-6 w-6 text-white" aria-hidden="true" />
             </span>
             <div className="min-w-0">
               <h3 className="font-display text-[28px] leading-tight font-semibold text-white md:text-[36px]">
                 Pilot NE-SHIELD in your district.
               </h3>
-              <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#C7D3E8]">
+              <p className="mt-3 max-w-2xl text-[15px] leading-relaxed text-(--text-soft)">
                 We are looking for pilot districts, department partners and supporters to take this
                 from 20 zones to every vulnerable slope in the Northeast. See the system live first
                 — then talk to us about bringing it to your region.
@@ -520,7 +522,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                 <button
                   type="button"
                   onClick={onOpenDashboard}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#3B82F6] px-6 py-3.5 text-[14px] font-bold text-white shadow-[0_8px_30px_rgba(59,130,246,0.35)] transition-all duration-300 hover:bg-[#2563EB] active:scale-[0.98]"
+                  className="inline-flex items-center gap-2 rounded-lg bg-(--accent) px-6 py-3.5 text-[14px] font-bold text-white shadow-[0_8px_30px_rgba(59,130,246,0.35)] transition-all duration-300 hover:bg-[#2563EB] active:scale-[0.98]"
                 >
                   Open the live dashboard
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
@@ -534,7 +536,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                   Explore the code on GitHub
                 </a>
               </div>
-              <p className="mt-6 text-[12px] leading-relaxed text-[#8CA0B8]">
+              <p className="mt-6 text-[12px] leading-relaxed text-(--muted)">
                 NE-SHIELD is an advisory system. It supports — and never replaces — official warnings
                 from disaster management authorities.
               </p>

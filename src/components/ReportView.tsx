@@ -61,19 +61,19 @@ export default function ReportView() {
   }
 
   const inputClass =
-    'w-full rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:border-[#3B82F6] focus:outline-none'
+    'w-full rounded-lg border border-(--border) bg-(--surface-2) px-3 py-2 text-[14px] text-(--text) placeholder:text-(--muted) focus:border-(--accent) focus:outline-none'
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-1 text-[20px] font-bold text-[#E8EEF7]">Report a Hazard</p>
-        <p className="mb-5 text-[13px] leading-relaxed text-[#8CA0B8]">
+      <div className="rounded-xl border border-(--border) bg-(--surface) p-5">
+        <p className="mb-1 text-[20px] font-bold text-(--text)">Report a Hazard</p>
+        <p className="mb-5 text-[13px] leading-relaxed text-(--muted)">
           Demo: reports sirf isi browser me save hoti hain (localStorage) — koi server par nahi
           jaati.
         </p>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div>
-            <label htmlFor="report-location" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-location" className="mb-1.5 block text-[13px] text-(--muted)">
               Location
             </label>
             <input
@@ -87,7 +87,7 @@ export default function ReportView() {
             />
           </div>
           <div>
-            <label htmlFor="report-type" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-type" className="mb-1.5 block text-[13px] text-(--muted)">
               Hazard type
             </label>
             <select
@@ -105,7 +105,7 @@ export default function ReportView() {
             </select>
           </div>
           <div>
-            <label htmlFor="report-description" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-description" className="mb-1.5 block text-[13px] text-(--muted)">
               Description
             </label>
             <textarea
@@ -119,7 +119,7 @@ export default function ReportView() {
             />
           </div>
           <div>
-            <label htmlFor="report-photo" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-photo" className="mb-1.5 block text-[13px] text-(--muted)">
               Photo (optional)
             </label>
             <input
@@ -128,19 +128,19 @@ export default function ReportView() {
               type="file"
               accept="image/*"
               onChange={(e) => setPhotoName(e.target.files?.[0]?.name ?? null)}
-              className="w-full rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7]"
+              className="w-full rounded-lg border border-(--border) bg-(--surface-2) px-3 py-2 text-[14px] text-(--text)"
             />
             {photoName ? (
-              <p className="mt-1.5 truncate text-[12px] text-[#8CA0B8]">Selected: {photoName}</p>
+              <p className="mt-1.5 truncate text-[12px] text-(--muted)">Selected: {photoName}</p>
             ) : null}
-            <p className="mt-1 text-[12px] text-[#8CA0B8]">
+            <p className="mt-1 text-[12px] text-(--muted)">
               Sirf file ka naam save hota hai — photo upload nahi hoti.
             </p>
           </div>
           <div>
             <button
               type="submit"
-              className="rounded-lg bg-[#3B82F6] px-4 py-2 text-[14px] font-medium text-white"
+              className="rounded-lg bg-(--accent) px-4 py-2 text-[14px] font-medium text-white"
             >
               Submit Report
             </button>
@@ -148,33 +148,33 @@ export default function ReportView() {
         </form>
       </div>
 
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-4 text-[16px] font-bold text-[#E8EEF7]">Your Reports</p>
+      <div className="rounded-xl border border-(--border) bg-(--surface) p-5">
+        <p className="mb-4 text-[16px] font-bold text-(--text)">Your Reports</p>
         {reports.length === 0 ? (
-          <p className="text-[14px] text-[#8CA0B8]">Abhi koi report nahi hai.</p>
+          <p className="text-[14px] text-(--muted)">Abhi koi report nahi hai.</p>
         ) : (
           <div className="flex flex-col">
             {reports.map((report) => (
               <div
                 key={report.id}
-                className="border-b border-[#1E2D47] py-4 first:pt-0 last:border-b-0 last:pb-0"
+                className="border-b border-(--border) py-4 first:pt-0 last:border-b-0 last:pb-0"
               >
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="max-w-full truncate text-[14px] font-medium text-[#E8EEF7]">
+                  <span className="max-w-full truncate text-[14px] font-medium text-(--text)">
                     {report.location}
                   </span>
-                  <span className="inline-flex items-center rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[12px] font-medium whitespace-nowrap text-[#E8EEF7]">
+                  <span className="inline-flex items-center rounded-full border border-(--border) bg-(--surface-2) px-2 py-0.5 text-[12px] font-medium whitespace-nowrap text-(--text)">
                     {report.type}
                   </span>
-                  <span className="text-[12px] whitespace-nowrap text-[#8CA0B8]">
+                  <span className="text-[12px] whitespace-nowrap text-(--muted)">
                     {formatDateTimeIST(report.time)} IST
                   </span>
                 </div>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-[#8CA0B8] line-clamp-2">
+                <p className="mt-1.5 text-[14px] leading-relaxed text-(--muted) line-clamp-2">
                   {report.description}
                 </p>
                 {report.photoName ? (
-                  <p className="mt-1 truncate text-[12px] text-[#8CA0B8]">Photo: {report.photoName}</p>
+                  <p className="mt-1 truncate text-[12px] text-(--muted)">Photo: {report.photoName}</p>
                 ) : null}
               </div>
             ))}

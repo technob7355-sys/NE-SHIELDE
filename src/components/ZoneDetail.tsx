@@ -28,17 +28,17 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
   ]
 
   return (
-    <div className="flex h-full flex-col bg-[#101A2E]">
-        <div className="flex items-start justify-between gap-3 border-b border-[#1E2D47] p-5">
+    <div className="flex h-full flex-col bg-(--surface)">
+        <div className="flex items-start justify-between gap-3 border-b border-(--border) p-5">
           <div className="min-w-0">
-            <p className="truncate text-[20px] font-bold text-[#E8EEF7]">{location.name}</p>
-            <p className="mt-0.5 truncate text-[13px] text-[#8CA0B8]">{location.state}</p>
+            <p className="truncate text-[20px] font-bold text-(--text)">{location.name}</p>
+            <p className="mt-0.5 truncate text-[13px] text-(--muted)">{location.state}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="shrink-0 rounded-lg border border-[#1E2D47] bg-[#16233C] p-2 text-[#E8EEF7]"
+            className="shrink-0 rounded-lg border border-(--border) bg-(--surface-2) p-2 text-(--text)"
           >
             <X className="h-4 w-4" aria-hidden="true" />
           </button>
@@ -46,26 +46,26 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
 
         <div className="flex flex-1 flex-col gap-5 overflow-y-auto p-5">
           <div className="flex flex-wrap items-center gap-3">
-            <span className="text-[28px] leading-none font-bold text-[#E8EEF7]">
+            <span className="text-[28px] leading-none font-bold text-(--text)">
               {prediction ? Math.round(prediction.score) : '—'}
             </span>
             {level ? <LevelBadge level={level} /> : null}
             {!prediction ? (
-              <span className="rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[12px] font-medium text-[#8CA0B8]">
+              <span className="rounded-full border border-(--border) bg-(--surface-2) px-2 py-0.5 text-[12px] font-medium text-(--muted)">
                 Data unavailable
               </span>
             ) : null}
           </div>
 
           <div>
-            <p className="mb-2 text-[13px] font-medium text-[#8CA0B8]">Inputs</p>
-            <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
+            <p className="mb-2 text-[13px] font-medium text-(--muted)">Inputs</p>
+            <div className="overflow-hidden rounded-xl border border-(--border)">
               <table className="w-full text-[14px]">
                 <tbody>
                   {rows.map((row) => (
-                    <tr key={row.label} className="border-b border-[#1E2D47] last:border-b-0">
-                      <td className="px-4 py-2.5 text-[#8CA0B8]">{row.label}</td>
-                      <td className="px-4 py-2.5 text-right font-medium whitespace-nowrap text-[#E8EEF7]">
+                    <tr key={row.label} className="border-b border-(--border) last:border-b-0">
+                      <td className="px-4 py-2.5 text-(--muted)">{row.label}</td>
+                      <td className="px-4 py-2.5 text-right font-medium whitespace-nowrap text-(--text)">
                         {row.value}
                       </td>
                     </tr>
@@ -73,7 +73,7 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-[12px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-2 text-[12px] leading-relaxed text-(--muted)">
               Weather: Open-Meteo (fetched {weather ? formatTimeIST(weather.fetchedAt) : '—'}) • Slope:
               terrain attribute
             </p>
@@ -81,7 +81,7 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
 
           {prediction ? (
             <div>
-              <p className="mb-3 text-[13px] font-medium text-[#8CA0B8]">Score breakdown</p>
+              <p className="mb-3 text-[13px] font-medium text-(--muted)">Score breakdown</p>
               <div className="flex flex-col gap-3">
                 {prediction.breakdown.map((item) => {
                   const pct =
@@ -89,14 +89,14 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
                   return (
                     <div key={item.label}>
                       <div className="mb-1 flex items-center justify-between gap-3">
-                        <span className="truncate text-[13px] text-[#E8EEF7]">{item.label}</span>
-                        <span className="text-[13px] font-medium whitespace-nowrap text-[#8CA0B8]">
+                        <span className="truncate text-[13px] text-(--text)">{item.label}</span>
+                        <span className="text-[13px] font-medium whitespace-nowrap text-(--muted)">
                           {item.points.toFixed(1)} / {item.max}
                         </span>
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-[#16233C]">
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-(--surface-2)">
                         <div
-                          className="bar-grow h-full rounded-full bg-[#3B82F6]"
+                          className="bar-grow h-full rounded-full bg-(--accent)"
                           style={{ width: `${pct}%` }}
                         />
                       </div>
@@ -106,20 +106,20 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
               </div>
             </div>
           ) : (
-            <p className="text-[14px] leading-relaxed text-[#8CA0B8]">
+            <p className="text-[14px] leading-relaxed text-(--muted)">
               Live weather data is unavailable for this zone right now, so no score has been calculated.
               No number has been invented.
             </p>
           )}
 
           {advice ? (
-            <div className="rounded-xl border border-[#1E2D47] bg-[#16233C] p-4">
-              <p className="mb-1 text-[13px] font-medium text-[#8CA0B8]">What to do</p>
-              <p className="text-[14px] leading-relaxed text-[#E8EEF7]">{advice}</p>
+            <div className="rounded-xl border border-(--border) bg-(--surface-2) p-4">
+              <p className="mb-1 text-[13px] font-medium text-(--muted)">What to do</p>
+              <p className="text-[14px] leading-relaxed text-(--text)">{advice}</p>
             </div>
           ) : null}
 
-          <p className="text-[13px] text-[#8CA0B8]">
+          <p className="text-[13px] text-(--muted)">
             Emergency: 112 • Ambulance: 108 • Disaster: 1077
           </p>
         </div>
