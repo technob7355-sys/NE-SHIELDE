@@ -242,7 +242,10 @@ export default function App() {
               </span>
               <span className="truncate text-[16px] font-bold text-(--text)">NE-SHIELD</span>
             </button>
-            <span className="ml-auto shrink-0 text-[13px] whitespace-nowrap text-(--muted)">
+            <span className="ml-auto md:hidden">
+              <ThemeToggle />
+            </span>
+            <span className="shrink-0 text-[13px] whitespace-nowrap text-(--muted)">
               {clockText}
             </span>
           </div>
@@ -295,8 +298,10 @@ export default function App() {
                 </p>
               </div>
             </div>
-            <div className="flex min-w-0 items-center gap-2">
-              <ThemeToggle />
+            <div className="flex min-w-0 flex-wrap items-center gap-2">
+              <span className="hidden md:inline-flex">
+                <ThemeToggle />
+              </span>
               <ApiStatus />
             </div>
           </div>
