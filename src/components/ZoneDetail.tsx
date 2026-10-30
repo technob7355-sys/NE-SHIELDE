@@ -2,6 +2,18 @@ import { X } from 'lucide-react'
 import type { ZoneWithScore } from './types'
 import { LevelBadge, formatTimeIST } from './risk'
 
+function formatDayLabel(isoDate: string): string {
+  try {
+    return new Intl.DateTimeFormat('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      timeZone: 'UTC',
+    }).format(new Date(`${isoDate}T00:00:00Z`))
+  } catch {
+    return isoDate
+  }
+}
+
 const WHAT_TO_DO: Record<string, string> = {
   Low: 'Abhi khatra kam hai. Aam din ki tarah travel kar sakte hain, mausam par nazar rakhein.',
   Moderate: 'Dhyaan dein. Baarish badhe to is raste par savdhaani bartein.',
@@ -116,6 +128,33 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
             <div className="rounded-xl border border-[#1E2D47] bg-[#16233C] p-4">
               <p className="mb-1 text-[13px] font-medium text-[#8CA0B8]">What to do</p>
               <p className="text-[14px] leading-relaxed text-[#E8EEF7]">{advice}</p>
+            </div>
+          ) : null}
+
+          {zone.outlook && zone.outlook.length > 0 ? (
+            <div>
+              <p className="mb-3 text-[13px] font-medium text-[#8CA0B8]">Next 3 days — forecast</p>
+              <div className="grid grid-cols-3 gap-3">
+                {zone.outlook.map((d) => (
+                  <div key={d.date} className="rounded-xl border border-[#1E2D47] bg-[#16233C] p-3">
+                    <p className="text-[12px] font-medium whitespace-nowrap text-[#8CA0B8]">
+                      {formatDayLabel(d.date)}
+                    </p>
+                    <p className="mt-1 text-[18px] leading-none font-bold text-[#E8EEF7]">
+                      {Math.round(d.score)}
+                    </p>
+                    <div className="mt-1.5">
+                      <LevelBadge level={d.level} />
+                    </div>
+                    <p className="mt-1.5 text-[12px] whitespace-nowrap text-[#8CA0B8]">
+                      {d.rainfall.toFixed(0)} mm rain
+                    </p>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-2 text-[12px] leading-relaxed text-[#8CA0B8]">
+                Forecast: Open-Meteo • same V4 formula, rolled forward day by day
+              </p>
             </div>
           ) : null}
 

@@ -7,12 +7,32 @@ export interface ZoneLocation {
   slope: number
 }
 
+export interface DayRain {
+  date: string
+  rainfall: number
+}
+
+export interface ForecastDay {
+  date: string
+  rainfall: number
+  soilMoisture: number
+}
+
+export interface ForecastDayRisk {
+  date: string
+  rainfall: number
+  score: number
+  level: string
+}
+
 export interface ZoneWeather {
   zoneId: string
   rainfall: number
   rainfall3d: number
   rainfall30d: number
   soilMoisture: number
+  history: DayRain[]
+  forecast: ForecastDay[]
   fetchedAt: string
   sourceUrl: string
 }
@@ -33,6 +53,7 @@ export interface ZoneWithScore {
   location: ZoneLocation
   weather: ZoneWeather | null
   prediction: Prediction | null
+  outlook: ForecastDayRisk[] | null
   error: string | null
 }
 

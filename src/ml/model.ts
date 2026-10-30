@@ -71,6 +71,59 @@ export function predictRisk(input: RiskInput): RiskResult {
   return { score, level: levelOf(score), breakdown };
 }
 
+export interface ForecastDayRisk {
+  date: string; // YYYY-MM-DD
+  rainfall: number; // forecast mm that day
+  score: number;
+  level: RiskLevel;
+}
+
+/**
+ * 72-hour outlook: apply the SAME V4 formula to each forecast day.
+ * rain24 = that day's forecast rain; rain3d / rain30d roll forward from the
+ * 31-day history; soil = that day's forecast soil average.
+ */
+export function predictForecast(
+  history: { date: string; rainfall: number }[],
+  forecast: { date: string; rainfall: number; soilMoisture: number }[],
+  slope: number,
+): ForecastDayRisk[] {
+  const all = [
+    ...history.map((h) => ({ date: h.date, rainfall: h.rainfall })),
+    ...forecast.map((f) => ({ date: f.date, rainfall: f.rainfall })),
+  ];
+  return forecast.map((f) => {
+    const i = all.findIndex((d) => d.date === f.date);
+    const rain24 = f.rainfall;
+    const rain3d = all.slice(Math.max(0, i - 2), i + 1).reduce((s, d) => s + d.rainfall, 0);
+    const rain30d = all.slice(Math.max(0, i - 29), i + 1).reduce((s, d) => s + d.rainfall, 0);
+    const r = predictRisk({
+      rainfall: rain24,
+      rainfall3d: rain3d,
+      rainfall30d: rain30d,
+      soilMoisture: f.soilMoisture,
+      slope,
+    });
+    return { date: f.date, rainfall: rain24, score: r.score, level: r.level };
+  });
+}
+
+const LEVEL_ORDER: Record<RiskLevel, number> = { Low: 0, Moderate: 1, High: 2, Critical: 3 };
+
+export function levelRank(level: string | null | undefined): number {
+  return level && level in LEVEL_ORDER ? LEVEL_ORDER[level as RiskLevel] : -1;
+}
+
+/** Highest risk level in a list (for the 3-day outlook badge). */
+export function worstLevel(levels: (string | null | undefined)[]): RiskLevel | null {
+  let best: RiskLevel | null = null;
+  for (const l of levels) {
+    if (!l || !(l in LEVEL_ORDER)) continue;
+    if (!best || LEVEL_ORDER[l as RiskLevel] > LEVEL_ORDER[best]) best = l as RiskLevel;
+  }
+  return best;
+}
+
 // Mirrors ml/metrics.json (values filled in after training — see
 // src/data/modelInfo.ts, which is the generated copy the UI reads).
 export const MODEL_INFO = {

@@ -9,7 +9,7 @@ import {
   Shield,
 } from 'lucide-react'
 import { LOCATIONS } from './data/locations'
-import { predictRisk } from './ml/model'
+import { predictForecast, predictRisk } from './ml/model'
 import { fetchZoneWeather } from './services/weather'
 import ApiStatus from './components/ApiStatus'
 import Landing from './components/Landing'
@@ -53,6 +53,7 @@ export default function App() {
         location,
         weather: null,
         prediction: null,
+        outlook: null,
         error: null,
       }))
       if (!cancelled) setZones(initial)
@@ -75,15 +76,26 @@ export default function App() {
               soilMoisture: weather.soilMoisture,
               slope: location.slope,
             }) as unknown as ZoneWithScore['prediction']
-            return { location, weather, prediction, error: null }
+            let outlook: ZoneWithScore['outlook'] = null
+            try {
+              outlook = predictForecast(
+                weather.history,
+                weather.forecast,
+                location.slope,
+              ) as unknown as ZoneWithScore['outlook']
+            } catch {
+              outlook = null
+            }
+            return { location, weather, prediction, outlook, error: null }
           } catch {
-            return { location, weather, prediction: null, error: 'Prediction failed' }
+            return { location, weather, prediction: null, outlook: null, error: 'Prediction failed' }
           }
         }
         return {
           location,
           weather: null,
           prediction: null,
+          outlook: null,
           error: result.reason instanceof Error ? result.reason.message : 'Data unavailable',
         }
       })
@@ -310,7 +322,7 @@ export default function App() {
               />
             ) : null}
             {activeTab === 'overview' ? (
-              <Overview zones={zones} loading={loading} onSelectZone={handleSelectZone} />
+              <Overview zones={zones} loading={loading} onSelectZone={handleSelectZone} onOpenMap={() => handleTabChange('map')} />
             ) : null}
             {activeTab === 'map' ? (
               <MapView

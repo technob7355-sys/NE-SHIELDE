@@ -1,10 +1,13 @@
 import type { ZoneWithScore } from './types'
-import { LevelBadge, RiskDot, formatTimeIST } from './risk'
+import { LevelBadge, RiskDot, formatTimeIST, riskColor } from './risk'
+import { levelRank, worstLevel } from '../ml/model'
+import MiniMap from './MiniMap'
 
 interface OverviewProps {
   zones: ZoneWithScore[]
   loading: boolean
   onSelectZone: (zone: ZoneWithScore) => void
+  onOpenMap: () => void
 }
 
 function StatCard({ label, value }: { label: string; value: string }) {
@@ -16,7 +19,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
   )
 }
 
-export default function Overview({ zones, loading, onSelectZone }: OverviewProps) {
+export default function Overview({ zones, loading, onSelectZone, onOpenMap }: OverviewProps) {
   const scored = zones.filter((z) => z.prediction !== null)
   const criticalHighCount = scored.filter(
     (z) => z.prediction && (z.prediction.level === 'Critical' || z.prediction.level === 'High'),
@@ -47,6 +50,44 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
         <StatCard label="Critical + High Now" value={scored.length === 0 ? '—' : String(criticalHighCount)} />
         <StatCard label="Average Risk Score" value={avgScore} />
         <StatCard label="Last Live Update" value={lastUpdate} />
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1E2D47] bg-[#101A2E] px-5 py-4">
+          <div>
+            <p className="text-[16px] font-bold text-[#E8EEF7]">Live Risk Map</p>
+            <p className="mt-0.5 text-[12px] text-[#8CA0B8]">
+              Satellite view • 20 zones • tap a zone for details
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onOpenMap}
+            className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
+          >
+            Open full live map →
+          </button>
+        </div>
+        <MiniMap zones={zones} onSelectZone={onSelectZone} />
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-[#1E2D47] bg-[#101A2E] px-5 py-3">
+          {['Low', 'Moderate', 'High', 'Critical'].map((level) => (
+            <span key={level} className="inline-flex items-center gap-2">
+              <span
+                className="h-3 w-3 rounded-full border-2"
+                style={{
+                  backgroundColor: `color-mix(in srgb, ${riskColor(level)} 30%, transparent)`,
+                  borderColor: riskColor(level),
+                }}
+                aria-hidden="true"
+              />
+              <span className="text-[12px] text-[#E8EEF7]">{level}</span>
+            </span>
+          ))}
+          <span className="inline-flex items-center gap-2">
+            <span className="h-3 w-3 rounded-full border-2 border-[#8CA0B8] bg-[#8CA0B8]/30" aria-hidden="true" />
+            <span className="text-[12px] text-[#8CA0B8]">No data</span>
+          </span>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-5">
@@ -100,7 +141,8 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
                   <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Rain 24h</th>
                   <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Soil %</th>
                   <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Score</th>
-                  <th className="pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Level</th>
+                  <th className="pr-3 pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">Level</th>
+                  <th className="pb-3 font-medium whitespace-nowrap text-[#8CA0B8]">3-day outlook</th>
                 </tr>
               </thead>
               <tbody>
@@ -125,11 +167,33 @@ export default function Overview({ zones, loading, onSelectZone }: OverviewProps
                     <td className="py-3 pr-3 font-bold whitespace-nowrap text-[#E8EEF7]">
                       {zone.prediction ? Math.round(zone.prediction.score) : '—'}
                     </td>
-                    <td className="py-3 whitespace-nowrap">
+                    <td className="py-3 pr-3 whitespace-nowrap">
                       {zone.prediction ? (
                         <LevelBadge level={zone.prediction.level} />
                       ) : (
                         <span className="text-[12px] font-medium whitespace-nowrap text-[#8CA0B8]">No data</span>
+                      )}
+                    </td>
+                    <td className="py-3 whitespace-nowrap">
+                      {zone.outlook && zone.outlook.length > 0 ? (
+                        (() => {
+                          const worst = worstLevel(zone.outlook.map((d) => d.level))
+                          if (!worst) return <span className="text-[#8CA0B8]">—</span>
+                          const rising =
+                            zone.prediction != null && levelRank(worst) > levelRank(zone.prediction.level)
+                          return (
+                            <span className="inline-flex items-center gap-1.5">
+                              <LevelBadge level={worst} />
+                              {rising ? (
+                                <span className="text-[13px] font-bold text-[#F87171]" title="Risk rising in next 3 days" aria-label="Risk rising">
+                                  ↑
+                                </span>
+                              ) : null}
+                            </span>
+                          )
+                        })()
+                      ) : (
+                        <span className="text-[#8CA0B8]">—</span>
                       )}
                     </td>
                   </tr>
