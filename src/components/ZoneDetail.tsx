@@ -1,6 +1,6 @@
 import { X } from 'lucide-react'
 import type { ZoneWithScore } from './types'
-import { LevelBadge, formatTimeIST } from './risk'
+import { LevelBadge } from './risk'
 
 function formatDayLabel(isoDate: string): string {
   try {
@@ -85,10 +85,6 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-[12px] leading-relaxed text-[#8CA0B8]">
-              Weather: Open-Meteo (fetched {weather ? formatTimeIST(weather.fetchedAt) : '—'}) • Slope:
-              terrain attribute
-            </p>
           </div>
 
           {prediction ? (
@@ -152,9 +148,6 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
                   </div>
                 ))}
               </div>
-              <p className="mt-2 text-[12px] leading-relaxed text-[#8CA0B8]">
-                Forecast: Open-Meteo • same V4 formula, rolled forward day by day
-              </p>
             </div>
           ) : null}
 

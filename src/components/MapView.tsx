@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { Circle, CircleMarker, LayerGroup, MapContainer, ScaleControl, TileLayer, useMap } from 'react-leaflet'
 import type { ZoneWithScore } from './types'
 import { LevelBadge, RiskDot, riskColor } from './risk'
@@ -7,6 +7,7 @@ interface MapViewProps {
   zones: ZoneWithScore[]
   loading: boolean
   onSelectZone: (zone: ZoneWithScore) => void
+  onDeselectZone?: () => void
   selectedZone: ZoneWithScore | null
 }
 
@@ -40,6 +41,21 @@ function FlyToSelected({ zone }: { zone: ZoneWithScore | null }) {
   return null
 }
 
+/** Clears the zone selection when the user clicks empty map area. */
+function MapClickDeselect({ onClick }: { onClick: () => void }) {
+  const map = useMap()
+  const handlerRef = useRef(onClick)
+  handlerRef.current = onClick
+  useEffect(() => {
+    const handler = () => handlerRef.current()
+    map.on('click', handler)
+    return () => {
+      map.off('click', handler)
+    }
+  }, [map])
+  return null
+}
+
 const LEGEND: { level: string; label: string }[] = [
   { level: 'Low', label: 'Low' },
   { level: 'Moderate', label: 'Moderate' },
@@ -47,7 +63,17 @@ const LEGEND: { level: string; label: string }[] = [
   { level: 'Critical', label: 'Critical' },
 ]
 
-export default function MapView({ zones, loading, onSelectZone, selectedZone }: MapViewProps) {
+export default function MapView({ zones, loading, onSelectZone, onDeselectZone, selectedZone }: MapViewProps) {
+  // Guard so a zone click (which also bubbles to the map) never deselects.
+  const zoneClickAt = useRef(0)
+  const markZoneClick = () => {
+    zoneClickAt.current = Date.now()
+  }
+  const handleMapClick = () => {
+    if (Date.now() - zoneClickAt.current < 400) return
+    onDeselectZone?.()
+  }
+
   return (
     <div className="flex flex-col gap-5">
       <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
@@ -66,6 +92,7 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
           easeLinearity={0.15}
           className="h-[360px] w-full md:h-[520px]"
         >
+          <MapClickDeselect onClick={handleMapClick} />
           <TileLayer
             url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
             attribution="Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics"
@@ -89,13 +116,16 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
                   center={[zone.location.lat, zone.location.lng]}
                   radius={38000}
                   pathOptions={{ fillColor: color, fillOpacity: 0.1, stroke: false }}
+                  eventHandlers={{
+                    click: () => { markZoneClick(); onSelectZone(zone) },
+                  }}
                 />
                 <Circle
                   center={[zone.location.lat, zone.location.lng]}
                   radius={25000}
                   pathOptions={{ fillColor: color, fillOpacity: 0.28, color, weight: 1.5, opacity: 0.85 }}
                   eventHandlers={{
-                    click: () => onSelectZone(zone),
+                    click: () => { markZoneClick(); onSelectZone(zone) },
                   }}
                 />
                 <CircleMarker
@@ -103,7 +133,7 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
                   radius={9}
                   pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#0B1220', weight: 1 }}
                   eventHandlers={{
-                    click: () => onSelectZone(zone),
+                    click: () => { markZoneClick(); onSelectZone(zone) },
                   }}
                 />
               </LayerGroup>

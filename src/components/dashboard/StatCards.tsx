@@ -98,7 +98,7 @@ export default function StatCards({ zones }: StatCardsProps) {
         iconColor="#34D399"
         title="Zones Online"
         value={`${online} / 20`}
-        sub="Live Open-Meteo feed"
+        sub="Live weather feed"
       />
       <Card
         icon={Brain}

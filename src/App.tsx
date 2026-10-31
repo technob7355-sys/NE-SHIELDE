@@ -12,7 +12,6 @@ import { LOCATIONS } from './data/locations'
 import { predictForecast, predictRisk } from './ml/model'
 import { fetchZoneWeather } from './services/weather'
 import { buildAlerts } from './services/alerts'
-import ApiStatus from './components/ApiStatus'
 import Landing from './components/Landing'
 import MapView from './components/MapView'
 import AccuracyView from './components/AccuracyView'
@@ -328,11 +327,7 @@ export default function App() {
                   </h1>
                 </div>
               </div>
-              <div className="min-w-0">
-                <ApiStatus />
-              </div>
             </div>
-
             <div key={activeTab} className={tabDir === 'fwd' ? 'tab-in-fwd' : 'tab-in-back'}>
               {activeTab === 'home' ? (
                 <Landing
@@ -348,9 +343,10 @@ export default function App() {
                   zones={zones}
                   loading={loading}
                   alerts={alerts}
-                  focusZone={focusZone}
+                  selectedZone={selectedZone}
                   onSelectZone={handleSelectZone}
                   onSelectZoneId={handleSelectZoneId}
+                  onDeselectZone={handleClosePanel}
                   onOpenMap={() => {
                     if (focusZone) handleSelectZone(focusZone)
                     handleTabChange('map')
@@ -362,6 +358,7 @@ export default function App() {
                   zones={zones}
                   loading={loading}
                   onSelectZone={handleSelectZone}
+                  onDeselectZone={handleClosePanel}
                   selectedZone={selectedZone}
                 />
               ) : null}
@@ -370,7 +367,7 @@ export default function App() {
             </div>
           </main>
 
-          {panelZone ? (
+          {panelZone && activeTab !== 'overview' ? (
             <aside
               aria-hidden={!panelOpen}
               className="sticky top-0 h-screen shrink-0 overflow-hidden bg-[#101A2E] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:top-16 md:h-[calc(100vh-4rem)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl"

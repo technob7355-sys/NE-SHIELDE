@@ -1,4 +1,4 @@
-import { Crosshair } from 'lucide-react'
+import { Crosshair, X } from 'lucide-react'
 import type { ZoneWithScore } from '../types'
 import { LevelBadge, formatTimeIST } from '../risk'
 import { countNearbyEvents } from '../../data/historicalEvents'
@@ -19,6 +19,7 @@ export interface SafetyPanelData {
 interface LocationDetailsProps {
   zone: ZoneWithScore | null
   onViewOnMap: () => void
+  onClose: () => void
   safety: SafetyPanelData | null
 }
 
@@ -44,7 +45,7 @@ function SectionLabel({ children }: { children: string }) {
 }
 
 /** Right-hand detail panel for the focus zone. All values are real. */
-export default function LocationDetails({ zone, onViewOnMap, safety }: LocationDetailsProps) {
+export default function LocationDetails({ zone, onViewOnMap, onClose, safety }: LocationDetailsProps) {
   if (!zone) {
     return (
       <div className="flex h-full items-center justify-center rounded-xl border border-[#1E2D47] bg-[#101A2E] p-6">
@@ -59,6 +60,14 @@ export default function LocationDetails({ zone, onViewOnMap, safety }: LocationD
     <div className="flex h-full min-h-0 flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
       <div className="mb-3 flex items-start justify-between gap-3">
         <p className="truncate text-[16px] font-bold text-[#E8EEF7]">Location Details</p>
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close details"
+          className="shrink-0 rounded-lg border border-[#1E2D47] bg-[#16233C] p-1.5 text-[#8CA0B8] transition-all duration-200 hover:text-[#E8EEF7] active:scale-95"
+        >
+          <X className="h-4 w-4" aria-hidden="true" />
+        </button>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
@@ -113,9 +122,6 @@ export default function LocationDetails({ zone, onViewOnMap, safety }: LocationD
       >
         View on Map
       </button>
-      <p className="mt-2 shrink-0 text-[11px] leading-relaxed text-[#8CA0B8]">
-        Historical counts from NASA GLC/COOLR (2007–2018).
-      </p>
     </div>
   )
 }
