@@ -67,21 +67,21 @@ function PortalPanel({
 /* ------------------------------------------------------------------ */
 const SLIDES = [
   {
-    img: '/img/hero_landslide.jpg',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Landslide_Nigulsari%2C_Kinnaur.jpg/1920px-Landslide_Nigulsari%2C_Kinnaur.jpg',
     alt: 'Landslide blocking a mountain road at Nigulsari, Kinnaur',
     title: 'Before the slope fails, people should know.',
     sub: "NE-SHIELD watches the rain and the soil on the Northeast's most vulnerable slopes and turns them into a live landslide risk score — so warnings reach people before disaster, not after it.",
     cta: true,
   },
   {
-    img: '/img/dashboard_landslide.jpg',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Landslides_in_Himachal_Pradesh.jpg/1920px-Landslides_in_Himachal_Pradesh.jpg',
     alt: 'Landslide scar on a Himachal hillside',
     title: 'Live risk scores for 20 Northeast zones.',
     sub: 'Open-Meteo rainfall and soil data, refreshed every 12 minutes. Every zone scored, every miss shown honestly.',
     cta: false,
   },
   {
-    img: '/img/hillside_landslide.jpg',
+    img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Road_construction_causing_landslides_in_the_Himalaya%2C_AJTJ.jpg/1920px-Road_construction_causing_landslides_in_the_Himalaya%2C_AJTJ.jpg',
     alt: 'Hillside landslide debris',
     title: 'Built for the people who have to decide.',
     sub: 'A control-room dashboard for disaster-management authorities — clean alerts, honest data, no fake numbers.',

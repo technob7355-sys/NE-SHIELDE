@@ -69,7 +69,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
       {/* Subtle image accent — hillside landslide photo */}
       <div
         className="relative overflow-hidden rounded-[15px] border border-[#003A66] bg-[#004F88] bg-cover bg-center"
-        style={{ backgroundImage: `url("/img/hillside_landslide.jpg")` }}
+        style={{ backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Road_construction_causing_landslides_in_the_Himalaya%2C_AJTJ.jpg/1920px-Road_construction_causing_landslides_in_the_Himalaya%2C_AJTJ.jpg")` }}
       >
         <div
           className="absolute inset-0 bg-[linear-gradient(100deg,rgba(0,79,136,0.93)_30%,rgba(0,79,136,0.55)_65%,rgba(0,79,136,0.25))]"

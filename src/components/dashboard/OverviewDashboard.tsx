@@ -182,7 +182,7 @@ export default function OverviewDashboard({
         {/* Image banner — Himachal slope scar, official-portal accent */}
         <div
           className="relative overflow-hidden rounded-[15px] border border-[#003A66] bg-[#004F88] bg-cover bg-center"
-          style={{ backgroundImage: `url("/img/dashboard_landslide.jpg")` }}
+          style={{ backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Landslides_in_Himachal_Pradesh.jpg/1920px-Landslides_in_Himachal_Pradesh.jpg")` }}
         >
           <div
             className="absolute inset-0 bg-[linear-gradient(100deg,rgba(0,79,136,0.92)_20%,rgba(0,79,136,0.45)_60%,rgba(0,79,136,0.15))]"
