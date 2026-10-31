@@ -5,7 +5,6 @@ import type { ZoneWithScore } from '../types'
 import {
   LIFECYCLE_LABELS,
   OPERATOR_LABEL,
-  getLog,
   getStatus,
   setStatus,
 } from '../../services/alertStore'
@@ -58,7 +57,6 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
     () => alerts.filter((a) => sevFilter === 'All' || a.severity === sevFilter),
     [alerts, sevFilter],
   )
-  const log = useMemo(() => getLog().slice(0, 30), [tick])
 
   const quickAck = (id: string) => {
     setStatus(id, 'acknowledged')
@@ -166,15 +164,13 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
         </p>
       </div>
 
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Hazard Report Review</p>
-        <p className="mb-4 text-[13px] leading-relaxed text-[#8CA0B8]">
-          Submitted reports are <span className="text-[#FBBF24]">never</span> auto-verified as real
-          landslides. Review each one explicitly.
-        </p>
-        {reports.length === 0 ? (
-          <p className="text-[14px] text-[#8CA0B8]">No reports submitted yet.</p>
-        ) : (
+      {reports.length > 0 ? (
+        <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+          <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Hazard Report Review</p>
+          <p className="mb-4 text-[13px] leading-relaxed text-[#8CA0B8]">
+            Submitted reports are <span className="text-[#FBBF24]">never</span> auto-verified as real
+            landslides. Review each one explicitly.
+          </p>
           <div className="flex flex-col gap-3">
             {reports.map((r) => {
               const status = getStatus(r.id)
@@ -215,28 +211,8 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
               )
             })}
           </div>
-        )}
-      </div>
-
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Action History</p>
-        <p className="mb-3 text-[13px] text-[#8CA0B8]">
-          This browser only — a shared audit log needs a backend (see backend gaps).
-        </p>
-        {log.length === 0 ? (
-          <p className="text-[14px] text-[#8CA0B8]">No actions recorded yet.</p>
-        ) : (
-          <div className="flex max-h-[240px] flex-col gap-1.5 overflow-y-auto">
-            {log.map((e, i) => (
-              <p key={i} className="text-[13px] leading-relaxed text-[#8CA0B8]">
-                <span className="text-[#E8EEF7]">{formatDateTimeIST(e.at)} IST</span> — {e.by}:{' '}
-                {e.action} <span className="font-mono text-[13px]">({e.targetId})</span>
-                {e.detail ? ` — ${e.detail}` : ''}
-              </p>
-            ))}
-          </div>
-        )}
-      </div>
+        </div>
+      ) : null}
 
       {detailAlert ? (
         <AlertDetailModal

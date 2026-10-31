@@ -1,8 +1,6 @@
 import {
   AlertTriangle,
   ClipboardList,
-  FlaskConical,
-  Gauge,
   History,
   LayoutDashboard,
   Map as MapIcon,
@@ -23,13 +21,6 @@ const GROUPS: { label: string; items: { id: TabId; label: string; icon: typeof L
       { id: 'map', label: 'Risk Map', icon: MapIcon },
       { id: 'alerts', label: 'Alerts & Warnings', icon: AlertTriangle },
       { id: 'history', label: 'History', icon: History },
-    ],
-  },
-  {
-    label: 'Analysis',
-    items: [
-      { id: 'accuracy', label: 'Model Accuracy', icon: Gauge },
-      { id: 'technical', label: 'Technical Evaluation', icon: FlaskConical },
     ],
   },
   {

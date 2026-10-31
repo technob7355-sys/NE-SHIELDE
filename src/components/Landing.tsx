@@ -23,7 +23,6 @@ interface LandingProps {
   zones: ZoneWithScore[]
   loading: boolean
   onOpenDashboard: () => void
-  onOpenAccuracy: () => void
   onOpenMap: () => void
 }
 
@@ -157,7 +156,7 @@ const ROADMAP = [
   },
 ]
 
-export default function Landing({ zones, loading, onOpenDashboard, onOpenAccuracy, onOpenMap }: LandingProps) {
+export default function Landing({ zones, loading, onOpenDashboard, onOpenMap }: LandingProps) {
   const states = new Set(zones.map((z) => z.location.state)).size
   const withScore = [...zones]
     .filter((z) => z.prediction)
@@ -200,13 +199,6 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
               >
                 View the live dashboard
                 <ArrowRight className="h-4 w-4" aria-hidden="true" />
-              </button>
-              <button
-                type="button"
-                onClick={onOpenAccuracy}
-                className="inline-flex items-center gap-2 rounded-lg border border-white/25 bg-black/30 px-6 py-3.5 text-[14px] font-medium text-white backdrop-blur-sm transition-all duration-300 hover:bg-black/50 active:scale-[0.98]"
-              >
-                See how we prove accuracy
               </button>
             </div>
             <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-[#C7D3E8]">
@@ -421,17 +413,6 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             )
           })}
         </div>
-        <button
-          type="button"
-          onClick={onOpenAccuracy}
-          className="group mt-6 inline-flex items-center gap-2 text-[14px] font-medium text-[#60A5FA] transition-all duration-300 hover:text-[#93C5FD] active:scale-[0.98]"
-        >
-          Read the full accuracy audit, misses included
-          <ArrowRight
-            className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1"
-            aria-hidden="true"
-          />
-        </button>
       </Reveal>
 
       {/* Who it serves — editorial list, not another card grid */}

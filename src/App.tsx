@@ -3,8 +3,6 @@ import {
   AlertTriangle,
   ArrowLeft,
   ClipboardList,
-  FlaskConical,
-  Gauge,
   History,
   Home,
   LayoutDashboard,
@@ -33,8 +31,6 @@ import type { HazardReport } from './services/reports'
 import ApiStatus from './components/ApiStatus'
 import Landing from './components/Landing'
 import MapView from './components/MapView'
-import AccuracyView from './components/AccuracyView'
-import TechnicalEvaluation from './components/TechnicalEvaluation'
 import HistoricalExplorer from './components/HistoricalExplorer'
 import ReportView from './components/ReportView'
 import ZoneDetail from './components/ZoneDetail'
@@ -51,8 +47,6 @@ const TABS: { id: TabId; label: string; title: string; icon: typeof LayoutDashbo
   { id: 'map', label: 'Live Map', title: 'Live Map', icon: MapIcon },
   { id: 'alerts', label: 'Alerts', title: 'Alerts & Warnings', icon: AlertTriangle },
   { id: 'history', label: 'History', title: 'Historical Events', icon: History },
-  { id: 'accuracy', label: 'Accuracy', title: 'Model Accuracy', icon: Gauge },
-  { id: 'technical', label: 'Technical', title: 'Technical Evaluation', icon: FlaskConical },
   { id: 'report', label: 'Report Hazard', title: 'Report Hazard', icon: ClipboardList },
 ]
 
@@ -445,7 +439,6 @@ export default function App() {
                   zones={zones}
                   loading={loading}
                   onOpenDashboard={() => handleTabChange('overview')}
-                  onOpenAccuracy={() => handleTabChange('accuracy')}
                   onOpenMap={() => handleTabChange('map')}
                 />
               ) : null}
@@ -472,8 +465,6 @@ export default function App() {
                   selectedZone={selectedZone}
                 />
               ) : null}
-              {activeTab === 'accuracy' ? <AccuracyView /> : null}
-              {activeTab === 'technical' ? <TechnicalEvaluation /> : null}
               {activeTab === 'history' ? <HistoricalExplorer /> : null}
               {activeTab === 'alerts' ? (
                 <AlertsPanel alerts={alerts} zones={zones} onSelectZone={handleSelectZoneId} />

@@ -65,6 +65,4 @@ export type TabId =
   | 'alerts'
   | 'map'
   | 'history'
-  | 'accuracy'
-  | 'technical'
   | 'report'
