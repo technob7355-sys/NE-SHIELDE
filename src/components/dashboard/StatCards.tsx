@@ -30,7 +30,7 @@ function Card({
 }) {
   const Icon = icon
   return (
-    <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+    <div className="rounded-[15px] border border-[#d9d9d9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
       <div className="mb-3 flex items-center justify-between gap-3">
         <span
           className="inline-flex h-10 w-10 items-center justify-center rounded-lg"
@@ -40,9 +40,9 @@ function Card({
         </span>
         {right ? <div className="shrink-0">{right}</div> : null}
       </div>
-      <p className="text-[14px] leading-snug text-[#8CA0B8]">{title}</p>
-      <p className="mt-1 text-[30px] leading-none font-bold text-[#E8EEF7]">{value}</p>
-      <div className="mt-1.5 text-[13px] leading-relaxed text-[#8CA0B8]">{sub}</div>
+      <p className="text-[14px] leading-snug text-[#64748B]">{title}</p>
+      <p className="mt-1 text-[30px] leading-none font-bold text-[#0F172A]">{value}</p>
+      <div className="mt-1.5 text-[13px] leading-relaxed text-[#64748B]">{sub}</div>
     </div>
   )
 }
@@ -107,16 +107,16 @@ export default function StatCards({ zones, alerts }: StatCardsProps) {
       />
       <Card
         icon={CloudRain}
-        iconBg="rgba(96,165,250,0.12)"
-        iconColor="#60A5FA"
+        iconBg="rgba(16,110,190,0.12)"
+        iconColor="#004f88"
         title="Max 24h Rainfall"
         value={`${maxRain.toFixed(0)} mm`}
         sub={maxRainZone ? `at ${maxRainZone.location.name}` : 'Waiting for live data'}
       />
       <Card
         icon={Activity}
-        iconBg="rgba(52,211,153,0.12)"
-        iconColor="#34D399"
+        iconBg="rgba(16,110,190,0.12)"
+        iconColor="#004f88"
         title="Monitoring Coverage"
         value={`${fresh} / ${zones.length}`}
         sub={
@@ -133,8 +133,8 @@ export default function StatCards({ zones, alerts }: StatCardsProps) {
       />
       <Card
         icon={RefreshCw}
-        iconBg="rgba(96,165,250,0.12)"
-        iconColor="#60A5FA"
+        iconBg="rgba(16,110,190,0.12)"
+        iconColor="#004f88"
         title="Data Freshness"
         value={lastTime ? formatTimeIST(lastTime) : '—'}
         sub={

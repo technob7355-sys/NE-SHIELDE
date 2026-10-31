@@ -81,7 +81,7 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
   const [riskFilter, setRiskFilter] = useState<RiskFilter>('All')
   return (
     <div className="flex flex-col gap-5">
-      <div className="relative overflow-hidden rounded-xl border border-[#1E2D47]">
+      <div className="relative overflow-hidden rounded-[15px] border border-[#D9D9D9]">
         <MapContainer
           center={[26.8, 92.5]}
           zoom={7}
@@ -116,7 +116,7 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
           <ZoneSearch zones={zones} onPick={selectZone} />
           <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
           {zones.filter((z) => zonePassesFilter(z, riskFilter)).map((zone) => {
-            const color = zone.prediction ? riskColor(zone.prediction.level) : '#8CA0B8'
+            const color = zone.prediction ? riskColor(zone.prediction.level) : '#64748B'
             return (
               <LayerGroup key={zone.location.id}>
                 <Circle
@@ -135,7 +135,7 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
                 <CircleMarker
                   center={[zone.location.lat, zone.location.lng]}
                   radius={9}
-                  pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#0B1220', weight: 1 }}
+                  pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#F0F0F0', weight: 1 }}
                   eventHandlers={{
                     click: () => selectZone(zone),
                   }}
@@ -146,7 +146,7 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
         </MapContainer>
       </div>
 
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
         {LEGEND.map((item) => (
           <span key={item.level} className="inline-flex items-center gap-2">
             <span
@@ -157,37 +157,37 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
               }}
               aria-hidden="true"
             />
-            <span className="text-[14px] text-[#E8EEF7]">{item.label} zone</span>
+            <span className="text-[14px] text-[#0F172A]">{item.label} zone</span>
           </span>
         ))}
         <span className="inline-flex items-center gap-2">
           <span
-            className="h-4 w-4 rounded-full border-2 border-[#8CA0B8] bg-[#8CA0B8]/30"
+            className="h-4 w-4 rounded-full border-2 border-[#64748B] bg-[#64748B]/30"
             aria-hidden="true"
           />
-          <span className="text-[14px] text-[#8CA0B8]">Data unavailable</span>
+          <span className="text-[14px] text-[#64748B]">Data unavailable</span>
         </span>
       </div>
 
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-4 text-[18px] font-bold text-[#E8EEF7]">Zones</p>
-        {loading ? <p className="mb-3 text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
+      <div className="rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+        <p className="mb-4 text-[18px] font-bold text-[#0F172A]">Zones</p>
+        {loading ? <p className="mb-3 text-[14px] text-[#64748B]">Loading live data…</p> : null}
         <div className="flex flex-col">
           {zones.map((zone) => (
             <button
               key={zone.location.id}
               type="button"
               onClick={() => onSelectZone(zone)}
-              className="flex w-full items-center gap-3 border-b border-[#1E2D47] py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-[#16233C]/50 active:bg-[#1E2D47]"
+              className="flex w-full items-center gap-3 border-b border-[#D9D9D9] py-3 text-left transition-colors last:border-b-0 last:pb-0 first:pt-0 hover:bg-[#E9E9E9]/50 active:bg-[#D9D9D9]"
             >
               <RiskDot level={zone.prediction?.level} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[14px] font-medium text-[#E8EEF7]" title={zone.location.name}>
+                <span className="block truncate text-[14px] font-medium text-[#0F172A]" title={zone.location.name}>
                   {zone.location.name}
                 </span>
-                <span className="block truncate text-[14px] text-[#8CA0B8]" title={zone.location.state}>{zone.location.state}</span>
+                <span className="block truncate text-[14px] text-[#64748B]" title={zone.location.state}>{zone.location.state}</span>
               </span>
-              <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-[#E8EEF7]">
+              <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-[#0F172A]">
                 {zone.prediction ? Math.round(zone.prediction.score) : '—'}
               </span>
               {zone.prediction ? (
@@ -195,13 +195,13 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
                   <LevelBadge level={zone.prediction.level} />
                 </span>
               ) : (
-                <span className="shrink-0 text-[13px] font-medium text-[#8CA0B8]">Data unavailable</span>
+                <span className="shrink-0 text-[13px] font-medium text-[#64748B]">Data unavailable</span>
               )}
             </button>
           ))}
         </div>
         {zones.length === 0 && !loading ? (
-          <p className="text-[14px] text-[#8CA0B8]">No zones available.</p>
+          <p className="text-[14px] text-[#64748B]">No zones available.</p>
         ) : null}
       </div>
     </div>

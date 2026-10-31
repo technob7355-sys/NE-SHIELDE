@@ -31,9 +31,9 @@ interface LocationDetailsProps {
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
     <div className="flex items-center justify-between gap-3 py-1.5">
-      <span className="text-[14px] text-[#8CA0B8]">{label}</span>
+      <span className="text-[14px] text-[#64748B]">{label}</span>
       <span
-        className={`text-right text-[14px] font-medium whitespace-nowrap ${accent ? 'text-[#F87171]' : 'text-[#E8EEF7]'}`}
+        className={`text-right text-[14px] font-medium whitespace-nowrap ${accent ? 'text-[#F87171]' : 'text-[#0F172A]'}`}
       >
         {value}
       </span>
@@ -43,7 +43,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <p className="mt-4 mb-1 text-[13px] font-bold tracking-wider text-[#8CA0B8] uppercase">
+    <p className="mt-4 mb-1 text-[13px] font-bold tracking-wider text-[#64748B] uppercase">
       {children}
     </p>
   )
@@ -53,8 +53,8 @@ function SectionLabel({ children }: { children: string }) {
 export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: LocationDetailsProps) {
   if (!zone) {
     return (
-      <div className="flex h-full items-center justify-center rounded-xl border border-[#1E2D47] bg-[#101A2E] p-6">
-        <p className="text-[14px] text-[#8CA0B8]">Select a zone on the map for details.</p>
+      <div className="flex h-full items-center justify-center rounded-xl border border-[#D9D9D9] bg-white p-6">
+        <p className="text-[14px] text-[#64748B]">Select a zone on the map for details.</p>
       </div>
     )
   }
@@ -75,16 +75,16 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
     worstOutlook && prediction && levelRank(worstOutlook) > levelRank(prediction.level)
 
   return (
-    <div className="flex h-full min-h-0 flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+    <div className="flex h-full min-h-0 flex-col rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
       <div className="mb-3 flex items-start justify-between gap-3">
-        <p className="text-[18px] font-bold text-[#E8EEF7]">Location Details</p>
+        <p className="text-[18px] font-bold text-[#0F172A]">Location Details</p>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[16px] leading-snug font-bold text-[#E8EEF7]">{location.name}</p>
-            <p className="mt-0.5 text-[14px] text-[#8CA0B8]">{location.state}, India</p>
+            <p className="text-[16px] leading-snug font-bold text-[#0F172A]">{location.name}</p>
+            <p className="mt-0.5 text-[14px] text-[#64748B]">{location.state}, India</p>
           </div>
           {prediction ? <LevelBadge level={prediction.level} /> : null}
         </div>
@@ -99,13 +99,13 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
             }
           />
           {quality.fetchedAt ? (
-            <span className="text-[13px] text-[#8CA0B8]">
+            <span className="text-[13px] text-[#64748B]">
               {formatTimeIST(quality.fetchedAt)} IST
             </span>
           ) : null}
         </div>
 
-        <p className="mt-2 inline-flex items-center gap-1.5 text-[14px] text-[#8CA0B8]">
+        <p className="mt-2 inline-flex items-center gap-1.5 text-[14px] text-[#64748B]">
           <Crosshair className="h-3.5 w-3.5" aria-hidden="true" />
           {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° E
         </p>
@@ -128,7 +128,7 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
         ) : null}
 
         <SectionLabel>Risk &amp; Weather</SectionLabel>
-        <div className="divide-y divide-[#1E2D47] border-y border-[#1E2D47]">
+        <div className="divide-y divide-[#D9D9D9] border-y border-[#D9D9D9]">
           <Row
             label="Predicted Risk"
             value={
@@ -161,8 +161,8 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
                   key={i}
                   className="flex items-center justify-between gap-3 text-[14px]"
                 >
-                  <span className="min-w-0 text-[#E8EEF7]">{e.name}</span>
-                  <span className="shrink-0 text-[#8CA0B8]">
+                  <span className="min-w-0 text-[#0F172A]">{e.name}</span>
+                  <span className="shrink-0 text-[#64748B]">
                     {e.date} · {e.distanceKm.toFixed(0)} km
                   </span>
                 </div>
@@ -194,11 +194,11 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
       <button
         type="button"
         onClick={onViewOnMap}
-        className="mt-4 w-full shrink-0 rounded-lg bg-[#3B82F6] px-4 py-2.5 text-[14px] font-medium text-white transition-all duration-300 hover:bg-[#2563EB] active:scale-[0.98]"
+        className="mt-4 w-full shrink-0 rounded-full bg-[#106EBE] px-4 py-2.5 text-[14px] font-medium text-white transition-all duration-300 hover:bg-[#004F88] active:scale-[0.98]"
       >
         View on Map
       </button>
-      <p className="mt-2 shrink-0 text-[13px] leading-relaxed text-[#8CA0B8]">
+      <p className="mt-2 shrink-0 text-[13px] leading-relaxed text-[#64748B]">
         Historical counts from NASA GLC/COOLR (2007–2018).
       </p>
     </div>

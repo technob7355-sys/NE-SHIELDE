@@ -170,19 +170,37 @@ export default function OverviewDashboard({
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl"
       >
-        <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-[#1D4ED8]/15 blur-[110px]" />
-        <div className="absolute top-1/3 -right-40 h-[480px] w-[480px] rounded-full bg-[#0D9488]/10 blur-[120px]" />
-        <div className="absolute -bottom-40 left-1/4 h-[420px] w-[520px] rounded-full bg-[#7C3AED]/10 blur-[120px]" />
+        <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-[#106EBE]/10 blur-[110px]" />
+        <div className="absolute top-1/3 -right-40 h-[480px] w-[480px] rounded-full bg-[#2D72D2]/10 blur-[120px]" />
+        <div className="absolute -bottom-40 left-1/4 h-[420px] w-[520px] rounded-full bg-[#004F88]/10 blur-[120px]" />
       </div>
       <div className="relative z-10 flex flex-col gap-5">
-        {loading ? <p className="text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
+        {loading ? <p className="text-[14px] text-[#64748B]">Loading live data…</p> : null}
 
         <StatCards zones={zones} alerts={alerts} />
 
+        {/* Image banner — Himachal slope scar, official-portal accent */}
+        <div
+          className="relative overflow-hidden rounded-[15px] border border-[#003A66] bg-[#004F88] bg-cover bg-center"
+          style={{ backgroundImage: `url("/img/dashboard_landslide.jpg")` }}
+        >
+          <div
+            className="absolute inset-0 bg-[linear-gradient(100deg,rgba(0,79,136,0.92)_20%,rgba(0,79,136,0.45)_60%,rgba(0,79,136,0.15))]"
+            aria-hidden="true"
+          />
+          <div className="relative z-10 flex flex-col gap-1 p-5 md:p-6">
+            <p className="text-[18px] font-bold text-white">Live monitoring across 20 Northeast zones</p>
+            <p className="max-w-xl text-[14px] leading-relaxed text-white/85">
+              Open-Meteo rainfall and soil data, refreshed every 12 minutes — every zone scored,
+              every miss shown honestly.
+            </p>
+          </div>
+        </div>
+
         {needsAttention.length > 0 ? (
-          <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-            <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Needs Attention</p>
-            <p className="mb-3 text-[14px] text-[#8CA0B8]">
+          <div className="rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+            <p className="mb-1 text-[18px] font-bold text-[#0F172A]">Needs Attention</p>
+            <p className="mb-3 text-[14px] text-[#64748B]">
               Highest-risk zones first — zones with stale or missing data are listed, never assumed safe.
             </p>
             <div className="flex flex-col gap-2">
@@ -194,23 +212,23 @@ export default function OverviewDashboard({
                     key={z.location.id}
                     type="button"
                     onClick={() => onSelectZone(z)}
-                    className="flex items-center gap-3 rounded-lg border border-[#1E2D47] bg-[#0B1220]/60 px-4 py-2.5 text-left transition-all hover:bg-[#16233C]"
+                    className="flex items-center gap-3 rounded-lg border border-[#D9D9D9] bg-[#F0F0F0] px-4 py-2.5 text-left transition-all hover:bg-[#D9D9D9]"
                   >
                     <span
                       className="h-2.5 w-2.5 shrink-0 rounded-full"
                       style={{
                         backgroundColor: z.prediction
                           ? riskColor(z.prediction.level)
-                          : '#8CA0B8',
+                          : '#64748B',
                       }}
                       aria-hidden="true"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[15px] leading-snug font-medium text-[#E8EEF7]">
+                      <span className="block text-[15px] leading-snug font-medium text-[#0F172A]">
                         {z.location.name}
-                        <span className="ml-2 font-normal text-[#8CA0B8]">{z.location.state}</span>
+                        <span className="ml-2 font-normal text-[#64748B]">{z.location.state}</span>
                       </span>
-                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[13px] text-[#8CA0B8]">
+                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[13px] text-[#64748B]">
                         <DataQualityBadge status={q.status} />
                         {worstAlert ? (
                           <span style={{ color: riskColor(worstAlert.severity) }}>
@@ -222,7 +240,7 @@ export default function OverviewDashboard({
                     {z.prediction ? (
                       <LevelBadge level={z.prediction.level} />
                     ) : (
-                      <span className="text-[13px] text-[#8CA0B8]">Unknown</span>
+                      <span className="text-[13px] text-[#64748B]">Unknown</span>
                     )}
                   </button>
                 )
@@ -233,18 +251,18 @@ export default function OverviewDashboard({
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1E2D47] bg-[#101A2E] px-5 py-4">
+          <div className="overflow-hidden rounded-[15px] border border-[#D9D9D9] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#D9D9D9] bg-white px-5 py-4">
               <div>
-                <p className="text-[18px] font-bold text-[#E8EEF7]">Live Risk Map</p>
-                <p className="mt-0.5 text-[13px] text-[#8CA0B8]">
+                <p className="text-[18px] font-bold text-[#0F172A]">Live Risk Map</p>
+                <p className="mt-0.5 text-[13px] text-[#64748B]">
                   Satellite view • 20 zones • tap a zone for details
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onOpenMap}
-                className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2 text-[14px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
+                className="rounded-lg border border-[#D9D9D9] bg-white px-4 py-2 text-[14px] font-medium text-[#0F172A] transition-all duration-300 hover:bg-[#E9E9E9] active:scale-[0.98]"
               >
                 Open full live map →
               </button>
@@ -268,28 +286,28 @@ export default function OverviewDashboard({
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
-        <div className="flex flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-          <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Rainfall Trend (Last 24 Hours)</p>
-          <p className="mb-3 text-[13px] text-[#8CA0B8]">
+        <div className="flex flex-col rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+          <p className="mb-1 text-[18px] font-bold text-[#0F172A]">Rainfall Trend (Last 24 Hours)</p>
+          <p className="mb-3 text-[13px] text-[#64748B]">
             {rainZone ? `${rainZone.location.name} — wettest zone` : 'Waiting for live data'}
           </p>
           <div className="flex flex-1 items-center">
             {rainZone ? (
               <RainfallChart values={rainZone.weather!.recentHourlyRain} />
             ) : (
-              <p className="text-[14px] text-[#8CA0B8]">No data yet.</p>
+              <p className="text-[14px] text-[#64748B]">No data yet.</p>
             )}
           </div>
         </div>
 
-        <div className="flex flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-          <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Risk Outlook (Next 3 Days)</p>
-          <p className="mb-3 text-[13px] text-[#8CA0B8]">Highest forecast score across zones</p>
+        <div className="flex flex-col rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+          <p className="mb-1 text-[18px] font-bold text-[#0F172A]">Risk Outlook (Next 3 Days)</p>
+          <p className="mb-3 text-[13px] text-[#64748B]">Highest forecast score across zones</p>
           <div className="flex flex-1 items-center">
             {outlookDays.length > 0 ? (
               <OutlookChart days={outlookDays} />
             ) : (
-              <p className="text-[14px] text-[#8CA0B8]">No data yet.</p>
+              <p className="text-[14px] text-[#64748B]">No data yet.</p>
             )}
           </div>
         </div>

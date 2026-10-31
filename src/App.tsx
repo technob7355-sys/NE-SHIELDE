@@ -340,11 +340,11 @@ export default function App() {
 
   const navButtonClass = (tab: TabId) =>
     `flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-[14px] font-medium whitespace-nowrap transition-all duration-300 active:scale-[0.97] ${
-      activeTab === tab ? 'bg-[#16233C] text-[#E8EEF7]' : 'text-[#8CA0B8] hover:bg-[#16233C]'
+      activeTab === tab ? 'bg-[#106EBE]/10 font-semibold text-[#004F88]' : 'text-[#64748B] hover:bg-[#D9D9D9]'
     }`
 
   return (
-    <div className="min-h-screen bg-[#0B1220] text-[#E8EEF7]">
+    <div className="min-h-screen bg-[#F0F0F0] text-[#0F172A]">
       <TopBar
         lastUpdated={lastUpdated}
         avgTempC={avgTempC}
@@ -365,7 +365,7 @@ export default function App() {
       />
 
       <div className="md:pl-[232px] md:pt-16">
-        <div className="border-b border-[#1E2D47] bg-[#101A2E] md:hidden">
+        <div className="border-b border-[#D9D9D9] bg-white md:hidden">
           <div className="flex items-center gap-2.5 px-4 py-3">
             <button
               type="button"
@@ -373,12 +373,12 @@ export default function App() {
               className="flex shrink-0 items-center gap-2.5 transition-all duration-300 active:scale-[0.97]"
               aria-label="Go to home"
             >
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#106EBE]">
                 <Shield className="h-4 w-4 text-white" aria-hidden="true" />
               </span>
-              <span className="text-[17px] font-bold whitespace-nowrap text-[#E8EEF7]">NE-SHIELD</span>
+              <span className="text-[17px] font-bold whitespace-nowrap text-[#0F172A]">NE-SHIELD</span>
             </button>
-            <span className="ml-auto shrink-0 text-[14px] whitespace-nowrap text-[#8CA0B8]">
+            <span className="ml-auto shrink-0 text-[14px] whitespace-nowrap text-[#64748B]">
               {clockText}
             </span>
           </div>
@@ -397,7 +397,7 @@ export default function App() {
                   aria-current={activeTab === tab.id ? 'page' : undefined}
                 >
                   <Icon
-                    className={`h-4 w-4 shrink-0 ${activeTab === tab.id ? 'text-[#3B82F6]' : 'text-[#8CA0B8]'}`}
+                    className={`h-4 w-4 shrink-0 ${activeTab === tab.id ? 'text-[#004F88]' : 'text-[#64748B]'}`}
                     aria-hidden="true"
                   />
                   {tab.label}
@@ -415,7 +415,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[14px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
+                    className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#D9D9D9] bg-[#E9E9E9] px-3 py-1.5 text-[14px] font-medium text-[#0F172A] transition-all duration-300 hover:bg-[#D9D9D9] active:scale-[0.95]"
                     aria-label="Go back"
                   >
                     <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -423,7 +423,7 @@ export default function App() {
                   </button>
                 ) : null}
                 <div className="min-w-0">
-                  <h1 key={activeTab} className="title-in text-[22px] font-bold text-[#E8EEF7]">
+                  <h1 key={activeTab} className="title-in text-[22px] font-bold text-[#0F172A]">
                     {activeTabMeta.title}
                   </h1>
                 </div>
@@ -438,8 +438,12 @@ export default function App() {
                 <Landing
                   zones={zones}
                   loading={loading}
+                  alerts={alerts}
+                  notifications={notifications}
                   onOpenDashboard={() => handleTabChange('overview')}
                   onOpenMap={() => handleTabChange('map')}
+                  onOpenAlerts={() => handleTabChange('alerts')}
+                  onOpenHistory={() => handleTabChange('history')}
                 />
               ) : null}
               {activeTab === 'overview' ? (
@@ -478,12 +482,12 @@ export default function App() {
           {panelZone ? (
             <aside
               aria-hidden={!panelVisible}
-              className={`sticky top-0 h-screen w-[min(380px,92vw)] shrink-0 overflow-hidden bg-[#101A2E] transition-all duration-300 ease-out md:top-16 md:h-[calc(100vh-4rem)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl ${
+              className={`sticky top-0 h-screen w-[min(380px,92vw)] shrink-0 overflow-hidden bg-white transition-all duration-300 ease-out md:top-16 md:h-[calc(100vh-4rem)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl ${
                 panelVisible
                   ? 'translate-x-0 opacity-100'
                   : 'pointer-events-none translate-x-full opacity-0'
               }`}
-              style={{ borderLeft: '1px solid #1E2D47' }}
+              style={{ borderLeft: '1px solid #D9D9D9' }}
             >
               <div
                 key={panelZone.location.id}

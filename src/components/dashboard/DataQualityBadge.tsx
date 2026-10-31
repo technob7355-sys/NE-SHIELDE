@@ -3,8 +3,8 @@ import type { QualityStatus } from '../../services/dataQuality'
 const STYLE: Record<QualityStatus, { bg: string; color: string; label: string }> = {
   fresh: { bg: 'rgba(52,211,153,0.12)', color: '#34D399', label: 'Fresh' },
   stale: { bg: 'rgba(251,191,36,0.12)', color: '#FBBF24', label: 'Stale' },
-  unavailable: { bg: 'rgba(148,163,184,0.12)', color: '#94A3B8', label: 'Unavailable' },
-  loading: { bg: 'rgba(148,163,184,0.12)', color: '#94A3B8', label: 'Loading' },
+  unavailable: { bg: 'rgba(148,163,184,0.12)', color: '#64748B', label: 'Unavailable' },
+  loading: { bg: 'rgba(148,163,184,0.12)', color: '#64748B', label: 'Loading' },
 }
 
 /** Data-quality badge: Fresh / Stale / Unavailable. Never implies Low risk. */

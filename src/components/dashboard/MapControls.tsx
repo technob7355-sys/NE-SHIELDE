@@ -32,8 +32,8 @@ export function ZoneSearch({
 
   return (
     <div ref={boxRef} className="absolute top-3 left-3 z-[500] w-[240px]">
-      <div className="flex items-center gap-2 rounded-lg border border-[#1E2D47] bg-[#0B1220]/95 px-3 py-2 backdrop-blur-sm">
-        <Search className="h-4 w-4 shrink-0 text-[#8CA0B8]" aria-hidden="true" />
+      <div className="flex items-center gap-2 rounded-lg border border-[#D9D9D9] bg-white/95 px-3 py-2 backdrop-blur-sm">
+        <Search className="h-4 w-4 shrink-0 text-[#64748B]" aria-hidden="true" />
         <input
           type="text"
           value={q}
@@ -56,7 +56,7 @@ export function ZoneSearch({
           }}
           placeholder="Search zones…"
           aria-label="Search monitoring zones"
-          className="w-full bg-transparent text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:outline-none"
+          className="w-full bg-transparent text-[14px] text-[#0F172A] placeholder:text-[#64748B] focus:outline-none"
         />
         {q ? (
           <button
@@ -64,14 +64,14 @@ export function ZoneSearch({
             aria-label="Clear search"
             onMouseDown={(e) => e.preventDefault()}
             onClick={() => setQ('')}
-            className="text-[#8CA0B8] hover:text-[#E8EEF7]"
+            className="text-[#64748B] hover:text-[#0F172A]"
           >
             <X className="h-3.5 w-3.5" aria-hidden="true" />
           </button>
         ) : null}
       </div>
       {open && results.length > 0 ? (
-        <div className="mt-1 overflow-hidden rounded-lg border border-[#1E2D47] bg-[#0B1220]/95 backdrop-blur-sm">
+        <div className="mt-1 overflow-hidden rounded-lg border border-[#D9D9D9] bg-white/95 backdrop-blur-sm">
           {results.map((z) => (
             <button
               key={z.location.id}
@@ -82,19 +82,19 @@ export function ZoneSearch({
                 setQ('')
                 setOpen(false)
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[#E8EEF7] hover:bg-[#16233C]"
+              className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-[#0F172A] hover:bg-[#D9D9D9]"
             >
               <span
                 className="h-2 w-2 shrink-0 rounded-full"
                 style={{
                   backgroundColor: z.prediction
                     ? riskColor(z.prediction.level)
-                    : '#8CA0B8',
+                    : '#64748B',
                 }}
                 aria-hidden="true"
               />
               <span className="min-w-0 flex-1 truncate text-[14px]" title={z.location.name}>{z.location.name}</span>
-              <span className="shrink-0 text-[13px] text-[#8CA0B8]">{z.location.state}</span>
+              <span className="shrink-0 text-[13px] text-[#64748B]">{z.location.state}</span>
             </button>
           ))}
         </div>
@@ -127,8 +127,8 @@ export function RiskFilterChips({
             aria-pressed={active}
             className={`rounded-full border px-2.5 py-1 text-[13px] font-medium whitespace-nowrap backdrop-blur-sm transition-all ${
               active
-                ? 'border-[#3B82F6] bg-[#3B82F6]/25 text-[#E8EEF7]'
-                : 'border-[#1E2D47] bg-[#0B1220]/85 text-[#8CA0B8] hover:text-[#E8EEF7]'
+                ? 'border-[#106EBE] bg-[#106EBE]/25 text-[#0F172A]'
+                : 'border-[#D9D9D9] bg-white/85 text-[#64748B] hover:text-[#0F172A]'
             }`}
           >
             {f}

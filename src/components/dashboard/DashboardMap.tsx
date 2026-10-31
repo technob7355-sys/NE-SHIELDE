@@ -97,7 +97,7 @@ export default function DashboardMap({
   )
 
   return (
-    <div className="relative overflow-hidden rounded-xl border border-[#1E2D47]">
+    <div className="relative overflow-hidden rounded-[15px] border border-[#D9D9D9]">
       <MapContainer
         center={[26.8, 92.5]}
         zoom={6}
@@ -116,7 +116,7 @@ export default function DashboardMap({
         <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
         {layers.risk
           ? zones.filter((z) => zonePassesFilter(z, riskFilter)).map((zone) => {
-              const color = zone.prediction ? riskColor(zone.prediction.level) : '#8CA0B8'
+              const color = zone.prediction ? riskColor(zone.prediction.level) : '#64748B'
               return (
                 <LayerGroup key={zone.location.id}>
                   <Circle
@@ -139,7 +139,7 @@ export default function DashboardMap({
                   <CircleMarker
                     center={[zone.location.lat, zone.location.lng]}
                     radius={9}
-                    pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#0B1220', weight: 1 }}
+                    pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#F0F0F0', weight: 1 }}
                     eventHandlers={{ click: () => selectZone(zone) }}
                   />
                 </LayerGroup>
@@ -152,7 +152,7 @@ export default function DashboardMap({
                 key={i}
                 center={[e.lat, e.lng]}
                 radius={3.5}
-                pathOptions={{ fillColor: '#FB923C', fillOpacity: 0.75, color: '#0B1220', weight: 0.5 }}
+                pathOptions={{ fillColor: '#FB923C', fillOpacity: 0.75, color: '#F0F0F0', weight: 0.5 }}
               />
             ))
           : null}
@@ -202,12 +202,12 @@ export default function DashboardMap({
             aria-expanded={open}
             aria-label="Map layers"
             title="Map layers"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#1E2D47] bg-[#0B1220]/90 text-[#E8EEF7] backdrop-blur-sm transition-all duration-300 hover:bg-[#1E2D47] active:scale-95"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D9D9D9] bg-white/90 text-[#0F172A] backdrop-blur-sm transition-all duration-300 hover:bg-[#E9E9E9] active:scale-95"
           >
             <Layers className="h-5 w-5" aria-hidden="true" />
           </button>
           <div
-            className={`absolute right-0 bottom-12 w-52 origin-bottom-right overflow-hidden rounded-xl border border-[#1E2D47] bg-[#0B1220]/95 backdrop-blur-sm transition-all duration-300 ease-out ${
+            className={`absolute right-0 bottom-12 w-52 origin-bottom-right overflow-hidden rounded-xl border border-[#D9D9D9] bg-white/95 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)] backdrop-blur-sm transition-all duration-300 ease-out ${
               open
                 ? 'visible translate-y-0 scale-100 opacity-100'
                 : 'invisible pointer-events-none translate-y-2 scale-95 opacity-0'
@@ -219,14 +219,14 @@ export default function DashboardMap({
                   key={layer.id}
                   type="button"
                   onClick={() => toggle(layer.id)}
-                  className="flex items-center justify-between py-1.5 text-left text-[14px] text-[#E8EEF7]"
+                  className="flex items-center justify-between py-1.5 text-left text-[14px] text-[#0F172A]"
                   role="switch"
                   aria-checked={layers[layer.id]}
                 >
                   {layer.label}
                   <span
                     className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
-                      layers[layer.id] ? 'bg-[#3B82F6]' : 'bg-[#1E2D47]'
+                      layers[layer.id] ? 'bg-[#106EBE]' : 'bg-[#D9D9D9]'
                     }`}
                   >
                     <span
@@ -237,35 +237,35 @@ export default function DashboardMap({
                   </span>
                 </button>
               ))}
-              <p className="pt-1 text-[13px] leading-relaxed text-[#8CA0B8]">
+              <p className="pt-1 text-[13px] leading-relaxed text-[#64748B]">
                 {HISTORICAL_EVENTS.length} recorded landslides (NASA GLC, 2007–2018)
               </p>
             </div>
           </div>
         </div>
 
-      <div className="absolute bottom-3 left-3 z-[500] rounded-xl border border-[#1E2D47] bg-[#0B1220]/90 px-3.5 py-2.5 backdrop-blur-sm">
-        <p className="mb-1.5 text-[13px] font-medium text-[#8CA0B8]">Landslide Risk Level</p>
+      <div className="absolute bottom-3 left-3 z-[500] rounded-[15px] border border-[#D9D9D9] bg-white/90 px-3.5 py-2.5 backdrop-blur-sm shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+        <p className="mb-1.5 text-[13px] font-medium text-[#64748B]">Landslide Risk Level</p>
         <div className="flex flex-col gap-1">
           {[
             ['Low', '#34D399'],
             ['Moderate', '#FBBF24'],
             ['High', '#FB923C'],
             ['Critical', '#F87171'],
-            ['Unknown', '#8CA0B8'],
+            ['Unknown', '#64748B'],
           ].map(([label, color]) => (
-            <span key={label} className="inline-flex items-center gap-2 text-[13px] text-[#E8EEF7]">
+            <span key={label} className="inline-flex items-center gap-2 text-[13px] text-[#0F172A]">
               <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
               {label}
             </span>
           ))}
         </div>
         {showRoutes ? (
-          <div className="mt-2 flex flex-col gap-1 border-t border-[#1E2D47] pt-2">
+          <div className="mt-2 flex flex-col gap-1 border-t border-[#D9D9D9] pt-2">
             {evacRoutes.map((route, i) => (
               <span
                 key={route.label}
-                className="inline-flex items-center gap-2 text-[13px] text-[#E8EEF7]"
+                className="inline-flex items-center gap-2 text-[13px] text-[#0F172A]"
               >
                 <span
                   className="h-0.5 w-4 rounded"

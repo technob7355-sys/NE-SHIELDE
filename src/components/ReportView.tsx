@@ -61,27 +61,44 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
   }
 
   const inputClass =
-    'w-full rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:border-[#3B82F6] focus:outline-none'
+    'w-full rounded-xl border border-[#CBD5E1] bg-white px-3 py-2 text-[14px] text-[#0F172A] placeholder:text-[#94A3B8] focus:border-[#106EBE] focus:ring-[#106EBE]/30 focus:outline-none'
   const errClass = 'mt-1 text-[13px] text-[#F87171]'
 
   return (
     <div className="flex flex-col gap-5">
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-1 text-[22px] font-bold text-[#E8EEF7]">Report a Hazard</p>
-        <p className="mb-5 text-[14px] leading-relaxed text-[#8CA0B8]">
+      {/* Subtle image accent — hillside landslide photo */}
+      <div
+        className="relative overflow-hidden rounded-[15px] border border-[#003A66] bg-[#004F88] bg-cover bg-center"
+        style={{ backgroundImage: `url("/img/hillside_landslide.jpg")` }}
+      >
+        <div
+          className="absolute inset-0 bg-[linear-gradient(100deg,rgba(0,79,136,0.93)_30%,rgba(0,79,136,0.55)_65%,rgba(0,79,136,0.25))]"
+          aria-hidden="true"
+        />
+        <div className="relative z-10 p-5">
+          <p className="text-[18px] font-bold text-white">See something on a slope? Report it.</p>
+          <p className="mt-1 max-w-xl text-[14px] leading-relaxed text-white/85">
+            Fresh cracks, tilted trees, muddy seepage — your field report helps verify what the
+            model flags.
+          </p>
+        </div>
+      </div>
+      <div className="rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+        <p className="mb-1 text-[22px] font-bold text-[#0F172A]">Report a Hazard</p>
+        <p className="mb-5 text-[14px] leading-relaxed text-[#64748B]">
           Reports are saved in this browser only (localStorage) — nothing is sent to a server.
           Every report starts as <span className="text-[#FBBF24]">Pending Verification</span> and is
           never auto-verified as a real landslide.
         </p>
         {justSubmitted ? (
-          <p className="mb-4 rounded-lg border border-[#34D399]/30 bg-[#34D399]/10 p-3 text-[14px] text-[#34D399]">
+          <p className="mb-4 rounded-lg border border-[#004F88]/30 bg-[#004F88]/10 p-3 text-[14px] text-[#004F88]">
             Report submitted — status: Pending Verification. Review it under Alerts → Hazard Report
             Review.
           </p>
         ) : null}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
           <div>
-            <label htmlFor="report-location" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
+            <label htmlFor="report-location" className="mb-1.5 block text-[14px] text-[#64748B]">
               Location *
             </label>
             <input
@@ -95,7 +112,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
             {errors.location ? <p className={errClass}>{errors.location}</p> : null}
           </div>
           <div>
-            <label htmlFor="report-type" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
+            <label htmlFor="report-type" className="mb-1.5 block text-[14px] text-[#64748B]">
               Hazard type
             </label>
             <select
@@ -113,7 +130,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
             </select>
           </div>
           <div>
-            <label htmlFor="report-description" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
+            <label htmlFor="report-description" className="mb-1.5 block text-[14px] text-[#64748B]">
               Description *
             </label>
             <textarea
@@ -128,7 +145,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="report-lat" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
+              <label htmlFor="report-lat" className="mb-1.5 block text-[14px] text-[#64748B]">
                 Latitude (optional)
               </label>
               <input
@@ -142,7 +159,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
               />
             </div>
             <div>
-              <label htmlFor="report-lng" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
+              <label htmlFor="report-lng" className="mb-1.5 block text-[14px] text-[#64748B]">
                 Longitude (optional)
               </label>
               <input
@@ -158,7 +175,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
           </div>
           {errors.coords ? <p className={errClass}>{errors.coords}</p> : null}
           <div>
-            <label htmlFor="report-photo" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
+            <label htmlFor="report-photo" className="mb-1.5 block text-[14px] text-[#64748B]">
               Photo (optional)
             </label>
             <input
@@ -167,19 +184,19 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
               type="file"
               accept="image/*"
               onChange={(e) => setPhotoName(e.target.files?.[0]?.name ?? null)}
-              className="w-full rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7]"
+              className="w-full rounded-xl border border-[#CBD5E1] bg-white px-3 py-2 text-[14px] text-[#0F172A]"
             />
             {photoName ? (
-              <p className="mt-1.5 truncate text-[13px] text-[#8CA0B8]" title={photoName}>Selected: {photoName}</p>
+              <p className="mt-1.5 truncate text-[13px] text-[#64748B]" title={photoName}>Selected: {photoName}</p>
             ) : null}
-            <p className="mt-1 text-[14px] text-[#8CA0B8]">
+            <p className="mt-1 text-[14px] text-[#64748B]">
               Only the file name is saved — the photo is not uploaded anywhere.
             </p>
           </div>
           <div>
             <button
               type="submit"
-              className="rounded-lg bg-[#3B82F6] px-4 py-2 text-[14px] font-medium text-white hover:bg-[#2563EB]"
+              className="rounded-full bg-[#106EBE] px-5 py-2 text-[14px] font-medium text-white hover:bg-[#004F88]"
             >
               Submit Report
             </button>
@@ -187,36 +204,36 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
         </form>
       </div>
 
-      <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-4 text-[18px] font-bold text-[#E8EEF7]">Your Reports</p>
+      <div className="rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+        <p className="mb-4 text-[18px] font-bold text-[#0F172A]">Your Reports</p>
         {reports.length === 0 ? (
-          <p className="text-[14px] text-[#8CA0B8]">No reports yet.</p>
+          <p className="text-[14px] text-[#64748B]">No reports yet.</p>
         ) : (
           <div className="flex flex-col">
             {reports.map((report) => (
               <div
                 key={report.id}
-                className="border-b border-[#1E2D47] py-4 first:pt-0 last:border-b-0 last:pb-0"
+                className="border-b border-[#D9D9D9] py-4 first:pt-0 last:border-b-0 last:pb-0"
               >
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="max-w-full truncate text-[15px] font-medium text-[#E8EEF7]" title={report.location}>
+                  <span className="max-w-full truncate text-[15px] font-medium text-[#0F172A]" title={report.location}>
                     {report.location}
                   </span>
-                  <span className="inline-flex items-center rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[12px] font-medium whitespace-nowrap text-[#E8EEF7]">
+                  <span className="inline-flex items-center rounded-full border border-[#D9D9D9] bg-[#E9E9E9] px-2 py-0.5 text-[12px] font-medium whitespace-nowrap text-[#0F172A]">
                     {report.type}
                   </span>
                   <span className="rounded-full bg-[#FBBF24]/12 px-2 py-0.5 text-[12px] font-medium text-[#FBBF24]">
                     {LIFECYCLE_LABELS[getStatus(report.id)]}
                   </span>
-                  <span className="text-[13px] whitespace-nowrap text-[#8CA0B8]">
+                  <span className="text-[13px] whitespace-nowrap text-[#64748B]">
                     {formatDateTimeIST(report.time)} IST
                   </span>
                 </div>
-                <p className="mt-1.5 text-[14px] leading-relaxed text-[#8CA0B8] line-clamp-2">
+                <p className="mt-1.5 text-[14px] leading-relaxed text-[#64748B] line-clamp-2">
                   {report.description}
                 </p>
                 {report.photoName ? (
-                  <p className="mt-1 truncate text-[13px] text-[#8CA0B8]" title={report.photoName}>Photo: {report.photoName}</p>
+                  <p className="mt-1 truncate text-[13px] text-[#64748B]" title={report.photoName}>Photo: {report.photoName}</p>
                 ) : null}
               </div>
             ))}

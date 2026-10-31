@@ -32,11 +32,11 @@ const GROUPS: { label: string; items: { id: TabId; label: string; icon: typeof L
 /** Grouped side navigation. Every item works — no dead buttons. */
 export default function SideNav({ activeTab, alertCount, onTab }: SideNavProps) {
   return (
-    <aside className="fixed top-16 bottom-0 left-0 z-40 hidden w-[232px] flex-col border-r border-[#1E2D47] bg-[#101A2E] md:flex">
+    <aside className="fixed top-16 bottom-0 left-0 z-40 hidden w-[232px] flex-col border-r border-[#d9d9d9] bg-white md:flex">
       <nav className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-3" aria-label="Main">
         {GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="px-3 pb-1.5 text-[12px] font-bold tracking-widest text-[#8CA0B8] uppercase">
+            <p className="px-3 pb-1.5 text-[12px] font-bold tracking-widest text-[#64748B] uppercase">
               {group.label}
             </p>
             <div className="flex flex-col gap-1">
@@ -50,11 +50,11 @@ export default function SideNav({ activeTab, alertCount, onTab }: SideNavProps) 
                     onClick={() => onTab(item.id)}
                     aria-current={isActive ? 'page' : undefined}
                     className={`flex shrink-0 items-center gap-2.5 rounded-lg px-3 py-2.5 text-[14px] font-medium whitespace-nowrap transition-all duration-300 active:scale-[0.97] ${
-                      isActive ? 'bg-[#16233C] text-[#E8EEF7]' : 'text-[#8CA0B8] hover:bg-[#16233C]'
+                      isActive ? 'bg-[#106ebe]/10 font-semibold text-[#004f88]' : 'text-[#475569] hover:bg-[#e9e9e9]'
                     }`}
                   >
                     <Icon
-                      className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#3B82F6]' : 'text-[#8CA0B8]'}`}
+                      className={`h-4 w-4 shrink-0 ${isActive ? 'text-[#004f88]' : 'text-[#64748B]'}`}
                       aria-hidden="true"
                     />
                     <span className="flex-1 text-left">{item.label}</span>
@@ -72,25 +72,25 @@ export default function SideNav({ activeTab, alertCount, onTab }: SideNavProps) 
       </nav>
 
       <div className="mt-auto shrink-0 p-3">
-        <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
+        <div className="overflow-hidden rounded-xl border border-[#d9d9d9]">
           <div
             className="bg-cover bg-center p-4"
             style={{
               backgroundImage:
-                'linear-gradient(160deg, rgba(11,18,32,0.55) 0%, rgba(11,18,32,0.92) 100%), linear-gradient(120deg, #16233C 0%, #0B1220 70%)',
+                'linear-gradient(160deg, rgba(16,110,190,0.92) 0%, rgba(0,79,136,0.96) 100%), linear-gradient(120deg, #106ebe 0%, #004f88 70%)',
             }}
           >
-            <p className="text-[16px] leading-snug font-bold text-[#E8EEF7]">
+            <p className="text-[16px] leading-snug font-bold text-white">
               Predict Risks.
               <br />
               Protect Lives.
             </p>
-            <p className="mt-1 text-[13px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-1 text-[13px] leading-relaxed text-white/80">
               Live monitoring across 20 Northeast zones.
             </p>
           </div>
         </div>
-        <p className="mt-3 px-1 text-[12px] text-[#8CA0B8]">v1.0.0</p>
+        <p className="mt-3 px-1 text-[12px] text-[#64748B]">v1.0.0</p>
       </div>
     </aside>
   )

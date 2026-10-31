@@ -20,7 +20,7 @@ interface SafetyPanelProps {
 
 function StatusLine({ icon, text }: { icon?: React.ReactNode; text: string }) {
   return (
-    <p className="flex items-center gap-2 py-2 text-[14px] text-[#8CA0B8]">
+    <p className="flex items-center gap-2 py-2 text-[14px] text-[#64748B]">
       {icon}
       {text}
     </p>
@@ -45,11 +45,11 @@ export default function SafetyPanel({
     <div className="mt-1">
       <div className="flex items-center gap-2">
         <HeartPulse className="h-4 w-4 text-[#F87171]" aria-hidden="true" />
-        <p className="text-[14px] font-bold tracking-wide text-[#E8EEF7] uppercase">
+        <p className="text-[14px] font-bold tracking-wide text-[#0F172A] uppercase">
           Nearby Hospitals
         </p>
       </div>
-      <p className="mt-0.5 mb-2 text-[13px] text-[#8CA0B8]">Real data · OpenStreetMap</p>
+      <p className="mt-0.5 mb-2 text-[13px] text-[#64748B]">Real data · OpenStreetMap</p>
 
       {hospitalsState === 'loading' ? (
         <StatusLine
@@ -75,19 +75,19 @@ export default function SafetyPanel({
                 aria-pressed={active}
                 className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-all duration-200 active:scale-[0.98] ${
                   active
-                    ? 'border-[#3B82F6] bg-[#3B82F6]/15'
-                    : 'border-[#1E2D47] bg-[#0B1220] hover:border-[#3B82F6]/60'
+                    ? 'border-[#106EBE] bg-[#106EBE]/15'
+                    : 'border-[#D9D9D9] bg-[#F0F0F0] hover:border-[#106EBE]/60'
                 }`}
               >
                 <span className="min-w-0">
-                  <span className="block truncate text-[14px] font-medium text-[#E8EEF7]" title={h.name}>
+                  <span className="block truncate text-[14px] font-medium text-[#0F172A]" title={h.name}>
                     {h.name}
                   </span>
-                  <span className="block text-[13px] text-[#8CA0B8]">
+                  <span className="block text-[13px] text-[#64748B]">
                     {h.kind === 'clinic' ? 'Clinic' : 'Hospital'}
                   </span>
                 </span>
-                <span className="shrink-0 text-[14px] font-medium whitespace-nowrap text-[#8CA0B8]">
+                <span className="shrink-0 text-[14px] font-medium whitespace-nowrap text-[#64748B]">
                   {h.distanceKm.toFixed(1)} km
                 </span>
               </button>
@@ -97,16 +97,16 @@ export default function SafetyPanel({
       ) : null}
 
       {selectedHospital ? (
-        <div className="mt-3 rounded-lg border border-[#1E2D47] bg-[#0B1220] p-3">
+        <div className="mt-3 rounded-lg border border-[#D9D9D9] bg-[#F0F0F0] p-3">
           <div className="mb-2 flex items-start justify-between gap-2">
-            <p className="flex min-w-0 items-center gap-1.5 text-[15px] font-bold text-[#E8EEF7]">
+            <p className="flex min-w-0 items-center gap-1.5 text-[15px] font-bold text-[#0F172A]">
               <Navigation className="h-3.5 w-3.5 shrink-0 text-[#38BDF6]" aria-hidden="true" />
               <span className="truncate" title={`Routes to ${selectedHospital.name}`}>Routes to {selectedHospital.name}</span>
             </p>
             <button
               type="button"
               onClick={onClearHospital}
-              className="shrink-0 rounded-md p-1 text-[#8CA0B8] transition-colors hover:bg-[#1E2D47] hover:text-[#E8EEF7]"
+              className="shrink-0 rounded-md p-1 text-[#64748B] transition-colors hover:bg-[#D9D9D9] hover:text-[#0F172A]"
               aria-label="Clear selected hospital"
             >
               <X className="h-3.5 w-3.5" aria-hidden="true" />
@@ -130,7 +130,7 @@ export default function SafetyPanel({
               {routes.map((r, i) => (
                 <div
                   key={r.label}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-[#1E2D47] bg-[#101A2E] px-3 py-2"
+                  className="flex items-center justify-between gap-3 rounded-lg border border-[#D9D9D9] bg-white px-3 py-2"
                 >
                   <span className="flex items-center gap-2">
                     <span
@@ -138,14 +138,14 @@ export default function SafetyPanel({
                       style={{ backgroundColor: ROUTE_COLORS[i % ROUTE_COLORS.length] }}
                       aria-hidden="true"
                     />
-                    <span className="text-[14px] font-medium text-[#E8EEF7]">{r.label}</span>
+                    <span className="text-[14px] font-medium text-[#0F172A]">{r.label}</span>
                   </span>
-                  <span className="text-[14px] whitespace-nowrap text-[#8CA0B8]">
+                  <span className="text-[14px] whitespace-nowrap text-[#64748B]">
                     {r.distanceKm.toFixed(1)} km · {r.durationMin} min drive
                   </span>
                 </div>
               ))}
-              <p className="text-[13px] text-[#8CA0B8]">Routes drawn on the map. Real data · OSRM</p>
+              <p className="text-[13px] text-[#64748B]">Routes drawn on the map. Real data · OSRM</p>
             </div>
           ) : null}
         </div>

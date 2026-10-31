@@ -64,32 +64,32 @@ export default function TopBar({
 }: TopBarProps) {
   const pill = PILL[feedState]
   return (
-    <header className="fixed inset-x-0 top-0 z-50 hidden h-16 items-center gap-4 border-b border-[#1E2D47] bg-[#101A2E] px-5 md:flex">
+    <header className="fixed inset-x-0 top-0 z-50 hidden h-16 items-center gap-4 border-b-2 border-[#003A66] bg-[#004F88] px-5 md:flex">
       <button
         type="button"
         onClick={onHome}
         className="flex shrink-0 items-center gap-2.5 transition-all duration-300 active:scale-[0.97]"
         aria-label="Go to home"
       >
-        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#3B82F6]">
+        <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#106EBE]">
           <Shield className="h-5 w-5 text-white" aria-hidden="true" />
         </span>
         <span className="text-left">
-          <span className="block text-[17px] leading-tight font-bold text-[#E8EEF7]">NE-SHIELD</span>
-          <span className="block text-[13px] leading-tight text-[#8CA0B8]">
+          <span className="block text-[17px] leading-tight font-bold text-[#FFFFFF]">NE-SHIELD</span>
+          <span className="block text-[13px] leading-tight text-[rgba(255,255,255,0.65)]">
             Landslide Early Warning System
           </span>
         </span>
       </button>
 
-      <span className="ml-2 inline-flex shrink-0 items-center gap-2 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] font-medium text-[#E8EEF7]">
-        <MapPin className="h-4 w-4 text-[#3B82F6]" aria-hidden="true" />
+      <span className="ml-2 inline-flex shrink-0 items-center gap-2 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-[14px] font-medium text-white">
+        <MapPin className="h-4 w-4 text-[#2D72D2]" aria-hidden="true" />
         Northeast India
       </span>
 
-      <span className="shrink-0 text-[13px] leading-tight text-[#8CA0B8]">
+      <span className="shrink-0 text-[13px] leading-tight text-[rgba(255,255,255,0.65)]">
         Last Updated
-        <span className="block font-medium text-[#E8EEF7]">{lastUpdated}</span>
+        <span className="block font-medium text-[#FFFFFF]">{lastUpdated}</span>
       </span>
 
       <span
@@ -110,7 +110,7 @@ export default function TopBar({
       </span>
 
       <div className="ml-auto flex shrink-0 items-center gap-4">
-        <span className="hidden items-center gap-2 text-[14px] text-[#E8EEF7] lg:inline-flex">
+        <span className="hidden items-center gap-2 text-[14px] text-[#FFFFFF] lg:inline-flex">
           {condition === 'Clear' ? (
             <CloudSun className="h-5 w-5 text-[#FBBF24]" aria-hidden="true" />
           ) : (
@@ -118,7 +118,7 @@ export default function TopBar({
           )}
           <span className="text-left leading-tight">
             <span className="block font-bold">{avgTempC != null ? `${avgTempC.toFixed(0)}°C` : '—'}</span>
-            <span className="block text-[13px] text-[#8CA0B8]">{condition}</span>
+            <span className="block text-[13px] text-[rgba(255,255,255,0.65)]">{condition}</span>
           </span>
         </span>
 
@@ -132,14 +132,14 @@ export default function TopBar({
         />
 
         <span className="flex shrink-0 items-center gap-2.5">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3B82F6]/20 text-[13px] font-bold text-[#60A5FA]">
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#106EBE]/20 text-[13px] font-bold text-[#2D72D2]">
             CR
           </span>
           <span className="hidden text-left leading-tight xl:block">
-            <span className="block text-[14px] font-medium text-[#E8EEF7]">Control Room</span>
-            <span className="block text-[13px] text-[#8CA0B8]">Operator</span>
+            <span className="block text-[14px] font-medium text-[#FFFFFF]">Control Room</span>
+            <span className="block text-[13px] text-[rgba(255,255,255,0.65)]">Operator</span>
           </span>
-          <ChevronDown className="hidden h-4 w-4 text-[#8CA0B8] xl:block" aria-hidden="true" />
+          <ChevronDown className="hidden h-4 w-4 text-[rgba(255,255,255,0.65)] xl:block" aria-hidden="true" />
         </span>
       </div>
     </header>

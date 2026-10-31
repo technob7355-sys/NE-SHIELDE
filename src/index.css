@@ -1,14 +1,18 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
-  --color-app-bg: #0b1220;
-  --color-app-surface: #101a2e;
-  --color-app-surface2: #16233c;
-  --color-app-border: #1e2d47;
-  --color-app-text: #e8eef7;
-  --color-app-muted: #8ca0b8;
-  --color-app-accent: #3b82f6;
+  --font-sans: "Open Sans", ui-sans-system, system-ui, sans-serif;
+  --font-display: "Inter", ui-sans-system, system-ui, sans-serif;
+  --color-app-bg: #f0f0f0;
+  --color-app-surface: #ffffff;
+  --color-app-surface2: #e9e9e9;
+  --color-app-border: #d9d9d9;
+  --color-app-text: #0f172a;
+  --color-app-muted: #64748b;
+  --color-app-accent: #106ebe;
+  --color-brand: #106ebe;
+  --color-brand-dark: #004f88;
+  --color-brand-light: #2d72d2;
   --color-risk-low: #34d399;
   --color-risk-moderate: #fbbf24;
   --color-risk-high: #fb923c;
@@ -16,20 +20,23 @@
 }
 
 :root {
-  --bg: #0b1220;
-  --surface: #101a2e;
-  --surface-2: #16233c;
-  --border: #1e2d47;
-  --text: #e8eef7;
-  --muted: #8ca0b8;
-  --accent: #3b82f6;
+  --brand: #106ebe;
+  --brand-dark: #004f88;
+  --brand-light: #2d72d2;
+  --bg: #f0f0f0;
+  --surface: #ffffff;
+  --surface-2: #e9e9e9;
+  --border: #d9d9d9;
+  --text: #0f172a;
+  --muted: #64748b;
+  --accent: #106ebe;
 }
 
 html,
 body {
-  background: #0b1220;
-  color: #e8eef7;
-  font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
+  background: #f0f0f0;
+  color: #0f172a;
+  font-family: "Open Sans", ui-sans-system, system-ui, sans-serif;
 }
 
 body {
@@ -38,19 +45,28 @@ body {
 
 #root {
   min-height: 100vh;
-  background: #0b1220;
+  background: #f0f0f0;
 }
 
-/* Leaflet dark adjustments — flat styling only */
+/* Headings use Inter per the LMS reference design language */
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-family: "Inter", ui-sans-system, system-ui, sans-serif;
+}
+
+/* Leaflet light-theme adjustments — flat styling only */
 .leaflet-container {
-  background: #0b1220;
-  font-family: "Plus Jakarta Sans", ui-sans-system, system-ui, sans-serif;
+  background: #eef2f6;
+  font-family: "Open Sans", ui-sans-system, system-ui, sans-serif;
   outline: none;
 }
 
-/* Cinematic grade on satellite tiles so terrain reads rich, not flat */
+/* Satellite tiles: keep natural color, no dark grade */
 .leaflet-tile-pane {
-  filter: saturate(1.15) contrast(1.05) brightness(0.92);
+  filter: saturate(1.05) contrast(1.02);
 }
 
 /* Buttery tile crossfade while panning/zooming */
@@ -136,15 +152,15 @@ body {
   animation: title-in 0.3s ease both;
 }
 
-/* Landing page: gradient accent for the hero's key phrase */
+/* Landing hero: green gradient accent for the key phrase */
 .text-gradient {
-  background: linear-gradient(90deg, #60a5fa, #34d399);
+  background: linear-gradient(90deg, #106ebe, #2d72d2);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* Landing cards: gentle lift on hover so the page feels alive, not flat */
+/* Landing cards: gentle lift on hover */
 .card-hover {
   transition:
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
@@ -154,13 +170,13 @@ body {
 
 .card-hover:hover {
   transform: translateY(-4px);
-  border-color: #3b82f6;
-  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.18);
+  border-color: rgba(106, 175, 8, 0.35);
+  box-shadow: 0 16px 48px rgba(15, 23, 42, 0.15);
 }
 
-/* Editorial display serif for landing headlines — the crafted, non-template look */
+/* Display headlines — Inter per reference (replaces old serif) */
 .font-display {
-  font-family: "Fraunces", Georgia, "Times New Roman", serif;
+  font-family: "Inter", ui-sans-system, system-ui, sans-serif;
   font-optical-sizing: auto;
 }
 
@@ -179,16 +195,16 @@ body {
 }
 
 .leaflet-popup-content-wrapper {
-  background: #101a2e;
-  color: #e8eef7;
-  border: 1px solid #1e2d47;
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #d9d9d9;
   border-radius: 12px;
-  box-shadow: none;
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.09);
 }
 
 .leaflet-popup-tip {
-  background: #101a2e;
-  border: 1px solid #1e2d47;
+  background: #ffffff;
+  border: 1px solid #d9d9d9;
 }
 
 .leaflet-popup-content {
@@ -198,17 +214,17 @@ body {
 }
 
 .leaflet-bar a {
-  background: #101a2e;
-  color: #e8eef7;
-  border-bottom: 1px solid #1e2d47;
+  background: #ffffff;
+  color: #0f172a;
+  border-bottom: 1px solid #d9d9d9;
 }
 
 .leaflet-control-attribution {
-  background: #101a2e !important;
-  color: #8ca0b8 !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #64748b !important;
   font-size: 12px;
 }
 
 .leaflet-control-attribution a {
-  color: #8ca0b8 !important;
+  color: #64748b !important;
 }
