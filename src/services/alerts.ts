@@ -50,7 +50,6 @@ export function buildAlerts(zones: ZoneWithScore[]): Alert[] {
       }
     }
   }
-  return alerts
-    .sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
-    .slice(0, 10)
+  // No artificial cap: an operational tool must not hide active alerts.
+  return alerts.sort((a, b) => SEVERITY_ORDER[a.severity] - SEVERITY_ORDER[b.severity])
 }

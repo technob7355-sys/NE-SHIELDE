@@ -7,31 +7,33 @@ import StatCards from './StatCards'
 import DashboardMap from './DashboardMap'
 import LocationDetails, { type SafetyPanelData } from './LocationDetails'
 import type { HospitalsState, RoutesState } from './SafetyPanel'
-import AlertsPanel from './AlertsPanel'
 import RainfallChart from './RainfallChart'
 import OutlookChart from './OutlookChart'
+import { LevelBadge, riskColor } from '../risk'
+import { zoneQuality } from '../../services/dataQuality'
+import DataQualityBadge from './DataQualityBadge'
 
 interface OverviewDashboardProps {
   zones: ZoneWithScore[]
   loading: boolean
-  alerts: Alert[]
   focusZone: ZoneWithScore | null
+  alerts: Alert[]
   onSelectZone: (zone: ZoneWithScore) => void
-  onSelectZoneId: (zoneId: string) => void
+  onDeselectZone: () => void
   onOpenMap: () => void
 }
 
 /**
- * TerraGuard-style command dashboard. Every number on this screen comes
- * from live Open-Meteo data or the real historical record — nothing simulated.
+ * TerraGuard-style command dashboard: stat cards, live risk map and the
+ * focus-zone details. Alerts live on their own separate tab.
  */
 export default function OverviewDashboard({
   zones,
   loading,
-  alerts,
   focusZone,
+  alerts,
   onSelectZone,
-  onSelectZoneId,
+  onDeselectZone,
   onOpenMap,
 }: OverviewDashboardProps) {
   const rainZone = useMemo(() => {
@@ -50,6 +52,30 @@ export default function OverviewDashboard({
     )[0]
     return worst?.outlook ?? []
   }, [zones])
+
+  // Locations needing attention: top zones by score with fresh data first,
+  // then zones with stale/unavailable data (never shown as safe).
+  const needsAttention = useMemo(() => {
+    const withQ = zones.map((z) => ({ z, q: zoneQuality(z) }))
+    const scored = withQ
+      .filter(({ z, q }) => z.prediction && q.status === 'fresh')
+      .sort((a, b) => (b.z.prediction?.score ?? 0) - (a.z.prediction?.score ?? 0))
+      .slice(0, 5)
+    const badData = withQ
+      .filter(({ q }) => q.status === 'stale' || q.status === 'unavailable')
+      .slice(0, 3)
+    return [...scored, ...badData]
+  }, [zones])
+
+  const zoneAlerts = useMemo(() => {
+    const map = new Map<string, Alert[]>()
+    for (const a of alerts) {
+      const arr = map.get(a.zoneId) ?? []
+      arr.push(a)
+      map.set(a.zoneId, arr)
+    }
+    return map
+  }, [alerts])
 
   // ---- Safety: nearby hospitals + evacuation routes (real data) ----
   const [hospitals, setHospitals] = useState<Hospital[]>([])
@@ -138,10 +164,72 @@ export default function OverviewDashboard({
     : null
 
   return (
-    <div className="flex flex-col gap-5">
-      {loading ? <p className="text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
+    <div className="relative">
+      {/* Light ambient backdrop — soft color blend, dashboard tab only. */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-xl"
+      >
+        <div className="absolute -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-[#1D4ED8]/15 blur-[110px]" />
+        <div className="absolute top-1/3 -right-40 h-[480px] w-[480px] rounded-full bg-[#0D9488]/10 blur-[120px]" />
+        <div className="absolute -bottom-40 left-1/4 h-[420px] w-[520px] rounded-full bg-[#7C3AED]/10 blur-[120px]" />
+      </div>
+      <div className="relative z-10 flex flex-col gap-5">
+        {loading ? <p className="text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
 
-      <StatCards zones={zones} />
+        <StatCards zones={zones} alerts={alerts} />
+
+        {needsAttention.length > 0 ? (
+          <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
+            <p className="mb-1 text-[16px] font-bold text-[#E8EEF7]">Needs Attention</p>
+            <p className="mb-3 text-[12px] text-[#8CA0B8]">
+              Highest-risk zones first — zones with stale or missing data are listed, never assumed safe.
+            </p>
+            <div className="flex flex-col gap-2">
+              {needsAttention.map(({ z, q }) => {
+                const za = zoneAlerts.get(z.location.id) ?? []
+                const worstAlert = za[0]
+                return (
+                  <button
+                    key={z.location.id}
+                    type="button"
+                    onClick={() => onSelectZone(z)}
+                    className="flex items-center gap-3 rounded-lg border border-[#1E2D47] bg-[#0B1220]/60 px-4 py-2.5 text-left transition-all hover:bg-[#16233C]"
+                  >
+                    <span
+                      className="h-2.5 w-2.5 shrink-0 rounded-full"
+                      style={{
+                        backgroundColor: z.prediction
+                          ? riskColor(z.prediction.level)
+                          : '#8CA0B8',
+                      }}
+                      aria-hidden="true"
+                    />
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-medium text-[#E8EEF7]">
+                        {z.location.name}
+                        <span className="ml-2 font-normal text-[#8CA0B8]">{z.location.state}</span>
+                      </span>
+                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-[#8CA0B8]">
+                        <DataQualityBadge status={q.status} />
+                        {worstAlert ? (
+                          <span style={{ color: riskColor(worstAlert.severity) }}>
+                            {worstAlert.severity} alert
+                          </span>
+                        ) : null}
+                      </span>
+                    </span>
+                    {z.prediction ? (
+                      <LevelBadge level={z.prediction.level} />
+                    ) : (
+                      <span className="text-[12px] text-[#8CA0B8]">Unknown</span>
+                    )}
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+        ) : null}
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
@@ -164,18 +252,22 @@ export default function OverviewDashboard({
             <DashboardMap
               zones={zones}
               onSelectZone={onSelectZone}
+              onDeselectZone={onDeselectZone}
               evacRoutes={routes}
               evacHospital={selectedHospital}
               evacFrom={evacFrom}
             />
           </div>
         </div>
-        <LocationDetails zone={focusZone} onViewOnMap={onOpenMap} safety={safety} />
+        <LocationDetails
+          zone={focusZone}
+          onViewOnMap={onOpenMap}
+          safety={safety}
+          alerts={focusZone ? (zoneAlerts.get(focusZone.location.id) ?? []) : []}
+        />
       </div>
 
-      <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
-        <AlertsPanel alerts={alerts} onSelectZone={onSelectZoneId} />
-
+      <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div className="flex flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
           <p className="mb-1 text-[16px] font-bold text-[#E8EEF7]">Rainfall Trend (Last 24 Hours)</p>
           <p className="mb-3 text-[12px] text-[#8CA0B8]">
@@ -201,6 +293,7 @@ export default function OverviewDashboard({
             )}
           </div>
         </div>
+      </div>
       </div>
     </div>
   )

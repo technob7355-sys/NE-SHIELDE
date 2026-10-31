@@ -1,23 +1,68 @@
-import { Bell, ChevronDown, CloudRain, CloudSun, MapPin, Shield } from 'lucide-react'
+import { ChevronDown, CloudRain, CloudSun, MapPin, Shield } from 'lucide-react'
+import type { FeedState } from '../../services/dataQuality'
+import type { Notification } from '../../services/notifications'
+import NotificationCentre from './NotificationCentre'
 
 interface TopBarProps {
   lastUpdated: string
   avgTempC: number | null
   condition: string
-  alertCount: number
-  onAlertsClick: () => void
+  feedState: FeedState
+  notifications: Notification[]
+  unread: number
+  onMarkRead: (id: string) => void
+  onMarkAllRead: () => void
+  onOpenLocation: (zoneId: string) => void
+  onViewAllAlerts: () => void
   onHome: () => void
 }
 
-/** TerraGuard-style top bar. Every value is real: live Open-Meteo data only. */
+const PILL: Record<FeedState, { bg: string; border: string; color: string; dot: string; label: string }> = {
+  live: {
+    bg: 'rgba(52,211,153,0.10)',
+    border: 'rgba(52,211,153,0.30)',
+    color: '#34D399',
+    dot: '#34D399',
+    label: 'Live Data',
+  },
+  stale: {
+    bg: 'rgba(251,191,36,0.10)',
+    border: 'rgba(251,191,36,0.30)',
+    color: '#FBBF24',
+    dot: '#FBBF24',
+    label: 'Data Stale',
+  },
+  unavailable: {
+    bg: 'rgba(148,163,184,0.10)',
+    border: 'rgba(148,163,184,0.30)',
+    color: '#94A3B8',
+    dot: '#94A3B8',
+    label: 'Data Unavailable',
+  },
+  loading: {
+    bg: 'rgba(148,163,184,0.10)',
+    border: 'rgba(148,163,184,0.30)',
+    color: '#94A3B8',
+    dot: '#94A3B8',
+    label: 'Loading…',
+  },
+}
+
+/** Top bar. The data pill reflects verified freshness — never a fake "live". */
 export default function TopBar({
   lastUpdated,
   avgTempC,
   condition,
-  alertCount,
-  onAlertsClick,
+  feedState,
+  notifications,
+  unread,
+  onMarkRead,
+  onMarkAllRead,
+  onOpenLocation,
+  onViewAllAlerts,
   onHome,
 }: TopBarProps) {
+  const pill = PILL[feedState]
   return (
     <header className="fixed inset-x-0 top-0 z-50 hidden h-16 items-center gap-4 border-b border-[#1E2D47] bg-[#101A2E] px-5 md:flex">
       <button
@@ -47,9 +92,21 @@ export default function TopBar({
         <span className="block font-medium text-[#E8EEF7]">{lastUpdated}</span>
       </span>
 
-      <span className="inline-flex shrink-0 items-center gap-2 rounded-full border border-[#34D399]/30 bg-[#34D399]/10 px-3 py-1.5 text-[12px] font-medium text-[#34D399]">
-        <span className="h-2 w-2 animate-pulse rounded-full bg-[#34D399]" aria-hidden="true" />
-        Live Data
+      <span
+        className="inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] font-medium"
+        style={{ backgroundColor: pill.bg, borderColor: pill.border, color: pill.color }}
+        title={
+          feedState === 'live'
+            ? 'Source reachable and data fresh'
+            : 'Data is stale or unavailable — treat zones with caution'
+        }
+      >
+        <span
+          className={`h-2 w-2 rounded-full ${feedState === 'live' ? 'animate-pulse' : ''}`}
+          style={{ backgroundColor: pill.dot }}
+          aria-hidden="true"
+        />
+        {pill.label}
       </span>
 
       <div className="ml-auto flex shrink-0 items-center gap-4">
@@ -65,19 +122,14 @@ export default function TopBar({
           </span>
         </span>
 
-        <button
-          type="button"
-          onClick={onAlertsClick}
-          className="relative rounded-lg border border-[#1E2D47] bg-[#16233C] p-2.5 text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
-          aria-label={`Alerts${alertCount > 0 ? `, ${alertCount} active` : ''}`}
-        >
-          <Bell className="h-4 w-4" aria-hidden="true" />
-          {alertCount > 0 ? (
-            <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F87171] px-1 text-[10px] font-bold text-white">
-              {alertCount}
-            </span>
-          ) : null}
-        </button>
+        <NotificationCentre
+          notifications={notifications}
+          unread={unread}
+          onMarkRead={onMarkRead}
+          onMarkAllRead={onMarkAllRead}
+          onOpenLocation={onOpenLocation}
+          onViewAll={onViewAllAlerts}
+        />
 
         <span className="flex shrink-0 items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#3B82F6]/20 text-[13px] font-bold text-[#60A5FA]">

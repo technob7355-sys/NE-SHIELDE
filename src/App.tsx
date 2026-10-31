@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
+  AlertTriangle,
   ArrowLeft,
   ClipboardList,
+  FlaskConical,
   Gauge,
+  History,
   Home,
   LayoutDashboard,
   Map as MapIcon,
@@ -12,15 +15,33 @@ import { LOCATIONS } from './data/locations'
 import { predictForecast, predictRisk } from './ml/model'
 import { fetchZoneWeather } from './services/weather'
 import { buildAlerts } from './services/alerts'
+import { feedState } from './services/dataQuality'
+import {
+  NOTIF_CONFIG,
+  commitTriggers,
+  computeTriggers,
+  hazardReportNotification,
+  loadNotifications,
+  loadSnapshot,
+  markAllRead,
+  markRead,
+  unreadCount,
+  type Notification,
+} from './services/notifications'
+import { setStatus as setLifecycleStatus } from './services/alertStore'
+import type { HazardReport } from './services/reports'
 import ApiStatus from './components/ApiStatus'
 import Landing from './components/Landing'
 import MapView from './components/MapView'
 import AccuracyView from './components/AccuracyView'
+import TechnicalEvaluation from './components/TechnicalEvaluation'
+import HistoricalExplorer from './components/HistoricalExplorer'
 import ReportView from './components/ReportView'
 import ZoneDetail from './components/ZoneDetail'
 import TopBar from './components/dashboard/TopBar'
 import SideNav from './components/dashboard/SideNav'
 import OverviewDashboard from './components/dashboard/OverviewDashboard'
+import AlertsPanel from './components/dashboard/AlertsPanel'
 import type { TabId, ZoneLocation, ZoneWeather, ZoneWithScore } from './components/types'
 import { formatTimeIST, formatTimeWithSecondsIST } from './components/risk'
 
@@ -28,7 +49,10 @@ const TABS: { id: TabId; label: string; title: string; icon: typeof LayoutDashbo
   { id: 'home', label: 'Home', title: 'Home', icon: Home },
   { id: 'overview', label: 'Overview', title: 'Overview', icon: LayoutDashboard },
   { id: 'map', label: 'Live Map', title: 'Live Map', icon: MapIcon },
+  { id: 'alerts', label: 'Alerts', title: 'Alerts & Warnings', icon: AlertTriangle },
+  { id: 'history', label: 'History', title: 'Historical Events', icon: History },
   { id: 'accuracy', label: 'Accuracy', title: 'Model Accuracy', icon: Gauge },
+  { id: 'technical', label: 'Technical', title: 'Technical Evaluation', icon: FlaskConical },
   { id: 'report', label: 'Report Hazard', title: 'Report Hazard', icon: ClipboardList },
 ]
 
@@ -39,77 +63,104 @@ export default function App() {
   const [loading, setLoading] = useState(true)
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [panelZone, setPanelZone] = useState<ZoneWithScore | null>(null)
+  // Drives the slide-in/out CSS classes; the last zone stays mounted for the
+  // 300ms exit animation, then panelZone is cleared (unmounted).
+  const [panelVisible, setPanelVisible] = useState(false)
   const closeTimer = useRef<number | undefined>(undefined)
   const [now, setNow] = useState(() => new Date())
+
+  // ---- Notifications (per-browser; computed on the polling cycle) ----
+  const [notifications, setNotifications] = useState<Notification[]>(() => loadNotifications())
+  const notificationsRef = useRef<Notification[]>(notifications)
+  const snapshotRef = useRef(loadSnapshot())
+  useEffect(() => {
+    notificationsRef.current = notifications
+  }, [notifications])
+
+  const runTriggers = useCallback((next: ZoneWithScore[]) => {
+    const prev = notificationsRef.current
+    const { notifications: fresh, snapshot } = computeTriggers(next, snapshotRef.current, prev)
+    snapshotRef.current = snapshot
+    const merged = commitTriggers(fresh, snapshot, prev)
+    notificationsRef.current = merged
+    setNotifications(merged)
+  }, [])
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 1000)
     return () => clearInterval(timer)
   }, [])
 
-  useEffect(() => {
-    let cancelled = false
-    const load = async () => {
-      setLoading(true)
-      const locations = LOCATIONS as unknown as ZoneLocation[]
-      const initial: ZoneWithScore[] = locations.map((location) => ({
+  const loadZones = useCallback(async () => {
+    const locations = LOCATIONS as unknown as ZoneLocation[]
+    const initial: ZoneWithScore[] = locations.map((location) => ({
+      location,
+      weather: null,
+      prediction: null,
+      outlook: null,
+      error: null,
+    }))
+    setZones(initial)
+
+    const results = await Promise.allSettled(
+      locations.map((loc) =>
+        (fetchZoneWeather as unknown as (l: ZoneLocation) => Promise<ZoneWeather>)(loc),
+      ),
+    )
+    const next: ZoneWithScore[] = locations.map((location, i) => {
+      const result = results[i]
+      if (result.status === 'fulfilled') {
+        const weather = result.value
+        try {
+          const prediction = predictRisk({
+            rainfall: weather.rainfall,
+            rainfall3d: weather.rainfall3d,
+            rainfall30d: weather.rainfall30d,
+            soilMoisture: weather.soilMoisture,
+            slope: location.slope,
+          }) as unknown as ZoneWithScore['prediction']
+          let outlook: ZoneWithScore['outlook'] = null
+          try {
+            outlook = predictForecast(
+              weather.history,
+              weather.forecast,
+              location.slope,
+            ) as unknown as ZoneWithScore['outlook']
+          } catch {
+            outlook = null
+          }
+          return { location, weather, prediction, outlook, error: null }
+        } catch {
+          return { location, weather, prediction: null, outlook: null, error: 'Prediction failed' }
+        }
+      }
+      return {
         location,
         weather: null,
         prediction: null,
         outlook: null,
-        error: null,
-      }))
-      if (!cancelled) setZones(initial)
+        error: result.reason instanceof Error ? result.reason.message : 'Data unavailable',
+      }
+    })
+    setZones(next)
+    setLoading(false)
+    runTriggers(next)
+  }, [runTriggers])
 
-      const results = await Promise.allSettled(
-        locations.map((loc) =>
-          (fetchZoneWeather as unknown as (l: ZoneLocation) => Promise<ZoneWeather>)(loc),
-        ),
-      )
-      if (cancelled) return
-      const next: ZoneWithScore[] = locations.map((location, i) => {
-        const result = results[i]
-        if (result.status === 'fulfilled') {
-          const weather = result.value
-          try {
-            const prediction = predictRisk({
-              rainfall: weather.rainfall,
-              rainfall3d: weather.rainfall3d,
-              rainfall30d: weather.rainfall30d,
-              soilMoisture: weather.soilMoisture,
-              slope: location.slope,
-            }) as unknown as ZoneWithScore['prediction']
-            let outlook: ZoneWithScore['outlook'] = null
-            try {
-              outlook = predictForecast(
-                weather.history,
-                weather.forecast,
-                location.slope,
-              ) as unknown as ZoneWithScore['outlook']
-            } catch {
-              outlook = null
-            }
-            return { location, weather, prediction, outlook, error: null }
-          } catch {
-            return { location, weather, prediction: null, outlook: null, error: 'Prediction failed' }
-          }
-        }
-        return {
-          location,
-          weather: null,
-          prediction: null,
-          outlook: null,
-          error: result.reason instanceof Error ? result.reason.message : 'Data unavailable',
-        }
-      })
-      setZones(next)
-      setLoading(false)
-    }
-    void load()
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  useEffect(() => {
+    setLoading(true)
+    void loadZones()
+  }, [loadZones])
+
+  // Polling cycle for fresh data + notification triggers. Paused while the
+  // tab is hidden. Documented delivery mechanism (no push/WebSocket).
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      if (document.hidden) return
+      void loadZones()
+    }, NOTIF_CONFIG.POLL_INTERVAL_MS)
+    return () => window.clearInterval(id)
+  }, [loadZones])
 
   const handleSelectZone = useCallback((zone: ZoneWithScore) => {
     setSelectedId(zone.location.id)
@@ -133,6 +184,8 @@ export default function App() {
       setTabDir(nextIdx > currentIdx ? 'fwd' : 'back')
       const nextStack = [...tabHistory, activeTab]
       setTabHistory(nextStack)
+      // Moving to another tab dismisses the zone panel (it slides out).
+      setSelectedId(null)
       setActiveTab(tab)
       window.history.pushState({ tab, stack: nextStack }, '')
     },
@@ -140,15 +193,50 @@ export default function App() {
   )
 
   const goToAlerts = useCallback(() => {
-    if (activeTab !== 'overview') handleTabChange('overview')
-    window.setTimeout(() => {
-      document.getElementById('alerts')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 350)
-  }, [activeTab, handleTabChange])
+    handleTabChange('alerts')
+  }, [handleTabChange])
+
+  // ---- Notification actions (per-browser) ----
+  const handleMarkRead = useCallback((id: string) => {
+    const next = markRead(id)
+    notificationsRef.current = next
+    setNotifications(next)
+  }, [])
+
+  const handleMarkAllRead = useCallback(() => {
+    const next = markAllRead()
+    notificationsRef.current = next
+    setNotifications(next)
+  }, [])
+
+  const handleOpenLocation = useCallback(
+    (zoneId: string) => {
+      const zone = zones.find((z) => z.location.id === zoneId)
+      if (!zone) return
+      handleTabChange('map')
+      handleSelectZone(zone)
+    },
+    [zones, handleTabChange, handleSelectZone],
+  )
+
+  const handleReportSubmitted = useCallback((report: HazardReport) => {
+    setLifecycleStatus(report.id, 'pending_verification', 'Report submitted')
+    const n = hazardReportNotification(report)
+    const prev = notificationsRef.current
+    const merged = [n, ...prev].slice(0, 100)
+    notificationsRef.current = merged
+    try {
+      localStorage.setItem('ne_shield_notifications_v1', JSON.stringify(merged))
+    } catch {
+      /* session-only */
+    }
+    setNotifications(merged)
+  }, [])
 
   const handleBack = useCallback(() => {
     if (tabHistory.length === 0) {
       setTabDir('back')
+      setSelectedId(null)
       setActiveTab('home')
       window.history.replaceState({ tab: 'home', stack: [] }, '')
       return
@@ -177,6 +265,8 @@ export default function App() {
         setTabDir(nextIdx > currentIdx ? 'fwd' : 'back')
       }
       setTabHistory(state?.stack ?? [])
+      // Browser back/forward is also a tab change — dismiss the zone panel.
+      setSelectedId(null)
       setActiveTab(nextTab)
     }
     window.addEventListener('popstate', onPopState)
@@ -189,6 +279,35 @@ export default function App() {
   )
 
   const alerts = useMemo(() => buildAlerts(zones), [zones])
+
+  // Slide the zone panel in on selection; on close (X, empty map tap, tab
+  // change) slide it out over 300ms, then unmount.
+  useEffect(() => {
+    if (selectedZone) {
+      window.clearTimeout(closeTimer.current)
+      setPanelZone(selectedZone)
+      // Mount first in the hidden state, then flip to visible on the next
+      // frames so the slide-in transition actually plays.
+      const raf = window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(() => setPanelVisible(true)),
+      )
+      return () => window.cancelAnimationFrame(raf)
+    }
+    setPanelVisible(false)
+    window.clearTimeout(closeTimer.current)
+    closeTimer.current = window.setTimeout(() => setPanelZone(null), 300)
+    return () => window.clearTimeout(closeTimer.current)
+  }, [selectedZone])
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), [])
+
+  const handleClosePanel = useCallback(() => {
+    setSelectedId(null)
+  }, [])
+
+  const handleDeselectZone = useCallback(() => {
+    setSelectedId(null)
+  }, [])
 
   const focusZone = useMemo(() => {
     if (selectedZone) return selectedZone
@@ -222,23 +341,6 @@ export default function App() {
     return 'Clear'
   }, [zones])
 
-  const panelOpen = selectedZone !== null
-
-  useEffect(() => {
-    if (selectedZone) {
-      window.clearTimeout(closeTimer.current)
-      setPanelZone(selectedZone)
-    }
-  }, [selectedZone])
-
-  useEffect(() => () => window.clearTimeout(closeTimer.current), [])
-
-  const handleClosePanel = useCallback(() => {
-    setSelectedId(null)
-    window.clearTimeout(closeTimer.current)
-    closeTimer.current = window.setTimeout(() => setPanelZone(null), 560)
-  }, [])
-
   const activeTabMeta = TABS.find((t) => t.id === activeTab) ?? TABS[0]
   const clockText = `${formatTimeWithSecondsIST(now.toISOString())} IST`
 
@@ -253,15 +355,19 @@ export default function App() {
         lastUpdated={lastUpdated}
         avgTempC={avgTempC}
         condition={condition}
-        alertCount={alerts.length}
-        onAlertsClick={goToAlerts}
+        feedState={feedState(zones)}
+        notifications={notifications}
+        unread={unreadCount(notifications)}
+        onMarkRead={handleMarkRead}
+        onMarkAllRead={handleMarkAllRead}
+        onOpenLocation={handleOpenLocation}
+        onViewAllAlerts={goToAlerts}
         onHome={() => handleTabChange('home')}
       />
       <SideNav
         activeTab={activeTab}
         alertCount={alerts.length}
         onTab={handleTabChange}
-        onAlerts={goToAlerts}
       />
 
       <div className="md:pl-[232px] md:pt-16">
@@ -347,13 +453,13 @@ export default function App() {
                 <OverviewDashboard
                   zones={zones}
                   loading={loading}
-                  alerts={alerts}
                   focusZone={focusZone}
+                  alerts={alerts}
                   onSelectZone={handleSelectZone}
-                  onSelectZoneId={handleSelectZoneId}
+                  onDeselectZone={handleDeselectZone}
                   onOpenMap={() => {
-                    if (focusZone) handleSelectZone(focusZone)
                     handleTabChange('map')
+                    if (focusZone) handleSelectZone(focusZone)
                   }}
                 />
               ) : null}
@@ -362,29 +468,41 @@ export default function App() {
                   zones={zones}
                   loading={loading}
                   onSelectZone={handleSelectZone}
+                  onDeselectZone={handleDeselectZone}
                   selectedZone={selectedZone}
                 />
               ) : null}
               {activeTab === 'accuracy' ? <AccuracyView /> : null}
-              {activeTab === 'report' ? <ReportView /> : null}
+              {activeTab === 'technical' ? <TechnicalEvaluation /> : null}
+              {activeTab === 'history' ? <HistoricalExplorer /> : null}
+              {activeTab === 'alerts' ? (
+                <AlertsPanel alerts={alerts} zones={zones} onSelectZone={handleSelectZoneId} />
+              ) : null}
+              {activeTab === 'report' ? (
+                <ReportView onReportSubmitted={handleReportSubmitted} />
+              ) : null}
             </div>
           </main>
 
           {panelZone ? (
             <aside
-              aria-hidden={!panelOpen}
-              className="sticky top-0 h-screen shrink-0 overflow-hidden bg-[#101A2E] transition-[width] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:top-16 md:h-[calc(100vh-4rem)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl"
-              style={{
-                width: panelOpen ? 'min(380px, 92vw)' : '0px',
-                borderLeft: panelOpen ? '1px solid #1E2D47' : '1px solid transparent',
-              }}
+              aria-hidden={!panelVisible}
+              className={`sticky top-0 h-screen w-[min(380px,92vw)] shrink-0 overflow-hidden bg-[#101A2E] transition-all duration-300 ease-out md:top-16 md:h-[calc(100vh-4rem)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl ${
+                panelVisible
+                  ? 'translate-x-0 opacity-100'
+                  : 'pointer-events-none translate-x-full opacity-0'
+              }`}
+              style={{ borderLeft: '1px solid #1E2D47' }}
             >
               <div
                 key={panelZone.location.id}
-                className="panel-content-in flex h-full w-[380px] max-w-[92vw] flex-col transition-opacity duration-500"
-                style={{ opacity: panelOpen ? 1 : 0 }}
+                className="panel-content-in flex h-full w-full flex-col"
               >
-                <ZoneDetail zone={panelZone} onClose={handleClosePanel} />
+                <ZoneDetail
+                  zone={panelZone}
+                  alerts={alerts.filter((a) => a.zoneId === panelZone.location.id)}
+                  onClose={handleClosePanel}
+                />
               </div>
             </aside>
           ) : null}

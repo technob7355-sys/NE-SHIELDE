@@ -1,6 +1,10 @@
 import { X } from 'lucide-react'
 import type { ZoneWithScore } from './types'
-import { LevelBadge, formatTimeIST } from './risk'
+import type { Alert } from '../services/alerts'
+import { LevelBadge, formatTimeIST, riskColor } from './risk'
+import { zoneQuality } from '../services/dataQuality'
+import DataQualityBadge from './dashboard/DataQualityBadge'
+import { guidanceFor } from './dashboard/Recommendations'
 
 function formatDayLabel(isoDate: string): string {
   try {
@@ -14,22 +18,18 @@ function formatDayLabel(isoDate: string): string {
   }
 }
 
-const WHAT_TO_DO: Record<string, string> = {
-  Low: 'Abhi khatra kam hai. Aam din ki tarah travel kar sakte hain, mausam par nazar rakhein.',
-  Moderate: 'Dhyaan dein. Baarish badhe to is raste par savdhaani bartein.',
-  High: 'Khatra zyada hai. Zaroori ho tabhi travel karein, local administration ki salah maanein.',
-  Critical: 'Bahut khatra hai. Is ilaake me travel na karein. Surakshit jagah par rahein.',
-}
-
 interface ZoneDetailProps {
   zone: ZoneWithScore
+  alerts: Alert[]
   onClose: () => void
 }
 
-export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
+/** Slide-in zone panel: operational facts only — no backend score internals. */
+export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
   const { location, weather, prediction } = zone
+  const quality = zoneQuality(zone)
   const level = prediction?.level ?? null
-  const advice = level ? (WHAT_TO_DO[level] ?? null) : null
+  const guidance = guidanceFor(level, quality.status)
 
   const rows: { label: string; value: string }[] = [
     { label: 'Rain 24h', value: weather ? `${weather.rainfall.toFixed(1)} mm` : '—' },
@@ -64,10 +64,35 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
             {level ? <LevelBadge level={level} /> : null}
             {!prediction ? (
               <span className="rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[12px] font-medium text-[#8CA0B8]">
-                Data unavailable
+                Unknown — data unavailable
               </span>
             ) : null}
+            <DataQualityBadge
+              status={quality.status}
+              detail={
+                quality.fetchedAt
+                  ? `Last successful fetch ${formatTimeIST(quality.fetchedAt)} IST (${quality.ageMin} min ago)`
+                  : undefined
+              }
+            />
           </div>
+
+          {alerts.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {alerts.map((a) => (
+                <span
+                  key={a.id}
+                  className="rounded-full px-2 py-0.5 text-[11px] font-bold"
+                  style={{
+                    backgroundColor: `${riskColor(a.severity)}22`,
+                    color: riskColor(a.severity),
+                  }}
+                >
+                  {a.severity} alert active
+                </span>
+              ))}
+            </div>
+          ) : null}
 
           <div>
             <p className="mb-2 text-[13px] font-medium text-[#8CA0B8]">Inputs</p>
@@ -91,45 +116,23 @@ export default function ZoneDetail({ zone, onClose }: ZoneDetailProps) {
             </p>
           </div>
 
-          {prediction ? (
-            <div>
-              <p className="mb-3 text-[13px] font-medium text-[#8CA0B8]">Score breakdown</p>
-              <div className="flex flex-col gap-3">
-                {prediction.breakdown.map((item) => {
-                  const pct =
-                    item.max > 0 ? Math.min(100, Math.max(0, (item.points / item.max) * 100)) : 0
-                  return (
-                    <div key={item.label}>
-                      <div className="mb-1 flex items-center justify-between gap-3">
-                        <span className="truncate text-[13px] text-[#E8EEF7]">{item.label}</span>
-                        <span className="text-[13px] font-medium whitespace-nowrap text-[#8CA0B8]">
-                          {item.points.toFixed(1)} / {item.max}
-                        </span>
-                      </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-[#16233C]">
-                        <div
-                          className="bar-grow h-full rounded-full bg-[#3B82F6]"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          ) : (
+          {!prediction ? (
             <p className="text-[14px] leading-relaxed text-[#8CA0B8]">
-              Live weather data is unavailable for this zone right now, so no score has been calculated.
-              No number has been invented.
+              Live weather data is unavailable for this zone right now, so no risk level has been
+              assigned. Unknown is shown as unknown — never as Low.
             </p>
-          )}
-
-          {advice ? (
-            <div className="rounded-xl border border-[#1E2D47] bg-[#16233C] p-4">
-              <p className="mb-1 text-[13px] font-medium text-[#8CA0B8]">What to do</p>
-              <p className="text-[14px] leading-relaxed text-[#E8EEF7]">{advice}</p>
-            </div>
           ) : null}
+
+          <div className="rounded-xl border border-[#1E2D47] bg-[#16233C] p-4">
+            <p className="mb-1 text-[12px] font-bold tracking-wider text-[#8CA0B8] uppercase">
+              Operational guidance
+            </p>
+            <p className="text-[14px] font-medium text-[#E8EEF7]">{guidance.title}</p>
+            <p className="mt-1 text-[13px] leading-relaxed text-[#8CA0B8]">{guidance.text}</p>
+            <p className="mt-2 text-[11px] leading-relaxed text-[#8CA0B8]">
+              Operational guidance — not an official government warning.
+            </p>
+          </div>
 
           {zone.outlook && zone.outlook.length > 0 ? (
             <div>

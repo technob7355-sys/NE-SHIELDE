@@ -1,12 +1,14 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Circle, CircleMarker, LayerGroup, MapContainer, ScaleControl, TileLayer, useMap } from 'react-leaflet'
 import type { ZoneWithScore } from './types'
 import { LevelBadge, RiskDot, riskColor } from './risk'
+import { ZoneSearch, RiskFilterChips, zonePassesFilter, type RiskFilter } from './dashboard/MapControls'
 
 interface MapViewProps {
   zones: ZoneWithScore[]
   loading: boolean
   onSelectZone: (zone: ZoneWithScore) => void
+  onDeselectZone: () => void
   selectedZone: ZoneWithScore | null
 }
 
@@ -40,6 +42,21 @@ function FlyToSelected({ zone }: { zone: ZoneWithScore | null }) {
   return null
 }
 
+/** Deselects the zone when the user taps empty map area (not a zone marker). */
+function MapClickDeselect({ onMapClick }: { onMapClick: () => void }) {
+  const map = useMap()
+  const cb = useRef(onMapClick)
+  cb.current = onMapClick
+  useEffect(() => {
+    const handler = () => cb.current()
+    map.on('click', handler)
+    return () => {
+      map.off('click', handler)
+    }
+  }, [map])
+  return null
+}
+
 const LEGEND: { level: string; label: string }[] = [
   { level: 'Low', label: 'Low' },
   { level: 'Moderate', label: 'Moderate' },
@@ -47,10 +64,24 @@ const LEGEND: { level: string; label: string }[] = [
   { level: 'Critical', label: 'Critical' },
 ]
 
-export default function MapView({ zones, loading, onSelectZone, selectedZone }: MapViewProps) {
+export default function MapView({ zones, loading, onSelectZone, onDeselectZone, selectedZone }: MapViewProps) {
+  // Guard: a zone click also bubbles to the map — ignore map clicks that
+  // arrive right after a zone click so selecting never instantly deselects.
+  const lastZoneClickAt = useRef(0)
+  const selectZone = useCallback(
+    (zone: ZoneWithScore) => {
+      lastZoneClickAt.current = Date.now()
+      onSelectZone(zone)
+    },
+    [onSelectZone],
+  )
+  const handleMapClick = useCallback(() => {
+    if (Date.now() - lastZoneClickAt.current > 200) onDeselectZone()
+  }, [onDeselectZone])
+  const [riskFilter, setRiskFilter] = useState<RiskFilter>('All')
   return (
     <div className="flex flex-col gap-5">
-      <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
+      <div className="relative overflow-hidden rounded-xl border border-[#1E2D47]">
         <MapContainer
           center={[26.8, 92.5]}
           zoom={7}
@@ -81,7 +112,10 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
           <ScaleControl position="bottomleft" imperial={false} />
           <MapAutoResize />
           <FlyToSelected zone={selectedZone} />
-          {zones.map((zone) => {
+          <MapClickDeselect onMapClick={handleMapClick} />
+          <ZoneSearch zones={zones} onPick={selectZone} />
+          <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
+          {zones.filter((z) => zonePassesFilter(z, riskFilter)).map((zone) => {
             const color = zone.prediction ? riskColor(zone.prediction.level) : '#8CA0B8'
             return (
               <LayerGroup key={zone.location.id}>
@@ -95,7 +129,7 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
                   radius={25000}
                   pathOptions={{ fillColor: color, fillOpacity: 0.28, color, weight: 1.5, opacity: 0.85 }}
                   eventHandlers={{
-                    click: () => onSelectZone(zone),
+                    click: () => selectZone(zone),
                   }}
                 />
                 <CircleMarker
@@ -103,7 +137,7 @@ export default function MapView({ zones, loading, onSelectZone, selectedZone }: 
                   radius={9}
                   pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#0B1220', weight: 1 }}
                   eventHandlers={{
-                    click: () => onSelectZone(zone),
+                    click: () => selectZone(zone),
                   }}
                 />
               </LayerGroup>

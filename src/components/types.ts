@@ -59,4 +59,12 @@ export interface ZoneWithScore {
   error: string | null
 }
 
-export type TabId = 'home' | 'overview' | 'map' | 'accuracy' | 'report'
+export type TabId =
+  | 'home'
+  | 'overview'
+  | 'alerts'
+  | 'map'
+  | 'history'
+  | 'accuracy'
+  | 'technical'
+  | 'report'

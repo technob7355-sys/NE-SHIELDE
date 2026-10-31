@@ -1,36 +1,29 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { formatDateTimeIST } from './risk'
+import {
+  loadReports,
+  saveReports,
+  validateReport,
+  type HazardReport,
+} from '../services/reports'
+import { LIFECYCLE_LABELS, getStatus } from '../services/alertStore'
 
-const STORAGE_KEY = 'neshield_reports_v4'
-
-interface HazardReport {
-  id: string
-  location: string
-  type: string
-  description: string
-  photoName: string | null
-  time: string
+interface ReportViewProps {
+  onReportSubmitted?: (report: HazardReport) => void
 }
 
-function loadReports(): HazardReport[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return []
-    const parsed = JSON.parse(raw) as HazardReport[]
-    return Array.isArray(parsed) ? parsed : []
-  } catch {
-    return []
-  }
-}
-
-export default function ReportView() {
+export default function ReportView({ onReportSubmitted }: ReportViewProps) {
   const [reports, setReports] = useState<HazardReport[]>([])
   const [location, setLocation] = useState('')
   const [type, setType] = useState('Landslide')
   const [description, setDescription] = useState('')
+  const [lat, setLat] = useState('')
+  const [lng, setLng] = useState('')
   const [photoName, setPhotoName] = useState<string | null>(null)
   const [fileInputKey, setFileInputKey] = useState(0)
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  const [justSubmitted, setJustSubmitted] = useState(false)
 
   useEffect(() => {
     setReports(loadReports())
@@ -38,53 +31,68 @@ export default function ReportView() {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
+    const { ok, errors: errs } = validateReport({ location, description, lat, lng })
+    setErrors(errs)
+    if (!ok) return
     const report: HazardReport = {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       location: location.trim(),
       type,
       description: description.trim(),
       photoName,
+      lat: lat.trim() === '' ? null : Number(lat),
+      lng: lng.trim() === '' ? null : Number(lng),
       time: new Date().toISOString(),
     }
     const next = [report, ...reports]
     setReports(next)
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-    } catch {
-      // storage full / unavailable — list still shows in this session
-    }
+    saveReports(next)
+    onReportSubmitted?.(report)
     setLocation('')
     setType('Landslide')
     setDescription('')
+    setLat('')
+    setLng('')
     setPhotoName(null)
+    setErrors({})
     setFileInputKey((k) => k + 1)
+    setJustSubmitted(true)
+    window.setTimeout(() => setJustSubmitted(false), 6000)
   }
 
   const inputClass =
     'w-full rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:border-[#3B82F6] focus:outline-none'
+  const errClass = 'mt-1 text-[12px] text-[#F87171]'
 
   return (
     <div className="flex flex-col gap-5">
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
         <p className="mb-1 text-[20px] font-bold text-[#E8EEF7]">Report a Hazard</p>
         <p className="mb-5 text-[13px] leading-relaxed text-[#8CA0B8]">
-          Demo: reports sirf isi browser me save hoti hain (localStorage) — koi server par nahi
-          jaati.
+          Reports are saved in this browser only (localStorage) — nothing is sent to a server.
+          Every report starts as <span className="text-[#FBBF24]">Pending Verification</span> and is
+          never auto-verified as a real landslide.
         </p>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {justSubmitted ? (
+          <p className="mb-4 rounded-lg border border-[#34D399]/30 bg-[#34D399]/10 p-3 text-[13px] text-[#34D399]">
+            Report submitted — status: Pending Verification. Review it under Alerts → Hazard Report
+            Review.
+          </p>
+        ) : null}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
           <div>
             <label htmlFor="report-location" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
-              Location
+              Location *
             </label>
             <input
               id="report-location"
               type="text"
-              required
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="e.g. NH-10, near Gangtok"
               className={inputClass}
             />
+            {errors.location ? <p className={errClass}>{errors.location}</p> : null}
           </div>
           <div>
             <label htmlFor="report-type" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
@@ -106,18 +114,49 @@ export default function ReportView() {
           </div>
           <div>
             <label htmlFor="report-description" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
-              Description
+              Description *
             </label>
             <textarea
               id="report-description"
-              required
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Kya dekha, kab dekha, road ki haalat kya hai…"
+              placeholder="What did you see, when, what is the road condition…"
               rows={4}
               className={inputClass}
             />
+            {errors.description ? <p className={errClass}>{errors.description}</p> : null}
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="report-lat" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+                Latitude (optional)
+              </label>
+              <input
+                id="report-lat"
+                type="text"
+                inputMode="decimal"
+                value={lat}
+                onChange={(e) => setLat(e.target.value)}
+                placeholder="27.33"
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label htmlFor="report-lng" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+                Longitude (optional)
+              </label>
+              <input
+                id="report-lng"
+                type="text"
+                inputMode="decimal"
+                value={lng}
+                onChange={(e) => setLng(e.target.value)}
+                placeholder="88.61"
+                className={inputClass}
+              />
+            </div>
+          </div>
+          {errors.coords ? <p className={errClass}>{errors.coords}</p> : null}
           <div>
             <label htmlFor="report-photo" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
               Photo (optional)
@@ -134,13 +173,13 @@ export default function ReportView() {
               <p className="mt-1.5 truncate text-[12px] text-[#8CA0B8]">Selected: {photoName}</p>
             ) : null}
             <p className="mt-1 text-[12px] text-[#8CA0B8]">
-              Sirf file ka naam save hota hai — photo upload nahi hoti.
+              Only the file name is saved — the photo is not uploaded anywhere.
             </p>
           </div>
           <div>
             <button
               type="submit"
-              className="rounded-lg bg-[#3B82F6] px-4 py-2 text-[14px] font-medium text-white"
+              className="rounded-lg bg-[#3B82F6] px-4 py-2 text-[14px] font-medium text-white hover:bg-[#2563EB]"
             >
               Submit Report
             </button>
@@ -151,7 +190,7 @@ export default function ReportView() {
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
         <p className="mb-4 text-[16px] font-bold text-[#E8EEF7]">Your Reports</p>
         {reports.length === 0 ? (
-          <p className="text-[14px] text-[#8CA0B8]">Abhi koi report nahi hai.</p>
+          <p className="text-[14px] text-[#8CA0B8]">No reports yet.</p>
         ) : (
           <div className="flex flex-col">
             {reports.map((report) => (
@@ -165,6 +204,9 @@ export default function ReportView() {
                   </span>
                   <span className="inline-flex items-center rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[12px] font-medium whitespace-nowrap text-[#E8EEF7]">
                     {report.type}
+                  </span>
+                  <span className="rounded-full bg-[#FBBF24]/12 px-2 py-0.5 text-[11px] font-medium text-[#FBBF24]">
+                    {LIFECYCLE_LABELS[getStatus(report.id)]}
                   </span>
                   <span className="text-[12px] whitespace-nowrap text-[#8CA0B8]">
                     {formatDateTimeIST(report.time)} IST

@@ -105,6 +105,13 @@ export async function fetchZoneWeather(loc: ZoneLocation): Promise<ZoneWeather> 
       };
     });
 
+  // QA hook (documented): ?qa_stale=1 backdates fetchedAt by 7h so the STALE
+  // badge and stale-data behaviour can be verified end-to-end in Playwright.
+  // It changes no values, only the freshness timestamp.
+  const qaStale =
+    typeof window !== 'undefined' &&
+    new URLSearchParams(window.location.search).get('qa_stale') === '1'
+
   return {
     zoneId: loc.id,
     rainfall: round1(lastDays(1)),
@@ -121,7 +128,9 @@ export async function fetchZoneWeather(loc: ZoneLocation): Promise<ZoneWeather> 
     recentHourlyRain: precip.slice(-24).map((v) => round1(v ?? 0)),
     history,
     forecast,
-    fetchedAt: new Date().toISOString(),
+    fetchedAt: qaStale
+      ? new Date(Date.now() - 7 * 3600 * 1000).toISOString()
+      : new Date().toISOString(),
     sourceUrl,
   };
 }

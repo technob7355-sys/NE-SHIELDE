@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Circle,
   CircleMarker,
@@ -7,17 +7,21 @@ import {
   Polyline,
   TileLayer,
   Tooltip,
+  useMap,
 } from 'react-leaflet'
+import { Layers } from 'lucide-react'
 import type { ZoneWithScore } from '../types'
 import { riskColor } from '../risk'
 import { HISTORICAL_EVENTS } from '../../data/historicalEvents'
 import type { EvacRoute } from '../../services/routes'
 import type { Hospital } from '../../services/places'
 import { ROUTE_COLORS } from './SafetyPanel'
+import { ZoneSearch, RiskFilterChips, zonePassesFilter, type RiskFilter } from './MapControls'
 
 interface DashboardMapProps {
   zones: ZoneWithScore[]
   onSelectZone: (zone: ZoneWithScore) => void
+  onDeselectZone?: () => void
   evacRoutes?: EvacRoute[]
   evacHospital?: Hospital | null
   evacFrom?: { lat: number; lng: number } | null
@@ -39,11 +43,13 @@ type LayerId = (typeof LAYERS)[number]['id']
 export default function DashboardMap({
   zones,
   onSelectZone,
+  onDeselectZone,
   evacRoutes = [],
   evacHospital = null,
   evacFrom = null,
 }: DashboardMapProps) {
-  const [open, setOpen] = useState(true)
+  // Layer options stay hidden behind the floating button until the user asks.
+  const [open, setOpen] = useState(false)
   const [layers, setLayers] = useState<Record<LayerId, boolean>>({
     risk: true,
     history: true,
@@ -51,8 +57,44 @@ export default function DashboardMap({
     routes: true,
   })
   const toggle = (id: LayerId) => setLayers((l) => ({ ...l, [id]: !l[id] }))
+  const [riskFilter, setRiskFilter] = useState<RiskFilter>('All')
+
+  // Guard: a zone click also bubbles to the map — ignore map clicks that
+  // arrive right after a zone click so selecting never instantly deselects.
+  const lastZoneClickAt = useRef(0)
+  const selectZone = useCallback(
+    (zone: ZoneWithScore) => {
+      lastZoneClickAt.current = Date.now()
+      onSelectZone(zone)
+    },
+    [onSelectZone],
+  )
+  const handleMapClick = useCallback(() => {
+    if (Date.now() - lastZoneClickAt.current > 200) onDeselectZone?.()
+  }, [onDeselectZone])
+
+  // Collapse the layer options when the user taps anywhere outside them.
+  const layersRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!open) return
+    const onDown = (e: MouseEvent) => {
+      if (layersRef.current && !layersRef.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', onDown)
+    return () => document.removeEventListener('mousedown', onDown)
+  }, [open ])
 
   const showRoutes = layers.routes && evacRoutes.length > 0
+
+  // Fly to a zone picked from search (one-shot).
+  const [flyTarget, setFlyTarget] = useState<ZoneWithScore | null>(null)
+  const pickZone = useCallback(
+    (zone: ZoneWithScore) => {
+      setFlyTarget(zone)
+      selectZone(zone)
+    },
+    [selectZone],
+  )
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-[#1E2D47]">
@@ -68,8 +110,12 @@ export default function DashboardMap({
         {layers.labels ? (
           <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}" />
         ) : null}
+        <MapClickDeselect onMapClick={handleMapClick} />
+        <FlyToSelected zone={flyTarget} />
+        <ZoneSearch zones={zones} onPick={pickZone} />
+        <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
         {layers.risk
-          ? zones.map((zone) => {
+          ? zones.filter((z) => zonePassesFilter(z, riskFilter)).map((zone) => {
               const color = zone.prediction ? riskColor(zone.prediction.level) : '#8CA0B8'
               return (
                 <LayerGroup key={zone.location.id}>
@@ -88,13 +134,13 @@ export default function DashboardMap({
                       weight: 1.5,
                       opacity: 0.85,
                     }}
-                    eventHandlers={{ click: () => onSelectZone(zone) }}
+                    eventHandlers={{ click: () => selectZone(zone) }}
                   />
                   <CircleMarker
                     center={[zone.location.lat, zone.location.lng]}
                     radius={9}
                     pathOptions={{ fillColor: color, fillOpacity: 0.9, color: '#0B1220', weight: 1 }}
-                    eventHandlers={{ click: () => onSelectZone(zone) }}
+                    eventHandlers={{ click: () => selectZone(zone) }}
                   />
                 </LayerGroup>
               )
@@ -149,47 +195,54 @@ export default function DashboardMap({
         ) : null}
       </MapContainer>
 
-      <div className="absolute top-3 right-3 z-[500] w-52 overflow-hidden rounded-xl border border-[#1E2D47] bg-[#0B1220]/90 backdrop-blur-sm">
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          className="flex w-full items-center justify-between px-3.5 py-2.5 text-[13px] font-medium text-[#E8EEF7]"
-          aria-expanded={open}
-        >
-          Map Layers
-          <span className={`text-[#8CA0B8] transition-transform ${open ? 'rotate-180' : ''}`}>▾</span>
-        </button>
-        {open ? (
-          <div className="flex flex-col gap-1 border-t border-[#1E2D47] px-3.5 py-2.5">
-            {LAYERS.map((layer) => (
-              <button
-                key={layer.id}
-                type="button"
-                onClick={() => toggle(layer.id)}
-                className="flex items-center justify-between py-1.5 text-left text-[13px] text-[#E8EEF7]"
-                role="switch"
-                aria-checked={layers[layer.id]}
-              >
-                {layer.label}
-                <span
-                  className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
-                    layers[layer.id] ? 'bg-[#3B82F6]' : 'bg-[#1E2D47]'
-                  }`}
+      <div ref={layersRef} className="absolute right-3 bottom-3 z-[500]">
+          <button
+            type="button"
+            onClick={() => setOpen((o) => !o)}
+            aria-expanded={open}
+            aria-label="Map layers"
+            title="Map layers"
+            className="flex h-10 w-10 items-center justify-center rounded-full border border-[#1E2D47] bg-[#0B1220]/90 text-[#E8EEF7] backdrop-blur-sm transition-all duration-300 hover:bg-[#1E2D47] active:scale-95"
+          >
+            <Layers className="h-5 w-5" aria-hidden="true" />
+          </button>
+          <div
+            className={`absolute right-0 bottom-12 w-52 origin-bottom-right overflow-hidden rounded-xl border border-[#1E2D47] bg-[#0B1220]/95 backdrop-blur-sm transition-all duration-300 ease-out ${
+              open
+                ? 'visible translate-y-0 scale-100 opacity-100'
+                : 'invisible pointer-events-none translate-y-2 scale-95 opacity-0'
+            }`}
+          >
+            <div className="flex flex-col gap-1 px-3.5 py-2.5">
+              {LAYERS.map((layer) => (
+                <button
+                  key={layer.id}
+                  type="button"
+                  onClick={() => toggle(layer.id)}
+                  className="flex items-center justify-between py-1.5 text-left text-[13px] text-[#E8EEF7]"
+                  role="switch"
+                  aria-checked={layers[layer.id]}
                 >
+                  {layer.label}
                   <span
-                    className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${
-                      layers[layer.id] ? 'left-[18px]' : 'left-0.5'
+                    className={`relative h-5 w-9 shrink-0 rounded-full transition-colors ${
+                      layers[layer.id] ? 'bg-[#3B82F6]' : 'bg-[#1E2D47]'
                     }`}
-                  />
-                </span>
-              </button>
-            ))}
-            <p className="pt-1 text-[11px] leading-relaxed text-[#8CA0B8]">
-              {HISTORICAL_EVENTS.length} recorded landslides (NASA GLC, 2007–2018)
-            </p>
+                  >
+                    <span
+                      className={`absolute top-0.5 h-4 w-4 rounded-full bg-white transition-all ${
+                        layers[layer.id] ? 'left-[18px]' : 'left-0.5'
+                      }`}
+                    />
+                  </span>
+                </button>
+              ))}
+              <p className="pt-1 text-[11px] leading-relaxed text-[#8CA0B8]">
+                {HISTORICAL_EVENTS.length} recorded landslides (NASA GLC, 2007–2018)
+              </p>
+            </div>
           </div>
-        ) : null}
-      </div>
+        </div>
 
       <div className="absolute bottom-3 left-3 z-[500] rounded-xl border border-[#1E2D47] bg-[#0B1220]/90 px-3.5 py-2.5 backdrop-blur-sm">
         <p className="mb-1.5 text-[11px] font-medium text-[#8CA0B8]">Landslide Risk Level</p>
@@ -199,6 +252,7 @@ export default function DashboardMap({
             ['Moderate', '#FBBF24'],
             ['High', '#FB923C'],
             ['Critical', '#F87171'],
+            ['Unknown', '#8CA0B8'],
           ].map(([label, color]) => (
             <span key={label} className="inline-flex items-center gap-2 text-[12px] text-[#E8EEF7]">
               <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
@@ -225,4 +279,33 @@ export default function DashboardMap({
       </div>
     </div>
   )
+}
+
+/** Deselects the zone when the user taps empty map area (not a zone marker). */
+function MapClickDeselect({ onMapClick }: { onMapClick: () => void }) {
+  const map = useMap()
+  const cb = useRef(onMapClick)
+  cb.current = onMapClick
+  useEffect(() => {
+    const handler = () => cb.current()
+    map.on('click', handler)
+    return () => {
+      map.off('click', handler)
+    }
+  }, [map])
+  return null
+}
+
+/** One-shot smooth fly to a search-picked zone. */
+function FlyToSelected({ zone }: { zone: ZoneWithScore | null }) {
+  const map = useMap()
+  const zoneId = zone?.location.id
+  useEffect(() => {
+    if (!zone) return
+    map.flyTo([zone.location.lat, zone.location.lng], Math.max(map.getZoom(), 8), {
+      duration: 1.1,
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [zoneId])
+  return null
 }
