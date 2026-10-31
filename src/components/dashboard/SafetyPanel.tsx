@@ -49,6 +49,7 @@ export default function SafetyPanel({
           Nearby Hospitals
         </p>
       </div>
+      <p className="mt-0.5 mb-2 text-[11px] text-[#8CA0B8]">Real data · OpenStreetMap</p>
 
       {hospitalsState === 'loading' ? (
         <StatusLine
@@ -144,6 +145,7 @@ export default function SafetyPanel({
                   </span>
                 </div>
               ))}
+              <p className="text-[11px] text-[#8CA0B8]">Routes drawn on the map. Real data · OSRM</p>
             </div>
           ) : null}
         </div>
