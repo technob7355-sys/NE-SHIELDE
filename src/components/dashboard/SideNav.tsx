@@ -45,7 +45,7 @@ export default function SideNav({ activeTab, alertCount, onTab }: SideNavProps) 
       <nav className="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-3" aria-label="Main">
         {GROUPS.map((group) => (
           <div key={group.label}>
-            <p className="px-3 pb-1.5 text-[10px] font-bold tracking-widest text-[#8CA0B8] uppercase">
+            <p className="px-3 pb-1.5 text-[11px] font-bold tracking-widest text-[#8CA0B8] uppercase">
               {group.label}
             </p>
             <div className="flex flex-col gap-1">
@@ -68,7 +68,7 @@ export default function SideNav({ activeTab, alertCount, onTab }: SideNavProps) 
                     />
                     <span className="flex-1 text-left">{item.label}</span>
                     {item.id === 'alerts' && alertCount > 0 ? (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F87171] px-1.5 text-[10px] font-bold text-white">
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F87171] px-1.5 text-[11px] font-bold text-white">
                         {alertCount}
                       </span>
                     ) : null}
@@ -94,12 +94,12 @@ export default function SideNav({ activeTab, alertCount, onTab }: SideNavProps) 
               <br />
               Protect Lives.
             </p>
-            <p className="mt-1 text-[11px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-1 text-[12px] leading-relaxed text-[#8CA0B8]">
               Live monitoring across 20 Northeast zones.
             </p>
           </div>
         </div>
-        <p className="mt-3 px-1 text-[11px] text-[#8CA0B8]">v1.0.0</p>
+        <p className="mt-3 px-1 text-[12px] text-[#8CA0B8]">v1.0.0</p>
       </div>
     </aside>
   )

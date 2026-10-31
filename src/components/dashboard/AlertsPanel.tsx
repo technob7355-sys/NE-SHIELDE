@@ -85,7 +85,7 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
                 type="button"
                 onClick={() => setSevFilter(s)}
                 aria-pressed={sevFilter === s}
-                className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                className={`rounded-full px-2.5 py-1 text-[12px] font-medium ${
                   sevFilter === s ? 'bg-[#3B82F6]/25 text-[#E8EEF7]' : 'text-[#8CA0B8] hover:text-[#E8EEF7]'
                 }`}
               >
@@ -109,7 +109,7 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
                   className="flex flex-wrap items-start gap-3 rounded-lg border border-[#1E2D47] bg-[#0B1220]/60 p-3"
                 >
                   <span
-                    className="mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-bold whitespace-nowrap"
+                    className="mt-0.5 shrink-0 rounded px-1.5 py-0.5 text-[11px] font-bold whitespace-nowrap"
                     style={{
                       backgroundColor: SEVERITY_BG[alert.severity],
                       color: riskColor(alert.severity),
@@ -118,9 +118,9 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
                     {alert.severity}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-[13px] font-medium text-[#E8EEF7]">{alert.title}</p>
-                    <p className="truncate text-[12px] text-[#8CA0B8]">{alert.detail}</p>
-                    <p className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[11px] text-[#8CA0B8]">
+                    <p className="text-[14px] leading-snug font-medium text-[#E8EEF7]">{alert.title}</p>
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-[#8CA0B8]">{alert.detail}</p>
+                    <p className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-[12px] text-[#8CA0B8]">
                       <span>{formatTimeIST(alert.time)} IST</span>
                       <span className={STATUS_STYLE[status] ?? ''}>
                         {LIFECYCLE_LABELS[status]}
@@ -160,7 +160,7 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
             })}
           </div>
         )}
-        <p className="mt-3 text-[11px] text-[#8CA0B8]">
+        <p className="mt-3 text-[12px] leading-relaxed text-[#8CA0B8]">
           Model-generated alerts — not official government warnings. Acknowledgement is stored in
           this browser only ({OPERATOR_LABEL}).
         </p>
@@ -186,12 +186,12 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-medium text-[#E8EEF7]">
                       {r.location}{' '}
-                      <span className="ml-1 rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[11px] text-[#8CA0B8]">
+                      <span className="ml-1 rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[12px] text-[#8CA0B8]">
                         {r.type}
                       </span>
                     </p>
-                    <p className="mt-0.5 line-clamp-2 text-[12px] text-[#8CA0B8]">{r.description}</p>
-                    <p className="mt-1 text-[11px] text-[#8CA0B8]">
+                    <p className="mt-0.5 line-clamp-2 text-[13px] leading-relaxed text-[#8CA0B8]">{r.description}</p>
+                    <p className="mt-1 text-[12px] text-[#8CA0B8]">
                       {formatDateTimeIST(r.time)} IST •{' '}
                       <span className={STATUS_STYLE[status] ?? ''}>{LIFECYCLE_LABELS[status]}</span>
                     </p>
@@ -204,7 +204,7 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
                           type="button"
                           onClick={() => reviewReport(r.id, s)}
                           disabled={status === s}
-                          className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-2.5 py-1.5 text-[11px] text-[#E8EEF7] hover:bg-[#1E2D47] disabled:opacity-40"
+                          className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-2.5 py-1.5 text-[12px] text-[#E8EEF7] hover:bg-[#1E2D47] disabled:opacity-40"
                         >
                           {LIFECYCLE_LABELS[s]}
                         </button>
@@ -228,9 +228,9 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
         ) : (
           <div className="flex max-h-[240px] flex-col gap-1.5 overflow-y-auto">
             {log.map((e, i) => (
-              <p key={i} className="text-[12px] text-[#8CA0B8]">
+              <p key={i} className="text-[13px] leading-relaxed text-[#8CA0B8]">
                 <span className="text-[#E8EEF7]">{formatDateTimeIST(e.at)} IST</span> — {e.by}:{' '}
-                {e.action} <span className="font-mono text-[11px]">({e.targetId})</span>
+                {e.action} <span className="font-mono text-[12px]">({e.targetId})</span>
                 {e.detail ? ` — ${e.detail}` : ''}
               </p>
             ))}

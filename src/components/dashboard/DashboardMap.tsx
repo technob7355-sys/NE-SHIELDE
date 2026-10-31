@@ -219,7 +219,7 @@ export default function DashboardMap({
                   key={layer.id}
                   type="button"
                   onClick={() => toggle(layer.id)}
-                  className="flex items-center justify-between py-1.5 text-left text-[13px] text-[#E8EEF7]"
+                  className="flex items-center justify-between py-1.5 text-left text-[14px] text-[#E8EEF7]"
                   role="switch"
                   aria-checked={layers[layer.id]}
                 >
@@ -237,7 +237,7 @@ export default function DashboardMap({
                   </span>
                 </button>
               ))}
-              <p className="pt-1 text-[11px] leading-relaxed text-[#8CA0B8]">
+              <p className="pt-1 text-[12px] leading-relaxed text-[#8CA0B8]">
                 {HISTORICAL_EVENTS.length} recorded landslides (NASA GLC, 2007–2018)
               </p>
             </div>
@@ -245,7 +245,7 @@ export default function DashboardMap({
         </div>
 
       <div className="absolute bottom-3 left-3 z-[500] rounded-xl border border-[#1E2D47] bg-[#0B1220]/90 px-3.5 py-2.5 backdrop-blur-sm">
-        <p className="mb-1.5 text-[11px] font-medium text-[#8CA0B8]">Landslide Risk Level</p>
+        <p className="mb-1.5 text-[12px] font-medium text-[#8CA0B8]">Landslide Risk Level</p>
         <div className="flex flex-col gap-1">
           {[
             ['Low', '#34D399'],

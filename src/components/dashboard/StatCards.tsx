@@ -31,20 +31,18 @@ function Card({
   const Icon = icon
   return (
     <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <span
-            className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-lg"
-            style={{ backgroundColor: iconBg }}
-          >
-            <Icon className="h-5 w-5" style={{ color: iconColor }} aria-hidden="true" />
-          </span>
-          <p className="truncate text-[13px] text-[#8CA0B8]">{title}</p>
-          <p className="mt-1 truncate text-[26px] leading-none font-bold text-[#E8EEF7]">{value}</p>
-          <div className="mt-1.5 truncate text-[12px] text-[#8CA0B8]">{sub}</div>
-        </div>
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <span
+          className="inline-flex h-10 w-10 items-center justify-center rounded-lg"
+          style={{ backgroundColor: iconBg }}
+        >
+          <Icon className="h-5 w-5" style={{ color: iconColor }} aria-hidden="true" />
+        </span>
         {right ? <div className="shrink-0">{right}</div> : null}
       </div>
+      <p className="text-[14px] leading-snug text-[#8CA0B8]">{title}</p>
+      <p className="mt-1 text-[30px] leading-none font-bold text-[#E8EEF7]">{value}</p>
+      <div className="mt-1.5 text-[13px] leading-relaxed text-[#8CA0B8]">{sub}</div>
     </div>
   )
 }

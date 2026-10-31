@@ -32,7 +32,7 @@ export default function RainfallChart({ values }: RainfallChartProps) {
           <stop offset="100%" stopColor="#2563EB" />
         </linearGradient>
       </defs>
-      <text x={2} y={PAD_T - 2} fill="#8CA0B8" fontSize="11">
+      <text x={2} y={PAD_T - 2} fill="#8CA0B8" fontSize="12">
         {max.toFixed(0)} mm
       </text>
       {[0.25, 0.5, 0.75].map((f) => (
@@ -69,7 +69,7 @@ export default function RainfallChart({ values }: RainfallChartProps) {
             x={PAD_L + i * slot + slot / 2}
             y={H - 5}
             fill="#8CA0B8"
-            fontSize="10"
+            fontSize="12"
             textAnchor="middle"
           >
             {label}

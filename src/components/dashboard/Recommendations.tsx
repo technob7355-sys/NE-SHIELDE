@@ -54,7 +54,7 @@ export default function Recommendations({
       </p>
       <p className="text-[14px] font-medium text-[#E8EEF7]">{g.title}</p>
       <p className="mt-1 text-[13px] leading-relaxed text-[#8CA0B8]">{g.text}</p>
-      <p className="mt-2 text-[11px] leading-relaxed text-[#8CA0B8]">
+      <p className="mt-2 text-[12px] leading-relaxed text-[#8CA0B8]">
         Operational guidance — not an official government warning.
       </p>
     </div>

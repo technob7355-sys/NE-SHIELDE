@@ -67,7 +67,7 @@ export default function NotificationCentre({
       >
         <Bell className="h-4 w-4" aria-hidden="true" />
         {unread > 0 ? (
-          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F87171] px-1 text-[10px] font-bold text-white">
+          <span className="absolute -top-1.5 -right-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-[#F87171] px-1 text-[11px] font-bold text-white">
             {unread > 99 ? '99+' : unread}
           </span>
         ) : null}
@@ -81,7 +81,7 @@ export default function NotificationCentre({
               <button
                 type="button"
                 onClick={onMarkAllRead}
-                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[12px] text-[#8CA0B8] hover:bg-[#16233C] hover:text-[#E8EEF7]"
+                className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[13px] text-[#8CA0B8] hover:bg-[#16233C] hover:text-[#E8EEF7]"
               >
                 <CheckCheck className="h-3.5 w-3.5" aria-hidden="true" />
                 Mark all read
@@ -96,7 +96,7 @@ export default function NotificationCentre({
                 type="button"
                 onClick={() => setSevFilter(s)}
                 aria-pressed={sevFilter === s}
-                className={`rounded-full px-2.5 py-1 text-[11px] font-medium ${
+                className={`rounded-full px-2.5 py-1 text-[12px] font-medium ${
                   sevFilter === s
                     ? 'bg-[#3B82F6]/25 text-[#E8EEF7]'
                     : 'text-[#8CA0B8] hover:text-[#E8EEF7]'
@@ -109,7 +109,7 @@ export default function NotificationCentre({
               type="button"
               onClick={() => setHideRead((h) => !h)}
               aria-pressed={hideRead}
-              className={`ml-auto rounded-full px-2.5 py-1 text-[11px] font-medium ${
+              className={`ml-auto rounded-full px-2.5 py-1 text-[12px] font-medium ${
                 hideRead ? 'bg-[#3B82F6]/25 text-[#E8EEF7]' : 'text-[#8CA0B8] hover:text-[#E8EEF7]'
               }`}
             >
@@ -138,21 +138,21 @@ export default function NotificationCentre({
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <p className="text-[13px] font-medium text-[#E8EEF7]">{n.title}</p>
+                      <p className="text-[14px] leading-snug font-medium text-[#E8EEF7]">{n.title}</p>
                       {!n.read ? (
                         <button
                           type="button"
                           onClick={() => onMarkRead(n.id)}
-                          className="shrink-0 rounded px-1.5 py-0.5 text-[11px] text-[#8CA0B8] hover:bg-[#16233C] hover:text-[#E8EEF7]"
+                          className="shrink-0 rounded px-1.5 py-0.5 text-[12px] text-[#8CA0B8] hover:bg-[#16233C] hover:text-[#E8EEF7]"
                         >
                           Mark read
                         </button>
                       ) : null}
                     </div>
-                    <p className="mt-0.5 text-[12px] leading-relaxed text-[#8CA0B8]">{n.body}</p>
+                    <p className="mt-0.5 text-[13px] leading-relaxed text-[#8CA0B8]">{n.body}</p>
                     <div className="mt-1.5 flex flex-wrap items-center gap-2">
                       <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-bold"
+                        className="rounded-full px-2 py-0.5 text-[11px] font-bold"
                         style={{
                           backgroundColor: `${SEV_COLOR[n.severity]}22`,
                           color: SEV_COLOR[n.severity],
@@ -160,7 +160,7 @@ export default function NotificationCentre({
                       >
                         {n.severity}
                       </span>
-                      <span className="text-[11px] text-[#8CA0B8]">
+                      <span className="text-[12px] text-[#8CA0B8]">
                         {formatDateTimeIST(n.createdAt)} IST
                       </span>
                       {n.zoneId ? (
@@ -171,7 +171,7 @@ export default function NotificationCentre({
                             onOpenLocation(n.zoneId!)
                             setOpen(false)
                           }}
-                          className="inline-flex items-center gap-1 rounded-full border border-[#1E2D47] px-2 py-0.5 text-[11px] text-[#60A5FA] hover:bg-[#16233C]"
+                          className="inline-flex items-center gap-1 rounded-full border border-[#1E2D47] px-2 py-0.5 text-[12px] text-[#60A5FA] hover:bg-[#16233C]"
                         >
                           <MapPin className="h-3 w-3" aria-hidden="true" />
                           Open location
@@ -195,7 +195,7 @@ export default function NotificationCentre({
             >
               View All Alerts
             </button>
-            <p className="mt-1.5 text-center text-[10px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-1.5 text-center text-[11px] leading-relaxed text-[#8CA0B8]">
               Computed from live data every ~12 min on this device — no push delivery.
             </p>
           </div>

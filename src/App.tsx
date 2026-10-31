@@ -382,7 +382,7 @@ export default function App() {
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
                 <Shield className="h-4 w-4 text-white" aria-hidden="true" />
               </span>
-              <span className="truncate text-[16px] font-bold text-[#E8EEF7]">NE-SHIELD</span>
+              <span className="text-[16px] font-bold whitespace-nowrap text-[#E8EEF7]">NE-SHIELD</span>
             </button>
             <span className="ml-auto shrink-0 text-[13px] whitespace-nowrap text-[#8CA0B8]">
               {clockText}

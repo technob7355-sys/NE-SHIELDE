@@ -249,10 +249,10 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                       aria-hidden="true"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[14px] font-medium text-[#E8EEF7]">
+                      <span className="block truncate text-[14px] font-medium text-[#E8EEF7]" title={zone.location.name}>
                         {zone.location.name}
                       </span>
-                      <span className="block truncate text-[12px] text-[#8CA0B8]">
+                      <span className="block truncate text-[13px] text-[#8CA0B8]" title={zone.location.state}>
                         {zone.location.state}
                       </span>
                     </span>

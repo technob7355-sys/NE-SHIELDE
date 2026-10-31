@@ -76,7 +76,7 @@ export default function TopBar({
         </span>
         <span className="text-left">
           <span className="block text-[16px] leading-tight font-bold text-[#E8EEF7]">NE-SHIELD</span>
-          <span className="block text-[11px] leading-tight text-[#8CA0B8]">
+          <span className="block text-[12px] leading-tight text-[#8CA0B8]">
             Landslide Early Warning System
           </span>
         </span>
@@ -118,7 +118,7 @@ export default function TopBar({
           )}
           <span className="text-left leading-tight">
             <span className="block font-bold">{avgTempC != null ? `${avgTempC.toFixed(0)}°C` : '—'}</span>
-            <span className="block text-[11px] text-[#8CA0B8]">{condition}</span>
+            <span className="block text-[12px] text-[#8CA0B8]">{condition}</span>
           </span>
         </span>
 
@@ -137,7 +137,7 @@ export default function TopBar({
           </span>
           <span className="hidden text-left leading-tight xl:block">
             <span className="block text-[13px] font-medium text-[#E8EEF7]">Control Room</span>
-            <span className="block text-[11px] text-[#8CA0B8]">Operator</span>
+            <span className="block text-[12px] text-[#8CA0B8]">Operator</span>
           </span>
           <ChevronDown className="hidden h-4 w-4 text-[#8CA0B8] xl:block" aria-hidden="true" />
         </span>

@@ -56,7 +56,7 @@ export function ZoneSearch({
           }}
           placeholder="Search zones…"
           aria-label="Search monitoring zones"
-          className="w-full bg-transparent text-[13px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:outline-none"
+          className="w-full bg-transparent text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:outline-none"
         />
         {q ? (
           <button
@@ -93,8 +93,8 @@ export function ZoneSearch({
                 }}
                 aria-hidden="true"
               />
-              <span className="min-w-0 flex-1 truncate">{z.location.name}</span>
-              <span className="shrink-0 text-[11px] text-[#8CA0B8]">{z.location.state}</span>
+              <span className="min-w-0 flex-1 truncate text-[14px]" title={z.location.name}>{z.location.name}</span>
+              <span className="shrink-0 text-[12px] text-[#8CA0B8]">{z.location.state}</span>
             </button>
           ))}
         </div>
@@ -125,7 +125,7 @@ export function RiskFilterChips({
             type="button"
             onClick={() => onChange(f)}
             aria-pressed={active}
-            className={`rounded-full border px-2.5 py-1 text-[11px] font-medium whitespace-nowrap backdrop-blur-sm transition-all ${
+            className={`rounded-full border px-2.5 py-1 text-[12px] font-medium whitespace-nowrap backdrop-blur-sm transition-all ${
               active
                 ? 'border-[#3B82F6] bg-[#3B82F6]/25 text-[#E8EEF7]'
                 : 'border-[#1E2D47] bg-[#0B1220]/85 text-[#8CA0B8] hover:text-[#E8EEF7]'

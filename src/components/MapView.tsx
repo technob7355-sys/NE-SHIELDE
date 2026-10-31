@@ -182,10 +182,10 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
             >
               <RiskDot level={zone.prediction?.level} />
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-[14px] font-medium text-[#E8EEF7]">
+                <span className="block truncate text-[14px] font-medium text-[#E8EEF7]" title={zone.location.name}>
                   {zone.location.name}
                 </span>
-                <span className="block truncate text-[12px] text-[#8CA0B8]">{zone.location.state}</span>
+                <span className="block truncate text-[13px] text-[#8CA0B8]" title={zone.location.state}>{zone.location.state}</span>
               </span>
               <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-[#E8EEF7]">
                 {zone.prediction ? Math.round(zone.prediction.score) : '—'}

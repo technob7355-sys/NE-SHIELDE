@@ -170,9 +170,9 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
               className="w-full rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7]"
             />
             {photoName ? (
-              <p className="mt-1.5 truncate text-[12px] text-[#8CA0B8]">Selected: {photoName}</p>
+              <p className="mt-1.5 truncate text-[13px] text-[#8CA0B8]" title={photoName}>Selected: {photoName}</p>
             ) : null}
-            <p className="mt-1 text-[12px] text-[#8CA0B8]">
+            <p className="mt-1 text-[13px] text-[#8CA0B8]">
               Only the file name is saved — the photo is not uploaded anywhere.
             </p>
           </div>
@@ -199,16 +199,16 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
                 className="border-b border-[#1E2D47] py-4 first:pt-0 last:border-b-0 last:pb-0"
               >
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                  <span className="max-w-full truncate text-[14px] font-medium text-[#E8EEF7]">
+                  <span className="max-w-full truncate text-[15px] font-medium text-[#E8EEF7]" title={report.location}>
                     {report.location}
                   </span>
                   <span className="inline-flex items-center rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[12px] font-medium whitespace-nowrap text-[#E8EEF7]">
                     {report.type}
                   </span>
-                  <span className="rounded-full bg-[#FBBF24]/12 px-2 py-0.5 text-[11px] font-medium text-[#FBBF24]">
+                  <span className="rounded-full bg-[#FBBF24]/12 px-2 py-0.5 text-[12px] font-medium text-[#FBBF24]">
                     {LIFECYCLE_LABELS[getStatus(report.id)]}
                   </span>
-                  <span className="text-[12px] whitespace-nowrap text-[#8CA0B8]">
+                  <span className="text-[13px] whitespace-nowrap text-[#8CA0B8]">
                     {formatDateTimeIST(report.time)} IST
                   </span>
                 </div>
@@ -216,7 +216,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
                   {report.description}
                 </p>
                 {report.photoName ? (
-                  <p className="mt-1 truncate text-[12px] text-[#8CA0B8]">Photo: {report.photoName}</p>
+                  <p className="mt-1 truncate text-[13px] text-[#8CA0B8]" title={report.photoName}>Photo: {report.photoName}</p>
                 ) : null}
               </div>
             ))}

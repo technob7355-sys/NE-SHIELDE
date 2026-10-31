@@ -68,7 +68,7 @@ export default function HistoricalExplorer() {
             {filtered.length} / {HISTORICAL_EVENTS.length} events
           </span>
         </div>
-        <p className="mt-1.5 text-[12px] leading-relaxed text-[#8CA0B8]">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-[#8CA0B8]">
           Verified past events — NASA Global Landslide Catalog / COOLR ({years.min}–2018) plus 6
           verified 2021–2022 news events. These are <span className="text-[#E8EEF7]">observations</span>,
           not current predictions.
@@ -83,7 +83,7 @@ export default function HistoricalExplorer() {
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search by place name…"
               aria-label="Search historical events"
-              className="w-full bg-transparent py-2 text-[13px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:outline-none"
+              className="w-full bg-transparent py-2 text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:outline-none"
             />
           </div>
           <input
@@ -135,9 +135,9 @@ export default function HistoricalExplorer() {
 
         <div className="flex max-h-[420px] flex-col overflow-hidden rounded-xl border border-[#1E2D47] bg-[#101A2E]">
           <div className="overflow-y-auto">
-            <table className="w-full text-[13px]">
+            <table className="w-full text-[14px]">
               <thead className="sticky top-0 bg-[#101A2E]">
-                <tr className="border-b border-[#1E2D47] text-left text-[11px] tracking-wider text-[#8CA0B8] uppercase">
+                <tr className="border-b border-[#1E2D47] text-left text-[12px] tracking-wider text-[#8CA0B8] uppercase">
                   <th className="px-4 py-2.5">Date</th>
                   <th className="px-4 py-2.5">Location</th>
                   <th className="px-4 py-2.5 text-right">Coords</th>

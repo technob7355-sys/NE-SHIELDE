@@ -182,7 +182,7 @@ export default function OverviewDashboard({
         {needsAttention.length > 0 ? (
           <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
             <p className="mb-1 text-[16px] font-bold text-[#E8EEF7]">Needs Attention</p>
-            <p className="mb-3 text-[12px] text-[#8CA0B8]">
+            <p className="mb-3 text-[13px] text-[#8CA0B8]">
               Highest-risk zones first — zones with stale or missing data are listed, never assumed safe.
             </p>
             <div className="flex flex-col gap-2">
@@ -206,11 +206,11 @@ export default function OverviewDashboard({
                       aria-hidden="true"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13px] font-medium text-[#E8EEF7]">
+                      <span className="block text-[14px] leading-snug font-medium text-[#E8EEF7]">
                         {z.location.name}
                         <span className="ml-2 font-normal text-[#8CA0B8]">{z.location.state}</span>
                       </span>
-                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] text-[#8CA0B8]">
+                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[12px] text-[#8CA0B8]">
                         <DataQualityBadge status={q.status} />
                         {worstAlert ? (
                           <span style={{ color: riskColor(worstAlert.severity) }}>

@@ -77,7 +77,7 @@ export default function TechnicalEvaluation() {
         {summaryCards.map((card) => (
           <div key={card.label} className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
             <p className="text-[28px] leading-none font-bold text-[#E8EEF7]">{card.value}</p>
-            <p className="mt-2 text-[13px] leading-relaxed text-[#8CA0B8]">{card.label}</p>
+            <p className="mt-2 text-[14px] leading-relaxed text-[#8CA0B8]">{card.label}</p>
           </div>
         ))}
       </div>
@@ -123,8 +123,8 @@ export default function TechnicalEvaluation() {
                 return (
                   <div key={label}>
                     <div className="mb-1 flex items-center justify-between gap-3">
-                      <span className="truncate text-[13px] text-[#E8EEF7]">{label}</span>
-                      <span className="text-[13px] font-medium whitespace-nowrap text-[#8CA0B8]">
+                      <span className="truncate text-[14px] text-[#E8EEF7]" title={label}>{label}</span>
+                      <span className="text-[14px] font-medium whitespace-nowrap text-[#8CA0B8]">
                         {value.toFixed(1)}%
                       </span>
                     </div>
@@ -199,7 +199,7 @@ export default function TechnicalEvaluation() {
                   <td className="max-w-[180px] truncate py-3 pr-3 font-medium text-[#E8EEF7]" title={c.name}>
                     {c.name}
                   </td>
-                  <td className="max-w-[160px] truncate py-3 pr-3 whitespace-nowrap text-[#8CA0B8]">
+                  <td className="max-w-[160px] truncate py-3 pr-3 whitespace-nowrap text-[#8CA0B8]" title={c.location}>
                     {c.location}
                   </td>
                   <td className="py-3 pr-3 whitespace-nowrap text-[#E8EEF7]">{c.date}</td>

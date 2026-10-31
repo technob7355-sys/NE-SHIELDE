@@ -40,7 +40,7 @@ export default function OutlookChart({ days }: OutlookChartProps) {
           </linearGradient>
         ))}
       </defs>
-      <text x={2} y={PAD_T - 8} fill="#8CA0B8" fontSize="11">
+      <text x={2} y={PAD_T - 8} fill="#8CA0B8" fontSize="12">
         Score
       </text>
       {[0.25, 0.5, 0.75].map((f) => (
@@ -81,7 +81,7 @@ export default function OutlookChart({ days }: OutlookChartProps) {
               x={x + barW / 2}
               y={H - 6}
               fill="#8CA0B8"
-              fontSize="11"
+              fontSize="12"
               textAnchor="middle"
             >
               {dayLabel(d.date)}

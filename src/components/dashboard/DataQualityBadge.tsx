@@ -18,7 +18,7 @@ export default function DataQualityBadge({
   const s = STYLE[status]
   return (
     <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[11px] font-medium whitespace-nowrap"
+      className="inline-flex items-center gap-1.5 rounded-full px-2 py-0.5 text-[12px] font-medium whitespace-nowrap"
       style={{ backgroundColor: s.bg, color: s.color }}
       title={detail ?? s.label}
     >
