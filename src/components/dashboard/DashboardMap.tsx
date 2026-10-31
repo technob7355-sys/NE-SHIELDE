@@ -1,34 +1,58 @@
 import { useState } from 'react'
-import { Circle, CircleMarker, LayerGroup, MapContainer, TileLayer } from 'react-leaflet'
+import {
+  Circle,
+  CircleMarker,
+  LayerGroup,
+  MapContainer,
+  Polyline,
+  TileLayer,
+  Tooltip,
+} from 'react-leaflet'
 import type { ZoneWithScore } from '../types'
 import { riskColor } from '../risk'
 import { HISTORICAL_EVENTS } from '../../data/historicalEvents'
+import type { EvacRoute } from '../../services/routes'
+import type { Hospital } from '../../services/places'
+import { ROUTE_COLORS } from './SafetyPanel'
 
 interface DashboardMapProps {
   zones: ZoneWithScore[]
   onSelectZone: (zone: ZoneWithScore) => void
+  evacRoutes?: EvacRoute[]
+  evacHospital?: Hospital | null
+  evacFrom?: { lat: number; lng: number } | null
 }
 
 const LAYERS = [
   { id: 'risk', label: 'Risk Zones' },
   { id: 'history', label: 'Historical Landslides' },
   { id: 'labels', label: 'Place Labels' },
+  { id: 'routes', label: 'Evac Routes' },
 ] as const
 
 type LayerId = (typeof LAYERS)[number]['id']
 
 /**
  * Hero risk map for the dashboard: Esri satellite + live risk circles,
- * real historical landslide markers, toggleable layers.
+ * real historical landslide markers, evacuation routes, toggleable layers.
  */
-export default function DashboardMap({ zones, onSelectZone }: DashboardMapProps) {
+export default function DashboardMap({
+  zones,
+  onSelectZone,
+  evacRoutes = [],
+  evacHospital = null,
+  evacFrom = null,
+}: DashboardMapProps) {
   const [open, setOpen] = useState(true)
   const [layers, setLayers] = useState<Record<LayerId, boolean>>({
     risk: true,
     history: true,
     labels: true,
+    routes: true,
   })
   const toggle = (id: LayerId) => setLayers((l) => ({ ...l, [id]: !l[id] }))
+
+  const showRoutes = layers.routes && evacRoutes.length > 0
 
   return (
     <div className="relative overflow-hidden rounded-xl border border-[#1E2D47]">
@@ -86,6 +110,43 @@ export default function DashboardMap({ zones, onSelectZone }: DashboardMapProps)
               />
             ))
           : null}
+        {showRoutes
+          ? evacRoutes.map((route, i) => (
+              <Polyline
+                key={route.label}
+                positions={route.geometry.coordinates.map(
+                  ([lng, lat]) => [lat, lng] as [number, number],
+                )}
+                pathOptions={{
+                  color: ROUTE_COLORS[i % ROUTE_COLORS.length],
+                  weight: 4,
+                  opacity: 0.9,
+                }}
+              />
+            ))
+          : null}
+        {showRoutes && evacHospital ? (
+          <CircleMarker
+            center={[evacHospital.lat, evacHospital.lng]}
+            radius={9}
+            pathOptions={{ fillColor: '#F87171', fillOpacity: 1, color: '#FFFFFF', weight: 2 }}
+          >
+            <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>
+              {evacHospital.name}
+            </Tooltip>
+          </CircleMarker>
+        ) : null}
+        {showRoutes && evacFrom ? (
+          <CircleMarker
+            center={[evacFrom.lat, evacFrom.lng]}
+            radius={7}
+            pathOptions={{ fillColor: '#38BDF6', fillOpacity: 1, color: '#FFFFFF', weight: 2 }}
+          >
+            <Tooltip direction="top" offset={[0, -10]} opacity={0.95}>
+              Start: risk zone
+            </Tooltip>
+          </CircleMarker>
+        ) : null}
       </MapContainer>
 
       <div className="absolute top-3 right-3 z-[500] w-52 overflow-hidden rounded-xl border border-[#1E2D47] bg-[#0B1220]/90 backdrop-blur-sm">
@@ -145,6 +206,22 @@ export default function DashboardMap({ zones, onSelectZone }: DashboardMapProps)
             </span>
           ))}
         </div>
+        {showRoutes ? (
+          <div className="mt-2 flex flex-col gap-1 border-t border-[#1E2D47] pt-2">
+            {evacRoutes.map((route, i) => (
+              <span
+                key={route.label}
+                className="inline-flex items-center gap-2 text-[12px] text-[#E8EEF7]"
+              >
+                <span
+                  className="h-0.5 w-4 rounded"
+                  style={{ backgroundColor: ROUTE_COLORS[i % ROUTE_COLORS.length] }}
+                />
+                {route.label}
+              </span>
+            ))}
+          </div>
+        ) : null}
       </div>
     </div>
   )

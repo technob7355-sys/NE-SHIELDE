@@ -1,9 +1,12 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ZoneWithScore } from '../types'
 import type { Alert } from '../../services/alerts'
+import { fetchNearbyHospitals, type Hospital } from '../../services/places'
+import { fetchEvacRoutes, type EvacRoute } from '../../services/routes'
 import StatCards from './StatCards'
 import DashboardMap from './DashboardMap'
-import LocationDetails from './LocationDetails'
+import LocationDetails, { type SafetyPanelData } from './LocationDetails'
+import type { HospitalsState, RoutesState } from './SafetyPanel'
 import AlertsPanel from './AlertsPanel'
 import RainfallChart from './RainfallChart'
 import OutlookChart from './OutlookChart'
@@ -48,6 +51,92 @@ export default function OverviewDashboard({
     return worst?.outlook ?? []
   }, [zones])
 
+  // ---- Safety: nearby hospitals + evacuation routes (real data) ----
+  const [hospitals, setHospitals] = useState<Hospital[]>([])
+  const [hospitalsState, setHospitalsState] = useState<HospitalsState>('loading')
+  const [selectedHospital, setSelectedHospital] = useState<Hospital | null>(null)
+  const [routes, setRoutes] = useState<EvacRoute[]>([])
+  const [routesState, setRoutesState] = useState<RoutesState>('idle')
+
+  const safetyZoneId = focusZone?.location.id ?? null
+  const focusRef = useRef(focusZone)
+  focusRef.current = focusZone
+
+  // Fetch hospitals whenever the focus zone changes. Stale responses are dropped.
+  useEffect(() => {
+    const zone = focusRef.current
+    setSelectedHospital(null)
+    setRoutes([])
+    setRoutesState('idle')
+    setHospitals([])
+    if (!zone) {
+      setHospitalsState('loading')
+      return
+    }
+    let cancelled = false
+    setHospitalsState('loading')
+    const { lat, lng } = zone.location
+    void fetchNearbyHospitals(lat, lng, 20).then((res) => {
+      if (cancelled) return
+      if (!res.ok) {
+        setHospitalsState('error')
+      } else if (res.hospitals.length === 0) {
+        setHospitalsState('empty')
+      } else {
+        setHospitals(res.hospitals)
+        setHospitalsState('ok')
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [safetyZoneId])
+
+  const handleSelectHospital = (hospital: Hospital) => {
+    const zone = focusRef.current
+    if (!zone) return
+    const zoneId = zone.location.id
+    setSelectedHospital(hospital)
+    setRoutes([])
+    setRoutesState('loading')
+    void fetchEvacRoutes(zone.location.lat, zone.location.lng, hospital.lat, hospital.lng).then(
+      (res) => {
+        if (focusRef.current?.location.id !== zoneId) return
+        if (!res.ok) {
+          setRoutesState('error')
+        } else if (res.routes.length === 0) {
+          setRoutesState('empty')
+        } else {
+          setRoutes(res.routes)
+          setRoutesState('ok')
+        }
+      },
+    )
+  }
+
+  const handleClearHospital = () => {
+    setSelectedHospital(null)
+    setRoutes([])
+    setRoutesState('idle')
+  }
+
+  const safety: SafetyPanelData = useMemo(
+    () => ({
+      hospitals,
+      hospitalsState,
+      selectedHospital,
+      routes,
+      routesState,
+      onSelectHospital: handleSelectHospital,
+      onClearHospital: handleClearHospital,
+    }),
+    [hospitals, hospitalsState, selectedHospital, routes, routesState],
+  )
+
+  const evacFrom = focusZone
+    ? { lat: focusZone.location.lat, lng: focusZone.location.lng }
+    : null
+
   return (
     <div className="flex flex-col gap-5">
       {loading ? <p className="text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
@@ -72,10 +161,16 @@ export default function OverviewDashboard({
                 Open full live map →
               </button>
             </div>
-            <DashboardMap zones={zones} onSelectZone={onSelectZone} />
+            <DashboardMap
+              zones={zones}
+              onSelectZone={onSelectZone}
+              evacRoutes={routes}
+              evacHospital={selectedHospital}
+              evacFrom={evacFrom}
+            />
           </div>
         </div>
-        <LocationDetails zone={focusZone} onViewOnMap={onOpenMap} />
+        <LocationDetails zone={focusZone} onViewOnMap={onOpenMap} safety={safety} />
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
