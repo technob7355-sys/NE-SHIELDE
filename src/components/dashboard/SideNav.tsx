@@ -70,28 +70,6 @@ export default function SideNav({ activeTab, alertCount, onTab }: SideNavProps) 
           </div>
         ))}
       </nav>
-
-      <div className="mt-auto shrink-0 p-3">
-        <div className="overflow-hidden rounded-xl border border-[#d9d9d9]">
-          <div
-            className="bg-cover bg-center p-4"
-            style={{
-              backgroundImage:
-                'linear-gradient(160deg, rgba(16,110,190,0.92) 0%, rgba(0,79,136,0.96) 100%), linear-gradient(120deg, #106ebe 0%, #004f88 70%)',
-            }}
-          >
-            <p className="text-[16px] leading-snug font-bold text-white">
-              Predict Risks.
-              <br />
-              Protect Lives.
-            </p>
-            <p className="mt-1 text-[13px] leading-relaxed text-white/80">
-              Live monitoring across 20 Northeast zones.
-            </p>
-          </div>
-        </div>
-        <p className="mt-3 px-1 text-[12px] text-[#64748B]">v1.0.0</p>
-      </div>
     </aside>
   )
 }

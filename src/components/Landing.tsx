@@ -15,6 +15,7 @@ import {
   Gauge,
   Map as MapIcon,
   Newspaper,
+  RefreshCw,
 } from 'lucide-react'
 import DashboardMap from './dashboard/DashboardMap'
 import { LevelBadge, formatDateTimeIST } from './risk'
@@ -111,7 +112,7 @@ function HeroCarousel({ onOpenDashboard }: { onOpenDashboard: () => void }) {
           className="absolute inset-0 bg-[linear-gradient(100deg,rgba(0,79,136,0.92)_25%,rgba(0,79,136,0.55)_60%,rgba(0,79,136,0.20))]"
           aria-hidden="true"
         />
-        <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-10">
+        <div className="absolute inset-0 flex flex-col justify-center px-14 py-6 md:px-20 md:py-10">
           <p className="inline-flex w-fit items-center gap-2 rounded-full border border-white/25 bg-white/10 px-3 py-1.5 text-[13px] font-medium text-white">
             <span className="relative flex h-2 w-2" aria-hidden="true">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#7CC4FF] opacity-75" />
@@ -330,7 +331,7 @@ export default function Landing({
             <button
               type="button"
               onClick={onOpenDashboard}
-              className="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 text-[13px] font-medium text-white transition hover:bg-white/25"
+              className="inline-flex shrink-0 items-center gap-1 rounded-full bg-white/15 px-3 py-1 text-[13px] font-medium whitespace-nowrap text-white transition hover:bg-white/25"
             >
               Open dashboard <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
             </button>
@@ -440,7 +441,7 @@ export default function Landing({
               { icon: MapIcon, value: '20', label: 'Zones Monitored' },
               { icon: BarChart3, value: String(states), label: 'States Covered' },
               { icon: Database, value: '521', label: 'Historical Events' },
-              { icon: CloudRain, value: '1,740', label: 'Weeks of Monsoon Data' },
+              { icon: RefreshCw, value: '12 min', label: 'Live Refresh Cycle' },
             ].map((c) => {
               const Icon = c.icon
               return (

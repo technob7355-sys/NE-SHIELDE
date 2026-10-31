@@ -36,6 +36,21 @@ const LAYERS = [
 
 type LayerId = (typeof LAYERS)[number]['id']
 
+/** Keeps Leaflet sized to its container as the layout settles. */
+function MapAutoResize() {
+  const map = useMap()
+  useEffect(() => {
+    const container = map.getContainer()
+    if (!('ResizeObserver' in window)) return
+    const ro = new ResizeObserver(() => {
+      map.invalidateSize({ animate: true })
+    })
+    ro.observe(container)
+    return () => ro.disconnect()
+  }, [map])
+  return null
+}
+
 /**
  * Hero risk map for the dashboard: Esri satellite + live risk circles,
  * real historical landslide markers, evacuation routes, toggleable layers.
@@ -97,6 +112,11 @@ export default function DashboardMap({
   )
 
   return (
+    <div className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="text-[14px] font-medium text-[#64748B]">Show zones:</p>
+        <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
+      </div>
     <div className="relative overflow-hidden rounded-[15px] border border-[#D9D9D9]">
       <MapContainer
         center={[26.8, 92.5]}
@@ -112,8 +132,8 @@ export default function DashboardMap({
         ) : null}
         <MapClickDeselect onMapClick={handleMapClick} />
         <FlyToSelected zone={flyTarget} />
+        <MapAutoResize />
         <ZoneSearch zones={zones} onPick={pickZone} />
-        <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
         {layers.risk
           ? zones.filter((z) => zonePassesFilter(z, riskFilter)).map((zone) => {
               const color = zone.prediction ? riskColor(zone.prediction.level) : '#64748B'
@@ -152,7 +172,7 @@ export default function DashboardMap({
                 key={i}
                 center={[e.lat, e.lng]}
                 radius={3.5}
-                pathOptions={{ fillColor: '#FB923C', fillOpacity: 0.75, color: '#F0F0F0', weight: 0.5 }}
+                pathOptions={{ fillColor: '#9AA7B8', fillOpacity: 0.75, color: '#F0F0F0', weight: 0.5 }}
               />
             ))
           : null}
@@ -253,6 +273,7 @@ export default function DashboardMap({
             ['High', '#FB923C'],
             ['Critical', '#F87171'],
             ['Unknown', '#64748B'],
+            ['Past event', '#9AA7B8'],
           ].map(([label, color]) => (
             <span key={label} className="inline-flex items-center gap-2 text-[13px] text-[#0F172A]">
               <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
@@ -277,6 +298,7 @@ export default function DashboardMap({
           </div>
         ) : null}
       </div>
+    </div>
     </div>
   )
 }

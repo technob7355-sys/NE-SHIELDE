@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { RefreshCw } from 'lucide-react'
-import { formatTimeWithSecondsIST } from './risk'
 
 const FORECAST_URL =
   'https://api.open-meteo.com/v1/forecast?latitude=27.17&longitude=88.52&hourly=precipitation&past_days=1&forecast_days=0'
@@ -75,41 +74,15 @@ export default function ApiStatus() {
   const dotColor = status.ok ? '#34D399' : '#F87171'
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      <div className="flex items-center gap-2">
-        <span
-          className="h-2.5 w-2.5 shrink-0 rounded-full"
-          style={{ backgroundColor: checking && !status.checkedAt ? '#64748B' : dotColor }}
-          aria-hidden="true"
-        />
-        <span className="text-[13px] font-medium text-[#0F172A]">
-          {checking && !status.checkedAt ? 'Checking API…' : status.ok ? 'API Connected' : 'API Failed'}
-        </span>
-      </div>
-      {status.latencyMs !== null ? (
-        <span className="text-[12px] text-[#64748B] whitespace-nowrap">{status.latencyMs} ms</span>
-      ) : null}
-      {status.checkedAt ? (
-        <span className="text-[12px] text-[#64748B] whitespace-nowrap">
-          Checked {formatTimeWithSecondsIST(status.checkedAt)} IST
-        </span>
-      ) : null}
-      <a
-        href={FORECAST_URL}
-        target="_blank"
-        rel="noreferrer"
-        className="text-[12px] text-[#64748B] underline underline-offset-2"
-      >
-        Forecast API
-      </a>
-      <a
-        href={ARCHIVE_URL}
-        target="_blank"
-        rel="noreferrer"
-        className="text-[12px] text-[#64748B] underline underline-offset-2"
-      >
-        Archive API
-      </a>
+    <div className="flex items-center gap-2">
+      <span
+        className="h-2.5 w-2.5 shrink-0 rounded-full"
+        style={{ backgroundColor: checking && !status.checkedAt ? '#64748B' : dotColor }}
+        aria-hidden="true"
+      />
+      <span className="text-[13px] font-medium text-[#0F172A]">
+        {checking && !status.checkedAt ? 'Checking…' : status.ok ? 'Connected' : 'Connection failed'}
+      </span>
       <button
         type="button"
         onClick={() => void runCheck()}
@@ -119,9 +92,6 @@ export default function ApiStatus() {
         <RefreshCw className="h-3 w-3" aria-hidden="true" />
         {checking ? 'Checking…' : 'Refresh'}
       </button>
-      {status.error ? (
-        <span className="w-full text-[12px] text-[#F87171] line-clamp-2">{status.error}</span>
-      ) : null}
     </div>
   )
 }

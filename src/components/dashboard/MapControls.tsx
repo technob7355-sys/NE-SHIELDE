@@ -103,7 +103,8 @@ export function ZoneSearch({
   )
 }
 
-/** Risk-level filter chips for the map. */
+/** Risk-level filter chips for the map — rendered in a toolbar above the map,
+    never overlaid on it. */
 export function RiskFilterChips({
   value,
   onChange,
@@ -112,11 +113,7 @@ export function RiskFilterChips({
   onChange: (f: RiskFilter) => void
 }) {
   return (
-    <div
-      className="absolute top-3 right-3 z-[500] flex max-w-[60%] flex-wrap justify-end gap-1.5"
-      role="group"
-      aria-label="Filter zones by risk level"
-    >
+    <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter zones by risk level">
       {RISK_FILTERS.map((f) => {
         const active = value === f
         return (

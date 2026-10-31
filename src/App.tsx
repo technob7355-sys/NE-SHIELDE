@@ -411,7 +411,7 @@ export default function App() {
           <main className="min-w-0 flex-1 p-4 md:p-6">
             <div className="mb-6 flex flex-wrap items-start justify-between gap-x-6 gap-y-3">
               <div className="flex min-w-0 items-start gap-3">
-                {activeTab !== 'home' ? (
+                {activeTab !== 'home' && tabHistory.length > 0 ? (
                   <button
                     type="button"
                     onClick={handleBack}

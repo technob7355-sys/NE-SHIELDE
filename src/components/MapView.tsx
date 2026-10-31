@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Circle, CircleMarker, LayerGroup, MapContainer, ScaleControl, TileLayer, useMap } from 'react-leaflet'
+import { Circle, CircleMarker, LayerGroup, MapContainer, ScaleControl, TileLayer, ZoomControl, useMap } from 'react-leaflet'
 import type { ZoneWithScore } from './types'
 import { LevelBadge, RiskDot, riskColor } from './risk'
 import { ZoneSearch, RiskFilterChips, zonePassesFilter, type RiskFilter } from './dashboard/MapControls'
@@ -81,11 +81,16 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
   const [riskFilter, setRiskFilter] = useState<RiskFilter>('All')
   return (
     <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center gap-3">
+        <p className="text-[14px] font-medium text-[#64748B]">Show zones:</p>
+        <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
+      </div>
       <div className="relative overflow-hidden rounded-[15px] border border-[#D9D9D9]">
         <MapContainer
           center={[26.8, 92.5]}
           zoom={7}
           scrollWheelZoom
+          zoomControl={false}
           zoomSnap={0.25}
           zoomDelta={0.5}
           wheelPxPerZoomLevel={110}
@@ -110,11 +115,11 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
             attribution="&copy; OpenStreetMap contributors"
           />
           <ScaleControl position="bottomleft" imperial={false} />
+          <ZoomControl position="bottomright" />
           <MapAutoResize />
           <FlyToSelected zone={selectedZone} />
           <MapClickDeselect onMapClick={handleMapClick} />
           <ZoneSearch zones={zones} onPick={selectZone} />
-          <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
           {zones.filter((z) => zonePassesFilter(z, riskFilter)).map((zone) => {
             const color = zone.prediction ? riskColor(zone.prediction.level) : '#64748B'
             return (

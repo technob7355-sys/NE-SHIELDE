@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { Check } from 'lucide-react'
 import type { ZoneWithScore } from '../types'
 import type { Alert } from '../../services/alerts'
 import { fetchNearbyHospitals, type Hospital } from '../../services/places'
@@ -53,18 +54,23 @@ export default function OverviewDashboard({
     return worst?.outlook ?? []
   }, [zones])
 
-  // Locations needing attention: top zones by score with fresh data first,
-  // then zones with stale/unavailable data (never shown as safe).
+  // Locations genuinely needing attention: zones at Moderate risk or worse,
+  // plus zones with stale/unavailable data (never shown as safe). When nothing
+  // qualifies, the section shows an honest "All clear" instead of low-risk rows.
   const needsAttention = useMemo(() => {
     const withQ = zones.map((z) => ({ z, q: zoneQuality(z) }))
-    const scored = withQ
-      .filter(({ z, q }) => z.prediction && q.status === 'fresh')
+    const risky = withQ
+      .filter(({ z, q }) => {
+        const lvl = z.prediction?.level
+        return (
+          q.status === 'fresh' && (lvl === 'Moderate' || lvl === 'High' || lvl === 'Critical')
+        )
+      })
       .sort((a, b) => (b.z.prediction?.score ?? 0) - (a.z.prediction?.score ?? 0))
-      .slice(0, 5)
     const badData = withQ
       .filter(({ q }) => q.status === 'stale' || q.status === 'unavailable')
       .slice(0, 3)
-    return [...scored, ...badData]
+    return [...risky, ...badData]
   }, [zones])
 
   const zoneAlerts = useMemo(() => {
@@ -247,7 +253,19 @@ export default function OverviewDashboard({
               })}
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+            <p className="mb-1 flex items-center gap-2 text-[18px] font-bold text-[#0F172A]">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#34D399]/15">
+                <Check className="h-4 w-4 text-[#0E9F6E]" aria-hidden="true" />
+              </span>
+              All clear
+            </p>
+            <p className="text-[14px] leading-relaxed text-[#64748B]">
+              No zone needs attention right now — every monitored zone is at Low risk with fresh data.
+            </p>
+          </div>
+        )}
 
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
