@@ -62,7 +62,7 @@ function Reveal({ children, className }: { children: ReactNode; className?: stri
 
 function SectionLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="flex items-center gap-3 text-[12px] font-bold tracking-[0.18em] text-[#60A5FA] uppercase">
+    <p className="flex items-center gap-3 text-[13px] font-bold tracking-[0.18em] text-[#60A5FA] uppercase">
       <span className="h-px w-8 bg-[#3B82F6]" aria-hidden="true" />
       {children}
     </p>
@@ -176,7 +176,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
       >
         <div className="grid items-center gap-8 lg:grid-cols-[1.15fr_0.85fr]">
           <div className="min-w-0">
-            <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[12px] font-medium text-[#E8EEF7] backdrop-blur-sm">
+            <p className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-black/30 px-3 py-1.5 text-[13px] font-medium text-[#E8EEF7] backdrop-blur-sm">
               <span className="relative flex h-2 w-2" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#34D399] opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-[#34D399]" />
@@ -209,7 +209,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                 See how we prove accuracy
               </button>
             </div>
-            <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-[13px] text-[#C7D3E8]">
+            <p className="mt-6 flex flex-wrap gap-x-4 gap-y-1 text-[14px] text-[#C7D3E8]">
               <span className="inline-flex items-center gap-1.5">
                 <Check className="h-4 w-4 text-[#34D399]" aria-hidden="true" /> No fake numbers
               </span>
@@ -225,10 +225,10 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
           {/* Live product snapshot — glass card over the imagery */}
           <div className="min-w-0 rounded-2xl border border-white/15 bg-[#0B1220]/85 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.5)] backdrop-blur-md">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[13px] font-bold tracking-wide text-[#E8EEF7] uppercase">
+              <p className="text-[14px] font-bold tracking-wide text-[#E8EEF7] uppercase">
                 Live risk snapshot
               </p>
-              <span className="inline-flex items-center gap-1.5 text-[12px] text-[#8CA0B8]">
+              <span className="inline-flex items-center gap-1.5 text-[13px] text-[#8CA0B8]">
                 <span className="h-2 w-2 rounded-full bg-[#34D399]" aria-hidden="true" />
                 Open-Meteo
               </span>
@@ -252,7 +252,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                       <span className="block truncate text-[14px] font-medium text-[#E8EEF7]" title={zone.location.name}>
                         {zone.location.name}
                       </span>
-                      <span className="block truncate text-[13px] text-[#8CA0B8]" title={zone.location.state}>
+                      <span className="block truncate text-[14px] text-[#8CA0B8]" title={zone.location.state}>
                         {zone.location.state}
                       </span>
                     </span>
@@ -264,7 +264,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                         <LevelBadge level={zone.prediction.level} />
                       </span>
                     ) : (
-                      <span className="shrink-0 text-[12px] text-[#8CA0B8]">
+                      <span className="shrink-0 text-[13px] text-[#8CA0B8]">
                         {loading ? 'Loading…' : 'Waiting for live data'}
                       </span>
                     )}
@@ -275,13 +275,13 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             <button
               type="button"
               onClick={onOpenMap}
-              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2.5 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
+              className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2.5 text-[14px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
             >
               Open the full live map
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </button>
             {topZone?.prediction ? (
-              <p className="mt-3 text-center text-[12px] text-[#8CA0B8]">
+              <p className="mt-3 text-center text-[13px] text-[#8CA0B8]">
                 Highest risk right now: {topZone.location.name} —{' '}
                 {Math.round(topZone.prediction.score)} ({topZone.prediction.level})
               </p>
@@ -294,23 +294,23 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             <p className="font-display text-[36px] leading-none font-semibold text-[#60A5FA]">
               {zones.length || 20}
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Zones monitored live</p>
+            <p className="mt-2 text-[14px] text-[#C7D3E8]">Zones monitored live</p>
           </div>
           <div className="flex-1 py-4 pr-4 md:px-6 md:py-0">
             <p className="font-display text-[36px] leading-none font-semibold text-white">
               {states || 4}
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">States covered</p>
+            <p className="mt-2 text-[14px] text-[#C7D3E8]">States covered</p>
           </div>
           <div className="flex-1 py-4 pr-4 md:px-6 md:py-0">
             <p className="font-display text-[36px] leading-none font-semibold text-white">1,740</p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Weeks of monsoon data trained on</p>
+            <p className="mt-2 text-[14px] text-[#C7D3E8]">Weeks of monsoon data trained on</p>
           </div>
           <div className="flex-1 py-4 md:px-6 md:py-0">
             <p className="font-display text-[36px] leading-none font-semibold text-[#34D399]">
               68.3%
             </p>
-            <p className="mt-2 text-[13px] text-[#C7D3E8]">Honest wet-day accuracy (train + test: wet days only)</p>
+            <p className="mt-2 text-[14px] text-[#C7D3E8]">Honest wet-day accuracy (train + test: wet days only)</p>
           </div>
         </div>
       </section>
@@ -358,7 +358,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
             </p>
           </div>
         </div>
-        <p className="mt-6 text-[12px] text-[#8CA0B8]">
+        <p className="mt-6 text-[13px] text-[#8CA0B8]">
           Sources: NESAC Seasonal Landslide Inventory for the North Eastern Region, 2025; GSI
           landslide-prone area figures.
         </p>
@@ -482,7 +482,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                 aria-hidden="true"
               />
               <div className="min-w-0">
-                <p className="text-[12px] font-bold tracking-wide text-[#8CA0B8] uppercase">
+                <p className="text-[13px] font-bold tracking-wide text-[#8CA0B8] uppercase">
                   {item.phase}
                 </p>
                 <p className="mt-1 text-[17px] font-bold text-[#E8EEF7]">{item.title}</p>
@@ -534,7 +534,7 @@ export default function Landing({ zones, loading, onOpenDashboard, onOpenAccurac
                   Explore the code on GitHub
                 </a>
               </div>
-              <p className="mt-6 text-[12px] leading-relaxed text-[#8CA0B8]">
+              <p className="mt-6 text-[13px] leading-relaxed text-[#8CA0B8]">
                 NE-SHIELD is an advisory system. It supports — and never replaces — official warnings
                 from disaster management authorities.
               </p>

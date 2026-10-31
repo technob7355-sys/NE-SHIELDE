@@ -49,12 +49,12 @@ export default function Recommendations({
   const g = guidanceFor(level, quality)
   return (
     <div className="rounded-xl border border-[#1E2D47] bg-[#16233C] p-4">
-      <p className="mb-1 text-[12px] font-bold tracking-wider text-[#8CA0B8] uppercase">
+      <p className="mb-1 text-[13px] font-bold tracking-wider text-[#8CA0B8] uppercase">
         Operational guidance
       </p>
-      <p className="text-[14px] font-medium text-[#E8EEF7]">{g.title}</p>
-      <p className="mt-1 text-[13px] leading-relaxed text-[#8CA0B8]">{g.text}</p>
-      <p className="mt-2 text-[12px] leading-relaxed text-[#8CA0B8]">
+      <p className="text-[15px] font-medium text-[#E8EEF7]">{g.title}</p>
+      <p className="mt-1 text-[14px] leading-relaxed text-[#8CA0B8]">{g.text}</p>
+      <p className="mt-2 text-[13px] leading-relaxed text-[#8CA0B8]">
         Operational guidance — not an official government warning.
       </p>
     </div>

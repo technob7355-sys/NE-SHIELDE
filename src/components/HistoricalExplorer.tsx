@@ -56,19 +56,19 @@ export default function HistoricalExplorer() {
   }, [])
 
   const inputClass =
-    'rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[13px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:border-[#3B82F6] focus:outline-none'
+    'rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:border-[#3B82F6] focus:outline-none'
 
   return (
     <div className="flex flex-col gap-5">
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
         <div className="flex flex-wrap items-center gap-2">
           <History className="h-4 w-4 text-[#60A5FA]" aria-hidden="true" />
-          <p className="text-[16px] font-bold text-[#E8EEF7]">Historical Landslide Explorer</p>
-          <span className="ml-auto rounded-full bg-[#3B82F6]/15 px-2.5 py-1 text-[12px] font-medium text-[#60A5FA]">
+          <p className="text-[18px] font-bold text-[#E8EEF7]">Historical Landslide Explorer</p>
+          <span className="ml-auto rounded-full bg-[#3B82F6]/15 px-2.5 py-1 text-[13px] font-medium text-[#60A5FA]">
             {filtered.length} / {HISTORICAL_EVENTS.length} events
           </span>
         </div>
-        <p className="mt-1.5 text-[13px] leading-relaxed text-[#8CA0B8]">
+        <p className="mt-1.5 text-[14px] leading-relaxed text-[#8CA0B8]">
           Verified past events — NASA Global Landslide Catalog / COOLR ({years.min}–2018) plus 6
           verified 2021–2022 news events. These are <span className="text-[#E8EEF7]">observations</span>,
           not current predictions.
@@ -137,7 +137,7 @@ export default function HistoricalExplorer() {
           <div className="overflow-y-auto">
             <table className="w-full text-[14px]">
               <thead className="sticky top-0 bg-[#101A2E]">
-                <tr className="border-b border-[#1E2D47] text-left text-[12px] tracking-wider text-[#8CA0B8] uppercase">
+                <tr className="border-b border-[#1E2D47] text-left text-[13px] tracking-wider text-[#8CA0B8] uppercase">
                   <th className="px-4 py-2.5">Date</th>
                   <th className="px-4 py-2.5">Location</th>
                   <th className="px-4 py-2.5 text-right">Coords</th>

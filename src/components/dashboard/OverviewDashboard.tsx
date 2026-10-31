@@ -181,8 +181,8 @@ export default function OverviewDashboard({
 
         {needsAttention.length > 0 ? (
           <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-            <p className="mb-1 text-[16px] font-bold text-[#E8EEF7]">Needs Attention</p>
-            <p className="mb-3 text-[13px] text-[#8CA0B8]">
+            <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Needs Attention</p>
+            <p className="mb-3 text-[14px] text-[#8CA0B8]">
               Highest-risk zones first — zones with stale or missing data are listed, never assumed safe.
             </p>
             <div className="flex flex-col gap-2">
@@ -206,11 +206,11 @@ export default function OverviewDashboard({
                       aria-hidden="true"
                     />
                     <span className="min-w-0 flex-1">
-                      <span className="block text-[14px] leading-snug font-medium text-[#E8EEF7]">
+                      <span className="block text-[15px] leading-snug font-medium text-[#E8EEF7]">
                         {z.location.name}
                         <span className="ml-2 font-normal text-[#8CA0B8]">{z.location.state}</span>
                       </span>
-                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[12px] text-[#8CA0B8]">
+                      <span className="mt-0.5 flex flex-wrap items-center gap-2 text-[13px] text-[#8CA0B8]">
                         <DataQualityBadge status={q.status} />
                         {worstAlert ? (
                           <span style={{ color: riskColor(worstAlert.severity) }}>
@@ -222,7 +222,7 @@ export default function OverviewDashboard({
                     {z.prediction ? (
                       <LevelBadge level={z.prediction.level} />
                     ) : (
-                      <span className="text-[12px] text-[#8CA0B8]">Unknown</span>
+                      <span className="text-[13px] text-[#8CA0B8]">Unknown</span>
                     )}
                   </button>
                 )
@@ -236,15 +236,15 @@ export default function OverviewDashboard({
           <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#1E2D47] bg-[#101A2E] px-5 py-4">
               <div>
-                <p className="text-[16px] font-bold text-[#E8EEF7]">Live Risk Map</p>
-                <p className="mt-0.5 text-[12px] text-[#8CA0B8]">
+                <p className="text-[18px] font-bold text-[#E8EEF7]">Live Risk Map</p>
+                <p className="mt-0.5 text-[13px] text-[#8CA0B8]">
                   Satellite view • 20 zones • tap a zone for details
                 </p>
               </div>
               <button
                 type="button"
                 onClick={onOpenMap}
-                className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
+                className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-4 py-2 text-[14px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.98]"
               >
                 Open full live map →
               </button>
@@ -269,8 +269,8 @@ export default function OverviewDashboard({
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div className="flex flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-          <p className="mb-1 text-[16px] font-bold text-[#E8EEF7]">Rainfall Trend (Last 24 Hours)</p>
-          <p className="mb-3 text-[12px] text-[#8CA0B8]">
+          <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Rainfall Trend (Last 24 Hours)</p>
+          <p className="mb-3 text-[13px] text-[#8CA0B8]">
             {rainZone ? `${rainZone.location.name} — wettest zone` : 'Waiting for live data'}
           </p>
           <div className="flex flex-1 items-center">
@@ -283,8 +283,8 @@ export default function OverviewDashboard({
         </div>
 
         <div className="flex flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-          <p className="mb-1 text-[16px] font-bold text-[#E8EEF7]">Risk Outlook (Next 3 Days)</p>
-          <p className="mb-3 text-[12px] text-[#8CA0B8]">Highest forecast score across zones</p>
+          <p className="mb-1 text-[18px] font-bold text-[#E8EEF7]">Risk Outlook (Next 3 Days)</p>
+          <p className="mb-3 text-[13px] text-[#8CA0B8]">Highest forecast score across zones</p>
           <div className="flex flex-1 items-center">
             {outlookDays.length > 0 ? (
               <OutlookChart days={outlookDays} />

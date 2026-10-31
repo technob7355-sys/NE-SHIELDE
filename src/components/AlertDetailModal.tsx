@@ -88,8 +88,8 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
               </span>
               {quality ? <DataQualityBadge status={quality.status} /> : null}
             </div>
-            <p className="mt-2 text-[17px] font-bold text-[#E8EEF7]">{alert.title}</p>
-            <p className="mt-0.5 font-mono text-[12px] text-[#8CA0B8]">ID: {alert.id}</p>
+            <p className="mt-2 text-[18px] font-bold text-[#E8EEF7]">{alert.title}</p>
+            <p className="mt-0.5 font-mono text-[13px] text-[#8CA0B8]">ID: {alert.id}</p>
           </div>
           <button
             type="button"
@@ -141,29 +141,29 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
             <Row label="Responsible team" value="Not configured" />
           </div>
 
-          <p className="mt-3 rounded-xl border border-[#FBBF24]/30 bg-[#FBBF24]/8 p-3 text-[13px] leading-relaxed text-[#FBBF24]">
+          <p className="mt-3 rounded-xl border border-[#FBBF24]/30 bg-[#FBBF24]/8 p-3 text-[14px] leading-relaxed text-[#FBBF24]">
             Verification: model-generated — not verified as a real landslide event. Not an official
             government warning.
           </p>
 
-          <p className="mt-5 mb-2 text-[14px] font-bold text-[#E8EEF7]">Change status</p>
+          <p className="mt-5 mb-2 text-[16px] font-bold text-[#E8EEF7]">Change status</p>
           <div className="flex flex-wrap gap-2">
             {LIFECYCLE_FLOW[status].map((s) => (
               <button
                 key={s}
                 type="button"
                 onClick={() => changeStatus(s)}
-                className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[13px] font-medium text-[#E8EEF7] hover:bg-[#1E2D47]"
+                className="rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[14px] font-medium text-[#E8EEF7] hover:bg-[#1E2D47]"
               >
                 {LIFECYCLE_LABELS[s]}
               </button>
             ))}
             {LIFECYCLE_FLOW[status].length === 0 ? (
-              <p className="text-[13px] text-[#8CA0B8]">Terminal state — no further transitions.</p>
+              <p className="text-[14px] text-[#8CA0B8]">Terminal state — no further transitions.</p>
             ) : null}
           </div>
 
-          <p className="mt-5 mb-2 text-[14px] font-bold text-[#E8EEF7]">Investigation notes</p>
+          <p className="mt-5 mb-2 text-[16px] font-bold text-[#E8EEF7]">Investigation notes</p>
           <div className="flex gap-2">
             <input
               type="text"
@@ -177,7 +177,7 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
             <button
               type="button"
               onClick={submitNote}
-              className="rounded-lg bg-[#3B82F6] px-4 py-2 text-[13px] font-medium text-white hover:bg-[#2563EB]"
+              className="rounded-lg bg-[#3B82F6] px-4 py-2 text-[14px] font-medium text-white hover:bg-[#2563EB]"
             >
               Add
             </button>
@@ -187,7 +187,7 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
               {(record?.notes ?? []).map((n, i) => (
                 <div key={i} className="rounded-lg border border-[#1E2D47] bg-[#101A2E] p-3">
                   <p className="text-[14px] text-[#E8EEF7]">{n.text}</p>
-                  <p className="mt-1 text-[12px] text-[#8CA0B8]">
+                  <p className="mt-1 text-[13px] text-[#8CA0B8]">
                     {n.by} • {formatDateTimeIST(n.at)} IST
                   </p>
                 </div>
@@ -195,7 +195,7 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
             </div>
           ) : null}
 
-          <p className="mt-5 mb-2 text-[14px] font-bold text-[#E8EEF7]">Timeline</p>
+          <p className="mt-5 mb-2 text-[16px] font-bold text-[#E8EEF7]">Timeline</p>
           <div className="flex flex-col gap-1.5">
             <p className="text-[13px] text-[#8CA0B8]">
               {formatDateTimeIST(alert.time)} IST — alert raised ({alert.severity})
@@ -207,7 +207,7 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
               </p>
             ))}
           </div>
-          <p className="mt-3 text-[12px] text-[#8CA0B8]">
+          <p className="mt-3 text-[13px] text-[#8CA0B8]">
             Operator identity: {OPERATOR_LABEL}. History is stored in this browser only.
           </p>
           {zone?.prediction ? (

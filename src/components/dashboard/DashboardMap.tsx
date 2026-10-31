@@ -237,7 +237,7 @@ export default function DashboardMap({
                   </span>
                 </button>
               ))}
-              <p className="pt-1 text-[12px] leading-relaxed text-[#8CA0B8]">
+              <p className="pt-1 text-[13px] leading-relaxed text-[#8CA0B8]">
                 {HISTORICAL_EVENTS.length} recorded landslides (NASA GLC, 2007–2018)
               </p>
             </div>
@@ -245,7 +245,7 @@ export default function DashboardMap({
         </div>
 
       <div className="absolute bottom-3 left-3 z-[500] rounded-xl border border-[#1E2D47] bg-[#0B1220]/90 px-3.5 py-2.5 backdrop-blur-sm">
-        <p className="mb-1.5 text-[12px] font-medium text-[#8CA0B8]">Landslide Risk Level</p>
+        <p className="mb-1.5 text-[13px] font-medium text-[#8CA0B8]">Landslide Risk Level</p>
         <div className="flex flex-col gap-1">
           {[
             ['Low', '#34D399'],
@@ -254,7 +254,7 @@ export default function DashboardMap({
             ['Critical', '#F87171'],
             ['Unknown', '#8CA0B8'],
           ].map(([label, color]) => (
-            <span key={label} className="inline-flex items-center gap-2 text-[12px] text-[#E8EEF7]">
+            <span key={label} className="inline-flex items-center gap-2 text-[13px] text-[#E8EEF7]">
               <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
               {label}
             </span>
@@ -265,7 +265,7 @@ export default function DashboardMap({
             {evacRoutes.map((route, i) => (
               <span
                 key={route.label}
-                className="inline-flex items-center gap-2 text-[12px] text-[#E8EEF7]"
+                className="inline-flex items-center gap-2 text-[13px] text-[#E8EEF7]"
               >
                 <span
                   className="h-0.5 w-4 rounded"

@@ -382,9 +382,9 @@ export default function App() {
               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#3B82F6]">
                 <Shield className="h-4 w-4 text-white" aria-hidden="true" />
               </span>
-              <span className="text-[16px] font-bold whitespace-nowrap text-[#E8EEF7]">NE-SHIELD</span>
+              <span className="text-[17px] font-bold whitespace-nowrap text-[#E8EEF7]">NE-SHIELD</span>
             </button>
-            <span className="ml-auto shrink-0 text-[13px] whitespace-nowrap text-[#8CA0B8]">
+            <span className="ml-auto shrink-0 text-[14px] whitespace-nowrap text-[#8CA0B8]">
               {clockText}
             </span>
           </div>
@@ -421,7 +421,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleBack}
-                    className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[13px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
+                    className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-1.5 text-[14px] font-medium text-[#E8EEF7] transition-all duration-300 hover:bg-[#1E2D47] active:scale-[0.95]"
                     aria-label="Go back"
                   >
                     <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -429,7 +429,7 @@ export default function App() {
                   </button>
                 ) : null}
                 <div className="min-w-0">
-                  <h1 key={activeTab} className="title-in text-[20px] font-bold text-[#E8EEF7]">
+                  <h1 key={activeTab} className="title-in text-[22px] font-bold text-[#E8EEF7]">
                     {activeTabMeta.title}
                   </h1>
                 </div>

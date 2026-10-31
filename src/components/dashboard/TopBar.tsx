@@ -75,25 +75,25 @@ export default function TopBar({
           <Shield className="h-5 w-5 text-white" aria-hidden="true" />
         </span>
         <span className="text-left">
-          <span className="block text-[16px] leading-tight font-bold text-[#E8EEF7]">NE-SHIELD</span>
-          <span className="block text-[12px] leading-tight text-[#8CA0B8]">
+          <span className="block text-[17px] leading-tight font-bold text-[#E8EEF7]">NE-SHIELD</span>
+          <span className="block text-[13px] leading-tight text-[#8CA0B8]">
             Landslide Early Warning System
           </span>
         </span>
       </button>
 
-      <span className="ml-2 inline-flex shrink-0 items-center gap-2 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[13px] font-medium text-[#E8EEF7]">
+      <span className="ml-2 inline-flex shrink-0 items-center gap-2 rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] font-medium text-[#E8EEF7]">
         <MapPin className="h-4 w-4 text-[#3B82F6]" aria-hidden="true" />
         Northeast India
       </span>
 
-      <span className="shrink-0 text-[12px] leading-tight text-[#8CA0B8]">
+      <span className="shrink-0 text-[13px] leading-tight text-[#8CA0B8]">
         Last Updated
         <span className="block font-medium text-[#E8EEF7]">{lastUpdated}</span>
       </span>
 
       <span
-        className="inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-[12px] font-medium"
+        className="inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-[13px] font-medium"
         style={{ backgroundColor: pill.bg, borderColor: pill.border, color: pill.color }}
         title={
           feedState === 'live'
@@ -110,7 +110,7 @@ export default function TopBar({
       </span>
 
       <div className="ml-auto flex shrink-0 items-center gap-4">
-        <span className="hidden items-center gap-2 text-[13px] text-[#E8EEF7] lg:inline-flex">
+        <span className="hidden items-center gap-2 text-[14px] text-[#E8EEF7] lg:inline-flex">
           {condition === 'Clear' ? (
             <CloudSun className="h-5 w-5 text-[#FBBF24]" aria-hidden="true" />
           ) : (
@@ -118,7 +118,7 @@ export default function TopBar({
           )}
           <span className="text-left leading-tight">
             <span className="block font-bold">{avgTempC != null ? `${avgTempC.toFixed(0)}°C` : '—'}</span>
-            <span className="block text-[12px] text-[#8CA0B8]">{condition}</span>
+            <span className="block text-[13px] text-[#8CA0B8]">{condition}</span>
           </span>
         </span>
 
@@ -136,8 +136,8 @@ export default function TopBar({
             CR
           </span>
           <span className="hidden text-left leading-tight xl:block">
-            <span className="block text-[13px] font-medium text-[#E8EEF7]">Control Room</span>
-            <span className="block text-[12px] text-[#8CA0B8]">Operator</span>
+            <span className="block text-[14px] font-medium text-[#E8EEF7]">Control Room</span>
+            <span className="block text-[13px] text-[#8CA0B8]">Operator</span>
           </span>
           <ChevronDown className="hidden h-4 w-4 text-[#8CA0B8] xl:block" aria-hidden="true" />
         </span>

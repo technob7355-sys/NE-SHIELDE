@@ -157,7 +157,7 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
               }}
               aria-hidden="true"
             />
-            <span className="text-[13px] text-[#E8EEF7]">{item.label} zone</span>
+            <span className="text-[14px] text-[#E8EEF7]">{item.label} zone</span>
           </span>
         ))}
         <span className="inline-flex items-center gap-2">
@@ -165,12 +165,12 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
             className="h-4 w-4 rounded-full border-2 border-[#8CA0B8] bg-[#8CA0B8]/30"
             aria-hidden="true"
           />
-          <span className="text-[13px] text-[#8CA0B8]">Data unavailable</span>
+          <span className="text-[14px] text-[#8CA0B8]">Data unavailable</span>
         </span>
       </div>
 
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-4 text-[16px] font-bold text-[#E8EEF7]">Zones</p>
+        <p className="mb-4 text-[18px] font-bold text-[#E8EEF7]">Zones</p>
         {loading ? <p className="mb-3 text-[14px] text-[#8CA0B8]">Loading live data…</p> : null}
         <div className="flex flex-col">
           {zones.map((zone) => (
@@ -185,7 +185,7 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
                 <span className="block truncate text-[14px] font-medium text-[#E8EEF7]" title={zone.location.name}>
                   {zone.location.name}
                 </span>
-                <span className="block truncate text-[13px] text-[#8CA0B8]" title={zone.location.state}>{zone.location.state}</span>
+                <span className="block truncate text-[14px] text-[#8CA0B8]" title={zone.location.state}>{zone.location.state}</span>
               </span>
               <span className="shrink-0 text-[14px] font-bold whitespace-nowrap text-[#E8EEF7]">
                 {zone.prediction ? Math.round(zone.prediction.score) : '—'}
@@ -195,7 +195,7 @@ export default function MapView({ zones, loading, onSelectZone, onDeselectZone, 
                   <LevelBadge level={zone.prediction.level} />
                 </span>
               ) : (
-                <span className="shrink-0 text-[12px] font-medium text-[#8CA0B8]">Data unavailable</span>
+                <span className="shrink-0 text-[13px] font-medium text-[#8CA0B8]">Data unavailable</span>
               )}
             </button>
           ))}

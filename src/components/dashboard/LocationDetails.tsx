@@ -43,7 +43,7 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <p className="mt-4 mb-1 text-[12px] font-bold tracking-wider text-[#8CA0B8] uppercase">
+    <p className="mt-4 mb-1 text-[13px] font-bold tracking-wider text-[#8CA0B8] uppercase">
       {children}
     </p>
   )
@@ -77,14 +77,14 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
   return (
     <div className="flex h-full min-h-0 flex-col rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
       <div className="mb-3 flex items-start justify-between gap-3">
-        <p className="text-[17px] font-bold text-[#E8EEF7]">Location Details</p>
+        <p className="text-[18px] font-bold text-[#E8EEF7]">Location Details</p>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <p className="text-[16px] leading-snug font-bold text-[#E8EEF7]">{location.name}</p>
-            <p className="mt-0.5 text-[13px] text-[#8CA0B8]">{location.state}, India</p>
+            <p className="mt-0.5 text-[14px] text-[#8CA0B8]">{location.state}, India</p>
           </div>
           {prediction ? <LevelBadge level={prediction.level} /> : null}
         </div>
@@ -99,13 +99,13 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
             }
           />
           {quality.fetchedAt ? (
-            <span className="text-[12px] text-[#8CA0B8]">
+            <span className="text-[13px] text-[#8CA0B8]">
               {formatTimeIST(quality.fetchedAt)} IST
             </span>
           ) : null}
         </div>
 
-        <p className="mt-2 inline-flex items-center gap-1.5 text-[13px] text-[#8CA0B8]">
+        <p className="mt-2 inline-flex items-center gap-1.5 text-[14px] text-[#8CA0B8]">
           <Crosshair className="h-3.5 w-3.5" aria-hidden="true" />
           {location.lat.toFixed(4)}° N, {location.lng.toFixed(4)}° E
         </p>
@@ -159,7 +159,7 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
               {nearest.map((e, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between gap-3 text-[13px]"
+                  className="flex items-center justify-between gap-3 text-[14px]"
                 >
                   <span className="min-w-0 text-[#E8EEF7]">{e.name}</span>
                   <span className="shrink-0 text-[#8CA0B8]">
@@ -198,7 +198,7 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
       >
         View on Map
       </button>
-      <p className="mt-2 shrink-0 text-[12px] leading-relaxed text-[#8CA0B8]">
+      <p className="mt-2 shrink-0 text-[13px] leading-relaxed text-[#8CA0B8]">
         Historical counts from NASA GLC/COOLR (2007–2018).
       </p>
     </div>

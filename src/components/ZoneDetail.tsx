@@ -63,7 +63,7 @@ export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
             </span>
             {level ? <LevelBadge level={level} /> : null}
             {!prediction ? (
-              <span className="rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[13px] font-medium text-[#8CA0B8]">
+              <span className="rounded-full border border-[#1E2D47] bg-[#16233C] px-2 py-0.5 text-[14px] font-medium text-[#8CA0B8]">
                 Unknown — data unavailable
               </span>
             ) : null}
@@ -95,7 +95,7 @@ export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
           ) : null}
 
           <div>
-            <p className="mb-2 text-[14px] font-medium text-[#8CA0B8]">Inputs</p>
+            <p className="mb-2 text-[15px] font-medium text-[#8CA0B8]">Inputs</p>
             <div className="overflow-hidden rounded-xl border border-[#1E2D47]">
               <table className="w-full text-[14px]">
                 <tbody>
@@ -110,7 +110,7 @@ export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
                 </tbody>
               </table>
             </div>
-            <p className="mt-2 text-[13px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-2 text-[14px] leading-relaxed text-[#8CA0B8]">
               Weather: Open-Meteo (fetched {weather ? formatTimeIST(weather.fetchedAt) : '—'}) • Slope:
               terrain attribute
             </p>
@@ -127,20 +127,20 @@ export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
             <p className="mb-1 text-[13px] font-bold tracking-wider text-[#8CA0B8] uppercase">
               Operational guidance
             </p>
-            <p className="text-[15px] font-medium text-[#E8EEF7]">{guidance.title}</p>
+            <p className="text-[16px] font-medium text-[#E8EEF7]">{guidance.title}</p>
             <p className="mt-1 text-[14px] leading-relaxed text-[#8CA0B8]">{guidance.text}</p>
-            <p className="mt-2 text-[12px] leading-relaxed text-[#8CA0B8]">
+            <p className="mt-2 text-[13px] leading-relaxed text-[#8CA0B8]">
               Operational guidance — not an official government warning.
             </p>
           </div>
 
           {zone.outlook && zone.outlook.length > 0 ? (
             <div>
-              <p className="mb-3 text-[14px] font-medium text-[#8CA0B8]">Next 3 days — forecast</p>
+              <p className="mb-3 text-[15px] font-medium text-[#8CA0B8]">Next 3 days — forecast</p>
               <div className="grid grid-cols-3 gap-3">
                 {zone.outlook.map((d) => (
                   <div key={d.date} className="rounded-xl border border-[#1E2D47] bg-[#16233C] p-3">
-                    <p className="text-[12px] font-medium whitespace-nowrap text-[#8CA0B8]">
+                    <p className="text-[13px] font-medium whitespace-nowrap text-[#8CA0B8]">
                       {formatDayLabel(d.date)}
                     </p>
                     <p className="mt-1 text-[18px] leading-none font-bold text-[#E8EEF7]">
@@ -149,13 +149,13 @@ export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
                     <div className="mt-1.5">
                       <LevelBadge level={d.level} />
                     </div>
-                    <p className="mt-1.5 text-[13px] whitespace-nowrap text-[#8CA0B8]">
+                    <p className="mt-1.5 text-[14px] whitespace-nowrap text-[#8CA0B8]">
                       {d.rainfall.toFixed(0)} mm rain
                     </p>
                   </div>
                 ))}
               </div>
-              <p className="mt-2 text-[13px] leading-relaxed text-[#8CA0B8]">
+              <p className="mt-2 text-[14px] leading-relaxed text-[#8CA0B8]">
                 Forecast: Open-Meteo • same V4 formula, rolled forward day by day
               </p>
             </div>

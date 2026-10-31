@@ -68,7 +68,7 @@ export default function TechnicalEvaluation() {
         <p className="mt-2 text-[14px] leading-relaxed text-[#8CA0B8]">
           {DEMO_INFO.accuracyLabel} — {DEMO_INFO.eventsCaught}/{DEMO_INFO.eventsTotal} asli landslides pakde, {DEMO_INFO.falseAlarms} false alarms
         </p>
-        <p className="mt-1 text-[12px] text-[#8CA0B8]">
+        <p className="mt-1 text-[13px] text-[#8CA0B8]">
           {DEMO_INFO.totalRows.toLocaleString('en-IN')} rows • {DEMO_INFO.eventRows} events + {DEMO_INFO.hardNegRows} wet-day non-events • January controls: 0 • har row me source
         </p>
       </div>
@@ -87,7 +87,7 @@ export default function TechnicalEvaluation() {
         <ol className="flex flex-col gap-3">
           {DEMO_METHOD.map((step, i) => (
             <li key={step} className="flex items-start gap-3 text-[14px] leading-relaxed text-[#8CA0B8]">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[12px] font-bold text-[#60A5FA]">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[13px] font-bold text-[#60A5FA]">
                 {i + 1}
               </span>
               <span>{step}</span>
@@ -148,7 +148,7 @@ export default function TechnicalEvaluation() {
         <ol className="flex flex-col gap-3">
           {DEMO_JOURNEY.map((step, i) => (
             <li key={step.title} className="flex items-start gap-3 text-[14px] leading-relaxed">
-              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[12px] font-bold text-[#60A5FA]">
+              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#3B82F6]/15 text-[13px] font-bold text-[#60A5FA]">
                 {i + 1}
               </span>
               <span>
@@ -216,7 +216,7 @@ export default function TechnicalEvaluation() {
                   <td className="py-3 pr-3 whitespace-nowrap">
                     <VerdictBadge verdict={c.verdict} />
                   </td>
-                  <td className="min-w-[260px] max-w-[360px] py-3 pr-3 text-[13px] leading-relaxed text-[#8CA0B8]">
+                  <td className="min-w-[260px] max-w-[360px] py-3 pr-3 text-[14px] leading-relaxed text-[#8CA0B8]">
                     {c.type === 'event' ? (EVENT_NOTES[c.name] ?? '—') : CONTROL_NOTE}
                   </td>
                   <td className="py-3 whitespace-nowrap">
@@ -226,12 +226,12 @@ export default function TechnicalEvaluation() {
                         target="_blank"
                         rel="noreferrer"
                         title={c.sourceTitle}
-                        className="text-[13px] font-medium whitespace-nowrap text-[#3B82F6] underline underline-offset-2"
+                        className="text-[14px] font-medium whitespace-nowrap text-[#3B82F6] underline underline-offset-2"
                       >
                         Source ↗
                       </a>
                     ) : (
-                      <span className="text-[13px] text-[#8CA0B8]">—</span>
+                      <span className="text-[14px] text-[#8CA0B8]">—</span>
                     )}
                   </td>
                 </tr>
@@ -245,7 +245,7 @@ export default function TechnicalEvaluation() {
       </div>
 
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-2 text-[16px] font-bold text-[#E8EEF7]">Honest Note</p>
+        <p className="mb-2 text-[18px] font-bold text-[#E8EEF7]">Honest Note</p>
         <p className="text-[14px] leading-relaxed text-[#8CA0B8]">{DEMO_HONEST_NOTE}</p>
       </div>
     </div>

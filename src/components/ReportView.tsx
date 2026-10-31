@@ -62,26 +62,26 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
 
   const inputClass =
     'w-full rounded-lg border border-[#1E2D47] bg-[#16233C] px-3 py-2 text-[14px] text-[#E8EEF7] placeholder:text-[#8CA0B8] focus:border-[#3B82F6] focus:outline-none'
-  const errClass = 'mt-1 text-[12px] text-[#F87171]'
+  const errClass = 'mt-1 text-[13px] text-[#F87171]'
 
   return (
     <div className="flex flex-col gap-5">
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-1 text-[20px] font-bold text-[#E8EEF7]">Report a Hazard</p>
-        <p className="mb-5 text-[13px] leading-relaxed text-[#8CA0B8]">
+        <p className="mb-1 text-[22px] font-bold text-[#E8EEF7]">Report a Hazard</p>
+        <p className="mb-5 text-[14px] leading-relaxed text-[#8CA0B8]">
           Reports are saved in this browser only (localStorage) — nothing is sent to a server.
           Every report starts as <span className="text-[#FBBF24]">Pending Verification</span> and is
           never auto-verified as a real landslide.
         </p>
         {justSubmitted ? (
-          <p className="mb-4 rounded-lg border border-[#34D399]/30 bg-[#34D399]/10 p-3 text-[13px] text-[#34D399]">
+          <p className="mb-4 rounded-lg border border-[#34D399]/30 bg-[#34D399]/10 p-3 text-[14px] text-[#34D399]">
             Report submitted — status: Pending Verification. Review it under Alerts → Hazard Report
             Review.
           </p>
         ) : null}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4" noValidate>
           <div>
-            <label htmlFor="report-location" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-location" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
               Location *
             </label>
             <input
@@ -95,7 +95,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
             {errors.location ? <p className={errClass}>{errors.location}</p> : null}
           </div>
           <div>
-            <label htmlFor="report-type" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-type" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
               Hazard type
             </label>
             <select
@@ -113,7 +113,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
             </select>
           </div>
           <div>
-            <label htmlFor="report-description" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-description" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
               Description *
             </label>
             <textarea
@@ -128,7 +128,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label htmlFor="report-lat" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+              <label htmlFor="report-lat" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
                 Latitude (optional)
               </label>
               <input
@@ -142,7 +142,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
               />
             </div>
             <div>
-              <label htmlFor="report-lng" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+              <label htmlFor="report-lng" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
                 Longitude (optional)
               </label>
               <input
@@ -158,7 +158,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
           </div>
           {errors.coords ? <p className={errClass}>{errors.coords}</p> : null}
           <div>
-            <label htmlFor="report-photo" className="mb-1.5 block text-[13px] text-[#8CA0B8]">
+            <label htmlFor="report-photo" className="mb-1.5 block text-[14px] text-[#8CA0B8]">
               Photo (optional)
             </label>
             <input
@@ -172,7 +172,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
             {photoName ? (
               <p className="mt-1.5 truncate text-[13px] text-[#8CA0B8]" title={photoName}>Selected: {photoName}</p>
             ) : null}
-            <p className="mt-1 text-[13px] text-[#8CA0B8]">
+            <p className="mt-1 text-[14px] text-[#8CA0B8]">
               Only the file name is saved — the photo is not uploaded anywhere.
             </p>
           </div>
@@ -188,7 +188,7 @@ export default function ReportView({ onReportSubmitted }: ReportViewProps) {
       </div>
 
       <div className="rounded-xl border border-[#1E2D47] bg-[#101A2E] p-5">
-        <p className="mb-4 text-[16px] font-bold text-[#E8EEF7]">Your Reports</p>
+        <p className="mb-4 text-[18px] font-bold text-[#E8EEF7]">Your Reports</p>
         {reports.length === 0 ? (
           <p className="text-[14px] text-[#8CA0B8]">No reports yet.</p>
         ) : (
