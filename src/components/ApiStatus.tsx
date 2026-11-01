@@ -29,13 +29,10 @@ export default function ApiStatus() {
     let forecastOk = false
     let archiveOk = false
     let errorMsg: string | null = null
-    // Bound the check: a hanging request must not hang the indicator.
-    const controller = new AbortController()
-    const timeout = setTimeout(() => controller.abort(), 20000)
     try {
       const [forecastRes, archiveRes] = await Promise.allSettled([
-        fetch(FORECAST_URL, { signal: controller.signal }),
-        fetch(ARCHIVE_URL, { signal: controller.signal }),
+        fetch(FORECAST_URL),
+        fetch(ARCHIVE_URL),
       ])
       if (forecastRes.status === 'fulfilled' && forecastRes.value.ok) {
         forecastOk = true
@@ -54,8 +51,6 @@ export default function ApiStatus() {
       if (!archiveOk && forecastOk && !errorMsg) errorMsg = 'Archive API did not return OK'
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : 'API check failed'
-    } finally {
-      clearTimeout(timeout)
     }
     const latencyMs = Math.round(performance.now() - start)
     if (!mountedRef.current) return

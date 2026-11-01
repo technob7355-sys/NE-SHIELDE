@@ -24,9 +24,7 @@ export default function HistoricalExplorer() {
   const [yearFrom, setYearFrom] = useState('')
   const [yearTo, setYearTo] = useState('')
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
-  const [page, setPage] = useState(0)
   const rowRefs = useRef<Record<number, HTMLTableRowElement | null>>({})
-  const PAGE_SIZE = 50
 
   const filtered = useMemo(() => {
     const needle = q.trim().toLowerCase()
@@ -45,15 +43,6 @@ export default function HistoricalExplorer() {
     selectedIdx != null
       ? { ...HISTORICAL_EVENTS[selectedIdx], idx: selectedIdx }
       : null
-
-  // Reset to the first page whenever the filters change.
-  useEffect(() => {
-    setPage(0)
-  }, [q, yearFrom, yearTo])
-
-  const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
-  const safePage = Math.min(page, pageCount - 1)
-  const pageRows = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE)
 
   useEffect(() => {
     if (selectedIdx != null) {
@@ -136,20 +125,12 @@ export default function HistoricalExplorer() {
                 pathOptions={
                   i === selectedIdx
                     ? { fillColor: '#106EBE', fillOpacity: 1, color: '#FFFFFF', weight: 2 }
-                    : { fillColor: '#9AA7B8', fillOpacity: 0.75, color: '#F0F0F0', weight: 0.5 }
+                    : { fillColor: '#FB923C', fillOpacity: 0.75, color: '#F0F0F0', weight: 0.5 }
                 }
               />
             ))}
             <FlyToEvent event={selected} />
           </MapContainer>
-          <div className="flex items-center gap-2 border-t border-[#D9D9D9] bg-white px-4 py-2">
-            <span
-              className="h-3 w-3 rounded-full border"
-              style={{ backgroundColor: '#9AA7B8', borderColor: '#F0F0F0' }}
-              aria-hidden="true"
-            />
-            <span className="text-[13px] text-[#64748B]">Past event (2007–2022) — observation, not a current risk</span>
-          </div>
         </div>
 
         <div className="flex max-h-[420px] flex-col overflow-hidden rounded-[15px] border border-[#D9D9D9] bg-white">
@@ -163,7 +144,7 @@ export default function HistoricalExplorer() {
                 </tr>
               </thead>
               <tbody>
-                {pageRows.map((e) => (
+                {filtered.map((e) => (
                   <tr
                     key={e.idx}
                     ref={(el) => {
@@ -190,34 +171,6 @@ export default function HistoricalExplorer() {
                 ) : null}
               </tbody>
             </table>
-          </div>
-          <div className="flex items-center justify-between gap-3 border-t border-[#D9D9D9] bg-white px-4 py-2.5">
-            <p className="text-[13px] text-[#64748B]">
-              {filtered.length === 0
-                ? 'No events'
-                : `Showing ${safePage * PAGE_SIZE + 1}–${safePage * PAGE_SIZE + pageRows.length} of ${filtered.length}`}
-            </p>
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={safePage === 0}
-                className="rounded-lg border border-[#D9D9D9] bg-white px-3 py-1 text-[13px] font-medium text-[#0F172A] hover:bg-[#E9E9E9] disabled:opacity-40"
-              >
-                ← Prev
-              </button>
-              <span className="text-[13px] text-[#64748B]">
-                Page {safePage + 1} / {pageCount}
-              </span>
-              <button
-                type="button"
-                onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
-                disabled={safePage >= pageCount - 1}
-                className="rounded-lg border border-[#D9D9D9] bg-white px-3 py-1 text-[13px] font-medium text-[#0F172A] hover:bg-[#E9E9E9] disabled:opacity-40"
-              >
-                Next →
-              </button>
-            </div>
           </div>
         </div>
       </div>

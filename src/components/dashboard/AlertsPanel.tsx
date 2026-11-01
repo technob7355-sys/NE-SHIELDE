@@ -10,7 +10,6 @@ import {
   setStatus,
 } from '../../services/alertStore'
 import { loadReports, type HazardReport } from '../../services/reports'
-import { canAckAlerts, canReviewReports, useRole } from '../../services/roles'
 import { formatDateTimeIST, formatTimeIST, riskColor } from '../risk'
 import AlertDetailModal from '../AlertDetailModal'
 
@@ -47,20 +46,19 @@ const SEV_FILTERS = ['All', 'Critical', 'High', 'Moderate'] as const
  * backend-gaps note in the report.
  */
 export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanelProps) {
-  const role = useRole()
   const [sevFilter, setSevFilter] = useState<(typeof SEV_FILTERS)[number]>('All')
   const [detailAlert, setDetailAlert] = useState<Alert | null>(null)
   const [tick, setTick] = useState(0)
   const [reports, setReports] = useState<HazardReport[]>(() => loadReports())
 
+  const refresh = () => setTick((t) => t + 1)
+  void tick
+
   // A genuinely re-raised alert must not inherit the old episode's terminal
-  // status (Resolved/Rejected/…). Ids are live alerts + known reports.
+  // status (Resolved/Rejected/...). Ids are live alerts + known reports.
   useEffect(() => {
     pruneStaleRecords([...alerts.map((a) => a.id), ...reports.map((r) => r.id)])
   }, [alerts, reports])
-
-  const refresh = () => setTick((t) => t + 1)
-  void tick
 
   const filtered = useMemo(
     () => alerts.filter((a) => sevFilter === 'All' || a.severity === sevFilter),
@@ -136,7 +134,7 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
                     </p>
                   </div>
                   <div className="flex shrink-0 gap-1.5">
-                    {canAckAlerts(role) && (status === 'new' || status === 'pending_verification') ? (
+                    {status === 'new' || status === 'pending_verification' ? (
                       <button
                         type="button"
                         onClick={() => quickAck(alert.id)}
@@ -202,21 +200,19 @@ export default function AlertsPanel({ alerts, zones, onSelectZone }: AlertsPanel
                     </p>
                   </div>
                   <div className="flex shrink-0 flex-wrap gap-1.5">
-                    {canReviewReports(role)
-                      ? (['under_investigation', 'rejected', 'duplicate', 'invalid'] as const).map(
-                          (s) => (
-                            <button
-                              key={s}
-                              type="button"
-                              onClick={() => reviewReport(r.id, s)}
-                              disabled={status === s}
-                              className="rounded-lg border border-[#D9D9D9] bg-white px-2.5 py-1.5 text-[13px] text-[#0F172A] hover:bg-[#E9E9E9] disabled:opacity-40"
-                            >
-                              {LIFECYCLE_LABELS[s]}
-                            </button>
-                          ),
-                        )
-                      : null}
+                    {(['under_investigation', 'rejected', 'duplicate', 'invalid'] as const).map(
+                      (s) => (
+                        <button
+                          key={s}
+                          type="button"
+                          onClick={() => reviewReport(r.id, s)}
+                          disabled={status === s}
+                          className="rounded-lg border border-[#D9D9D9] bg-white px-2.5 py-1.5 text-[13px] text-[#0F172A] hover:bg-[#E9E9E9] disabled:opacity-40"
+                        >
+                          {LIFECYCLE_LABELS[s]}
+                        </button>
+                      ),
+                    )}
                   </div>
                 </div>
               )

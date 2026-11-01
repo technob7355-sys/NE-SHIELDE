@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ChangeEvent, FormEvent } from 'react'
 import { CheckCircle2, MapPin, ShieldAlert, TriangleAlert } from 'lucide-react'
 import { formatDateTimeIST } from './risk'
@@ -19,7 +19,6 @@ import {
   type PhotoMeta,
   type ReportStatus,
 } from '../services/reports'
-import { canReviewReports, useRole, DEMO_ROLES } from '../services/roles'
 import type { ZoneWithScore } from './types'
 
 interface ReportViewProps {
@@ -50,11 +49,10 @@ function riskForZone(zones: ZoneWithScore[] | undefined, zoneId: string | null):
  *   uploaded — only metadata + a session preview on this device.
  * - Status after submit is "Submitted — pending verification", never
  *   "confirmed incident". Proximity to a monitored zone is context, not proof.
- * - Review buttons appear only for the Control-Room Operator demo role.
+ * - Review buttons are available to the control-room operator.
  */
 export default function ReportView({ onReportSubmitted, zones }: ReportViewProps) {
-  const role = useRole()
-  const isOperator = canReviewReports(role)
+  const isOperator = true
   const [reports, setReports] = useState<HazardReport[]>([])
   const [location, setLocation] = useState('')
   const [category, setCategory] = useState('')
@@ -82,10 +80,7 @@ export default function ReportView({ onReportSubmitted, zones }: ReportViewProps
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const operatorName = useMemo(() => {
-    const r = DEMO_ROLES.find((d) => d.id === role)
-    return `${r?.label ?? 'Operator'} (this device)`
-  }, [role])
+  const operatorName = 'Operator (this device)'
 
   const handlePhoto = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null
@@ -202,7 +197,7 @@ export default function ReportView({ onReportSubmitted, zones }: ReportViewProps
   if (confirmation) {
     const near = confirmation.nearestZoneId
     return (
-      <div className="mx-auto flex max-w-2xl flex-col gap-5">
+      <div className="mx-auto flex max-w-6xl flex-col gap-5">
         <div
           ref={confirmationRef}
           className="rounded-[15px] border border-[#34D399]/40 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]"
@@ -249,7 +244,7 @@ export default function ReportView({ onReportSubmitted, zones }: ReportViewProps
           </div>
           <p className="mt-4 text-[14px] leading-relaxed text-[#64748B]">
             What happens next: the report stays in this browser's review queue with the status
-            above. A control-room operator (on a device with the Operator demo role) can move it
+            above. A control-room operator can move it
             to Under Review → Verified → Assigned as the field situation is checked.
           </p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -274,7 +269,7 @@ export default function ReportView({ onReportSubmitted, zones }: ReportViewProps
   }
 
   return (
-    <div className="mx-auto flex max-w-2xl flex-col gap-5">
+    <div className="mx-auto flex max-w-6xl flex-col gap-5">
       {/* Hero */}
       <div
         className="relative overflow-hidden rounded-[15px] border border-[#003A66] bg-[#004F88] bg-cover bg-center"
@@ -296,28 +291,8 @@ export default function ReportView({ onReportSubmitted, zones }: ReportViewProps
         </div>
       </div>
 
-      {/* Safety panel (§15 — plain language) */}
-      <div className="rounded-[15px] border border-[#FBBF24]/40 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
-        <p className="flex items-center gap-2 text-[16px] font-bold text-[#0F172A]">
-          <ShieldAlert className="h-5 w-5 text-[#FBBF24]" aria-hidden="true" />
-          Stay safe first
-        </p>
-        <ul className="mt-2 flex list-disc flex-col gap-1.5 pl-5 text-[14px] leading-relaxed text-[#475569]">
-          <li>If you are near a failing slope, move away from it before doing anything else.</li>
-          <li>
-            No active alert <strong>does not mean you are safe</strong> — slopes can fail without
-            warning, and lack of alerts does not guarantee safety.
-          </li>
-          <li>Do not cross debris or blocked roads to take a photo. No photo is worth the risk.</li>
-        </ul>
-        <p className="mt-3 text-[14px] text-[#64748B]">
-          Emergency numbers (real public helplines, India — free to call):{' '}
-          <strong className="text-[#0F172A]">112</strong> (all emergencies) ·{' '}
-          <strong className="text-[#0F172A]">108</strong> (ambulance) ·{' '}
-          <strong className="text-[#0F172A]">1077</strong> (disaster management helpline)
-        </p>
-      </div>
-
+      <div className="grid items-start gap-5 lg:grid-cols-5">
+        <div className="flex flex-col gap-5 lg:col-span-3">
       {/* Form */}
       <div className="rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
         <p className="mb-1 text-[20px] font-bold text-[#0F172A]">Report a Hazard</p>
@@ -501,11 +476,34 @@ export default function ReportView({ onReportSubmitted, zones }: ReportViewProps
         </form>
       </div>
 
+        </div>
+        <div className="flex flex-col gap-5 lg:col-span-2">
+      {/* Safety panel (§15 — plain language) */}
+      <div className="rounded-[15px] border border-[#FBBF24]/40 bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+        <p className="flex items-center gap-2 text-[16px] font-bold text-[#0F172A]">
+          <ShieldAlert className="h-5 w-5 text-[#FBBF24]" aria-hidden="true" />
+          Stay safe first
+        </p>
+        <ul className="mt-2 flex list-disc flex-col gap-1.5 pl-5 text-[14px] leading-relaxed text-[#475569]">
+          <li>If you are near a failing slope, move away from it before doing anything else.</li>
+          <li>
+            No active alert <strong>does not mean you are safe</strong> — slopes can fail without
+            warning, and lack of alerts does not guarantee safety.
+          </li>
+          <li>Do not cross debris or blocked roads to take a photo. No photo is worth the risk.</li>
+        </ul>
+        <p className="mt-3 text-[14px] text-[#64748B]">
+          Emergency numbers (real public helplines, India — free to call):{' '}
+          <strong className="text-[#0F172A]">112</strong> (all emergencies) ·{' '}
+          <strong className="text-[#0F172A]">108</strong> (ambulance) ·{' '}
+          <strong className="text-[#0F172A]">1077</strong> (disaster management helpline)
+        </p>
+      </div>
       {/* My reports */}
       <div className="rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
         <p className="mb-1 text-[18px] font-bold text-[#0F172A]">Your Reports</p>
         <p className="mb-4 text-[13px] leading-relaxed text-[#64748B]">
-          Reports from this browser. Only the Control-Room Operator demo role can review them.
+          Reports from this browser. Review them below as the control-room operator.
         </p>
         {transitionError ? (
           <p className="mb-3 rounded-lg border border-[#F87171]/40 bg-[#F87171]/10 p-3 text-[14px] text-[#B91C1C]">
@@ -640,6 +638,8 @@ export default function ReportView({ onReportSubmitted, zones }: ReportViewProps
             })}
           </div>
         )}
+      </div>
+        </div>
       </div>
     </div>
   )

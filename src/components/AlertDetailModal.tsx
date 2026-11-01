@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { X } from 'lucide-react'
 import type { Alert } from '../services/alerts'
 import type { ZoneWithScore } from './types'
@@ -13,8 +13,6 @@ import {
   type LifecycleStatus,
 } from '../services/alertStore'
 import { formatDateTimeIST, formatTimeIST, LevelBadge } from './risk'
-import { RISK_THRESHOLDS } from '../config/thresholds'
-import { canAckAlerts, useRole } from '../services/roles'
 import { zoneQuality } from '../services/dataQuality'
 import DataQualityBadge from './dashboard/DataQualityBadge'
 
@@ -44,7 +42,6 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
 export default function AlertDetailModal({ alert, zone, onClose, onChanged }: AlertDetailModalProps) {
   const [noteText, setNoteText] = useState('')
   const [record, setRecord] = useState(() => getRecord(alert.id))
-  const role = useRole()
   const status: LifecycleStatus = record?.status ?? 'new'
   const log = getLogFor(alert.id)
   const quality = zone ? zoneQuality(zone) : null
@@ -61,14 +58,6 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
     setNoteText('')
     onChanged()
   }
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose()
-    }
-    document.addEventListener('keydown', onKey)
-    return () => document.removeEventListener('keydown', onKey)
-  }, [onClose])
 
   return (
     <div
@@ -129,7 +118,7 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
               label="Score / threshold"
               value={
                 score != null
-                  ? `${score} (Critical ≥${RISK_THRESHOLDS.critical} · High ≥${RISK_THRESHOLDS.high} · Moderate ≥${RISK_THRESHOLDS.moderate})`
+                  ? `${score} (Critical ≥80 · High ≥65 · Moderate ≥40)`
                   : '— (no live score)'
               }
             />
@@ -137,7 +126,7 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
               label="Inputs at trigger"
               value={
                 zone?.weather
-                  ? `${zone.weather.rainfall.toFixed(1)} mm/24h · soil ${zone.weather.soilMoisture.toFixed(0)}% (est.) · slope ${zone.location.slope}°`
+                  ? `${zone.weather.rainfall.toFixed(1)} mm/24h · soil ${zone.weather.soilMoisture.toFixed(0)}% · slope ${zone.location.slope}°`
                   : '—'
               }
             />
@@ -158,30 +147,23 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
           </p>
 
           <p className="mt-5 mb-2 text-[16px] font-bold text-[#0F172A]">Change status</p>
-          {canAckAlerts(role) ? (
-            <div className="flex flex-wrap gap-2">
-              {LIFECYCLE_FLOW[status].map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => changeStatus(s)}
-                  className="rounded-lg border border-[#D9D9D9] bg-white px-3 py-1.5 text-[14px] font-medium text-[#0F172A] hover:bg-[#E9E9E9]"
-                >
-                  {LIFECYCLE_LABELS[s]}
-                </button>
-              ))}
-              {LIFECYCLE_FLOW[status].length === 0 ? (
-                <p className="text-[14px] text-[#64748B]">Terminal state — no further transitions.</p>
-              ) : null}
-            </div>
-          ) : (
-            <p className="text-[14px] text-[#64748B]">
-              Status changes require the Control-Room Operator demo role.
-            </p>
-          )}
+          <div className="flex flex-wrap gap-2">
+            {LIFECYCLE_FLOW[status].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => changeStatus(s)}
+                className="rounded-lg border border-[#D9D9D9] bg-white px-3 py-1.5 text-[14px] font-medium text-[#0F172A] hover:bg-[#E9E9E9]"
+              >
+                {LIFECYCLE_LABELS[s]}
+              </button>
+            ))}
+            {LIFECYCLE_FLOW[status].length === 0 ? (
+              <p className="text-[14px] text-[#64748B]">Terminal state — no further transitions.</p>
+            ) : null}
+          </div>
 
           <p className="mt-5 mb-2 text-[16px] font-bold text-[#0F172A]">Investigation notes</p>
-          {canAckAlerts(role) ? (
           <div className="flex gap-2">
             <input
               type="text"
@@ -200,7 +182,6 @@ export default function AlertDetailModal({ alert, zone, onClose, onChanged }: Al
               Add
             </button>
           </div>
-          ) : null}
           {(record?.notes ?? []).length > 0 ? (
             <div className="mt-2 flex flex-col gap-2">
               {(record?.notes ?? []).map((n, i) => (

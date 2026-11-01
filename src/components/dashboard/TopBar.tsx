@@ -1,12 +1,10 @@
-import { ChevronDown, CloudRain, CloudSun, MapPin, Shield } from 'lucide-react'
+import { ChevronDown, MapPin, Shield } from 'lucide-react'
 import type { FeedState } from '../../services/dataQuality'
 import type { Notification } from '../../services/notifications'
 import NotificationCentre from './NotificationCentre'
 
 interface TopBarProps {
   lastUpdated: string
-  avgTempC: number | null
-  condition: string
   feedState: FeedState
   notifications: Notification[]
   unread: number
@@ -51,8 +49,6 @@ const PILL: Record<FeedState, { bg: string; border: string; color: string; dot: 
 /** Top bar. The data pill reflects verified freshness — never a fake "live". */
 export default function TopBar({
   lastUpdated,
-  avgTempC,
-  condition,
   feedState,
   notifications,
   unread,
@@ -110,18 +106,6 @@ export default function TopBar({
       </span>
 
       <div className="ml-auto flex shrink-0 items-center gap-4">
-        <span className="hidden items-center gap-2 text-[14px] text-[#FFFFFF] lg:inline-flex">
-          {condition === 'Clear' ? (
-            <CloudSun className="h-5 w-5 text-[#FBBF24]" aria-hidden="true" />
-          ) : (
-            <CloudRain className="h-5 w-5 text-[#60A5FA]" aria-hidden="true" />
-          )}
-          <span className="text-left leading-tight">
-            <span className="block font-bold">{avgTempC != null ? `${avgTempC.toFixed(0)}°C` : '—'}</span>
-            <span className="block text-[13px] text-[rgba(255,255,255,0.65)]">{condition}</span>
-          </span>
-        </span>
-
         <NotificationCentre
           notifications={notifications}
           unread={unread}

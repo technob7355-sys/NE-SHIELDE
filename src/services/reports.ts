@@ -7,12 +7,11 @@
  * - A submitted report is NOT a verified landslide event and must never be
  *   treated as ground truth, no matter how close it is to a monitored zone.
  * - Status transitions are a FRONTEND DEMO gated by the demo role switcher
- *   (services/roles.ts). Real review is a control-room process with backend
+ * Real review is a control-room process with backend
  *   RBAC — see docs/auth-rbac-guide.md.
  */
 import { LOCATIONS, type ZoneLocation } from '../data/locations'
 import { getStatus as getLifecycleStatus, setStatus as setLifecycleStatus } from './alertStore'
-import { canReviewReports, getRole } from './roles'
 
 /* ------------------------------------------------------------------ */
 /* Report status workflow (§10.4)                                      */
@@ -232,8 +231,7 @@ export function nextReportStatuses(status: ReportStatus): ReportStatus[] {
 
 /**
  * Move a report through the review workflow.
- * Returns { ok, error } — transitions are gated to the Control-Room Operator
- * demo role and must follow REPORT_FLOW.
+ * Returns { ok, error } — transitions must follow REPORT_FLOW.
  */
 export function transitionReportStatus(
   id: string,
@@ -241,9 +239,6 @@ export function transitionReportStatus(
   by: string,
   note?: string,
 ): { ok: boolean; error?: string } {
-  if (!canReviewReports(getRole())) {
-    return { ok: false, error: 'Report review needs the Control-Room Operator demo role.' }
-  }
   const reports = loadReports()
   const report = reports.find((r) => r.id === id)
   if (!report) return { ok: false, error: 'Report not found in this browser.' }

@@ -17,7 +17,6 @@ import {
   type IncidentStatus,
 } from '../services/incidents'
 import { getReportStatus, loadReports } from '../services/reports'
-import { canManageIncidents, canSeeIncidents, canWorkIncidents, useRole } from '../services/roles'
 
 interface IncidentsProps {
   alerts: Alert[]
@@ -38,13 +37,11 @@ const STATUS_STYLE: Record<IncidentStatus, string> = {
  * Real localStorage-backed workflow: create from a model alert or a VERIFIED
  * report, free-text officer assignment, status transitions, notes, and a
  * timestamped audit trail. Per-browser only — no server, no dispatch sync.
- * Hidden entirely for the Citizen demo role.
  */
 export default function Incidents({ alerts, zones }: IncidentsProps) {
-  const role = useRole()
-  const visible = canSeeIncidents(role)
-  const canWork = canWorkIncidents(role)
-  const canManage = canManageIncidents(role)
+  const visible = true
+  const canWork = true
+  const canManage = true
   const [incidents, setIncidents] = useState<Incident[]>(() => loadIncidents())
   const [sourceKind, setSourceKind] = useState<'alert' | 'report'>('alert')
   const [sourceId, setSourceId] = useState('')
@@ -130,7 +127,7 @@ export default function Incidents({ alerts, zones }: IncidentsProps) {
   }
 
   const handleNote = (id: string) => {
-    const res = addIncidentNote(id, `${role === 'field' ? 'Field Officer' : 'Operator'} (this device)`, noteText)
+    const res = addIncidentNote(id, 'Operator (this device)', noteText)
     if (!res.ok) setError(res.error ?? 'Note failed.')
     else {
       setNoteText('')

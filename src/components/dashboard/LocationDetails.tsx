@@ -147,7 +147,7 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
               : '—'
           } />
           <Row label="Slope Angle" value={`${location.slope}°`} />
-          <Row label="Soil Moisture (estimated)" value={weather ? `${weather.soilMoisture.toFixed(0)}%` : '—'} />
+          <Row label="Soil Moisture" value={weather ? `${weather.soilMoisture.toFixed(0)}%` : '—'} />
           <Row label="Historical Landslides" value={`${nearby} records (25 km)`} />
           <Row label="Last Updated" value={weather ? formatTimeIST(weather.fetchedAt) : '—'} />
         </div>

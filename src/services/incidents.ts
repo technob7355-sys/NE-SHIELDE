@@ -3,10 +3,9 @@
  *
  * HONESTY: incidents live ONLY in this browser. There is no server, no
  * cross-operator sync, no dispatch integration. Status changes are gated by
- * the demo role switcher (services/roles.ts). Real incident management is a
+ * Real incident management is a
  * backend concern — see docs/backend-notifications-spec.md.
  */
-import { canManageIncidents, canWorkIncidents, getRole } from './roles'
 
 export type IncidentStatus = 'open' | 'assigned' | 'in_progress' | 'resolved' | 'closed'
 
@@ -120,9 +119,6 @@ export function createIncident(
     assignee: string
   },
 ): { ok: boolean; error?: string; incident?: Incident } {
-  if (!canWorkIncidents(getRole())) {
-    return { ok: false, error: 'Creating incidents needs the Field Officer or Operator demo role.' }
-  }
   if (!input.title.trim()) return { ok: false, error: 'Title is required.' }
   const incident: Incident = {
     id: makeIncidentId(),
@@ -153,9 +149,6 @@ export function assignIncident(
   by: string,
   assignee: string,
 ): { ok: boolean; error?: string } {
-  if (!canManageIncidents(getRole())) {
-    return { ok: false, error: 'Assigning incidents needs the Control-Room Operator demo role.' }
-  }
   const all = loadIncidents()
   const incident = all.find((i) => i.id === id)
   if (!incident) return { ok: false, error: 'Incident not found in this browser.' }
@@ -173,9 +166,6 @@ export function transitionIncident(
   by: string,
   note?: string,
 ): { ok: boolean; error?: string } {
-  if (!canManageIncidents(getRole())) {
-    return { ok: false, error: 'Changing incident status needs the Control-Room Operator demo role.' }
-  }
   const all = loadIncidents()
   const incident = all.find((i) => i.id === id)
   if (!incident) return { ok: false, error: 'Incident not found in this browser.' }
@@ -198,9 +188,6 @@ export function transitionIncident(
 }
 
 export function addIncidentNote(id: string, by: string, text: string): { ok: boolean; error?: string } {
-  if (!canWorkIncidents(getRole())) {
-    return { ok: false, error: 'Adding notes needs the Field Officer or Operator demo role.' }
-  }
   if (!text.trim()) return { ok: false, error: 'Note text is required.' }
   const all = loadIncidents()
   const incident = all.find((i) => i.id === id)

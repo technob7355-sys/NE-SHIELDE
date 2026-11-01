@@ -17,14 +17,6 @@ const SEVERITY_ORDER: Record<Alert['severity'], number> = { Critical: 0, High: 1
  * Real alerts derived from live zone data — no simulation.
  * - Zones currently at High/Critical risk.
  * - Zones whose 3-day outlook rises above the current level.
- *
- * Ids are stable per (zone, condition), so unchanged conditions never
- * duplicate an alert. Repeat-suppression/cooldowns live in the notification
- * engine (services/notifications.ts), not here. A High → Critical escalation
- * keeps the alert id (same ongoing condition) but always emits a fresh
- * escalation event via the notification engine (never cooldown-suppressed).
- * BACKEND GAP: lifecycle is per-browser localStorage — true multi-operator
- * sync needs the server described in docs/backend-notifications-spec.md.
  */
 export function buildAlerts(zones: ZoneWithScore[]): Alert[] {
   const alerts: Alert[] = []

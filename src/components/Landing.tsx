@@ -32,7 +32,6 @@ interface LandingProps {
   onOpenMap: () => void
   onOpenAlerts: () => void
   onOpenHistory: () => void
-  onOpenDataSources: () => void
 }
 
 const GITHUB_URL = 'https://github.com/technob7355-sys/NE-SHIELDE'
@@ -263,7 +262,7 @@ const MILESTONES: { title: string; body: string }[] = [
   },
   {
     title: '521 historical events mapped',
-    body: 'NASA GLC/COOLR landslide inventory (2007–2022) wired into the explorer.',
+    body: 'NASA GLC/COOLR landslide inventory (2007–2018) wired into the explorer.',
   },
 ]
 
@@ -276,7 +275,6 @@ export default function Landing({
   onOpenMap,
   onOpenAlerts,
   onOpenHistory,
-  onOpenDataSources,
 }: LandingProps) {
   const states = useMemo(() => new Set(zones.map((z) => z.location.state)).size, [zones])
 
@@ -502,7 +500,7 @@ export default function Landing({
           <div className="flex items-center gap-4">
             <p className="text-[40px] leading-none font-extrabold text-[#004F88]">521</p>
             <p className="text-[14px] leading-relaxed text-[#475569]">
-              historical landslide events mapped from the NASA GLC / COOLR inventory (2007–2022).
+              historical landslide events mapped from the NASA GLC / COOLR inventory (2007–2018).
             </p>
           </div>
           <p className="mt-3 text-[13px] leading-relaxed text-[#64748B]">
@@ -528,14 +526,7 @@ export default function Landing({
 
       <p className="text-center text-[13px] text-[#64748B]">
         NE-SHIELD · Landslide Early Warning System for Northeast India · Model outputs are not
-        official government warnings. ·{' '}
-        <button
-          type="button"
-          onClick={onOpenDataSources}
-          className="underline underline-offset-2 hover:text-[#0F172A]"
-        >
-          Data Sources
-        </button>
+        official government warnings.
       </p>
     </div>
   )
