@@ -268,29 +268,32 @@ export default function DashboardMap({
           </div>
         </div>
 
-      <div className="absolute bottom-3 left-3 z-[500] rounded-[15px] border border-[#D9D9D9] bg-white/90 px-3.5 py-2.5 backdrop-blur-sm shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
-        <p className="mb-1.5 text-[13px] font-medium text-[#64748B]">Landslide Risk Level</p>
-        <div className="flex flex-col gap-1">
+      <div className="absolute bottom-3 left-3 z-[500] rounded-xl border border-white/40 bg-[#0F172A]/85 px-3.5 py-2.5 shadow-[0_4px_16px_rgba(15,23,42,0.35)] backdrop-blur-md">
+        <p className="mb-1.5 text-[11px] font-bold tracking-widest text-white/60 uppercase">Risk level</p>
+        <div className="flex flex-col gap-1.5">
           {[
             ['Low', '#34D399'],
             ['Moderate', '#FBBF24'],
             ['High', '#FB923C'],
             ['Critical', '#F87171'],
-            ['Unknown', '#64748B'],
-            ['Past event', '#9AA7B8'],
+            ['Unknown', '#94A3B8'],
+            ['Past event', '#CBD5E1'],
           ].map(([label, color]) => (
-            <span key={label} className="inline-flex items-center gap-2 text-[13px] text-[#0F172A]">
-              <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: color }} />
+            <span key={label} className="inline-flex items-center gap-2 text-[13px] font-medium text-white">
+              <span
+                className="h-2.5 w-2.5 shrink-0 rounded-full ring-2 ring-white/25"
+                style={{ backgroundColor: color }}
+              />
               {label}
             </span>
           ))}
         </div>
         {showRoutes ? (
-          <div className="mt-2 flex flex-col gap-1 border-t border-[#D9D9D9] pt-2">
+          <div className="mt-2 flex flex-col gap-1 border-t border-white/15 pt-2">
             {evacRoutes.map((route, i) => (
               <span
                 key={route.label}
-                className="inline-flex items-center gap-2 text-[13px] text-[#0F172A]"
+                className="inline-flex items-center gap-2 text-[13px] font-medium text-white"
               >
                 <span
                   className="h-0.5 w-4 rounded"

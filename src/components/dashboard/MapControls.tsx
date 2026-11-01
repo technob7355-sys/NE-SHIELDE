@@ -6,6 +6,16 @@ import { riskColor } from '../risk'
 export const RISK_FILTERS = ['All', 'Critical', 'High', 'Moderate', 'Low', 'Unknown'] as const
 export type RiskFilter = (typeof RISK_FILTERS)[number]
 
+/** Dot color per filter — matches the map's risk palette. */
+export const RISK_FILTER_COLORS: Record<RiskFilter, string | null> = {
+  All: null,
+  Critical: '#F87171',
+  High: '#FB923C',
+  Moderate: '#FBBF24',
+  Low: '#34D399',
+  Unknown: '#64748B',
+}
+
 /** Instant local search over the 20 monitoring zones (no network). */
 export function ZoneSearch({
   zones,
@@ -118,18 +128,26 @@ export function RiskFilterChips({
     <div className={containerClass ?? 'flex flex-wrap gap-1.5'} role="group" aria-label="Filter zones by risk level">
       {RISK_FILTERS.map((f) => {
         const active = value === f
+        const dot = RISK_FILTER_COLORS[f]
         return (
           <button
             key={f}
             type="button"
             onClick={() => onChange(f)}
             aria-pressed={active}
-            className={`rounded-full border px-2.5 py-1 text-center text-[13px] font-medium whitespace-nowrap backdrop-blur-sm transition-all ${
+            className={`inline-flex items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-center text-[13px] font-medium whitespace-nowrap backdrop-blur-sm transition-all ${
               active
-                ? 'border-[#106EBE] bg-[#106EBE]/25 text-[#0F172A]'
-                : 'border-[#D9D9D9] bg-white/85 text-[#64748B] hover:text-[#0F172A]'
+                ? 'border-[#106EBE] bg-[#106EBE] text-white shadow-[0_2px_8px_rgba(16,110,190,0.35)]'
+                : 'border-[#D9D9D9] bg-white/90 text-[#475569] hover:border-[#106EBE]/50 hover:text-[#0F172A]'
             }`}
           >
+            {dot ? (
+              <span
+                className="h-2 w-2 shrink-0 rounded-full"
+                style={{ backgroundColor: dot }}
+                aria-hidden="true"
+              />
+            ) : null}
             {f}
           </button>
         )

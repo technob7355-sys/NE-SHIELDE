@@ -30,10 +30,10 @@ interface LocationDetailsProps {
 
 function Row({ label, value, accent }: { label: string; value: string; accent?: boolean }) {
   return (
-    <div className="flex items-center justify-between gap-3 py-1.5">
-      <span className="text-[14px] text-[#64748B]">{label}</span>
+    <div className="flex items-center justify-between gap-4 py-2">
+      <span className="text-[14px] text-[#475569]">{label}</span>
       <span
-        className={`text-right text-[14px] font-medium whitespace-nowrap ${accent ? 'text-[#F87171]' : 'text-[#0F172A]'}`}
+        className={`text-right text-[14px] font-semibold whitespace-nowrap ${accent ? 'text-[#DC2626]' : 'text-[#0F172A]'}`}
       >
         {value}
       </span>
@@ -43,7 +43,8 @@ function Row({ label, value, accent }: { label: string; value: string; accent?: 
 
 function SectionLabel({ children }: { children: string }) {
   return (
-    <p className="mt-4 mb-1 text-[13px] font-bold tracking-wider text-[#64748B] uppercase">
+    <p className="mt-5 mb-2 flex items-center gap-2 text-[14px] font-bold text-[#004F88]">
+      <span className="h-4 w-1 rounded-full bg-[#106EBE]" aria-hidden="true" />
       {children}
     </p>
   )
@@ -81,9 +82,9 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
-        <div className="flex items-start justify-between gap-3">
+        <div className="flex items-start justify-between gap-3 rounded-xl bg-gradient-to-r from-[#EFF6FF] to-transparent px-3 py-2.5">
           <div className="min-w-0">
-            <p className="text-[16px] leading-snug font-bold text-[#0F172A]">{location.name}</p>
+            <p className="text-[17px] leading-snug font-bold text-[#0F172A]">{location.name}</p>
             <p className="mt-0.5 text-[14px] text-[#64748B]">{location.state}, India</p>
           </div>
           {prediction ? <LevelBadge level={prediction.level} /> : null}
@@ -128,7 +129,7 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
         ) : null}
 
         <SectionLabel>Risk &amp; Weather</SectionLabel>
-        <div className="divide-y divide-[#D9D9D9] border-y border-[#D9D9D9]">
+        <div className="divide-y divide-[#E2E8F0] rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4">
           <Row
             label="Predicted Risk"
             value={

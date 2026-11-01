@@ -43,9 +43,11 @@ export default function SafetyPanel({
 }: SafetyPanelProps) {
   return (
     <div className="mt-1">
-      <div className="flex items-center gap-2">
-        <HeartPulse className="h-4 w-4 text-[#F87171]" aria-hidden="true" />
-        <p className="text-[14px] font-bold tracking-wide text-[#0F172A] uppercase">
+      <div className="flex items-center gap-2.5 rounded-xl bg-gradient-to-r from-[#FFF1F2] via-[#FFE4E6] to-transparent px-3 py-2">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-[#FB7185] to-[#E11D48] shadow-[0_2px_6px_rgba(225,29,72,0.35)]">
+          <HeartPulse className="h-4 w-4 text-white" aria-hidden="true" />
+        </span>
+        <p className="text-[14px] font-bold tracking-wide text-[#881337] uppercase">
           Nearby Hospitals
         </p>
       </div>
@@ -73,21 +75,24 @@ export default function SafetyPanel({
                 type="button"
                 onClick={() => onSelectHospital(h)}
                 aria-pressed={active}
-                className={`flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-left transition-all duration-200 active:scale-[0.98] ${
+                className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-all duration-200 active:scale-[0.98] ${
                   active
-                    ? 'border-[#106EBE] bg-[#106EBE]/15'
-                    : 'border-[#D9D9D9] bg-[#F0F0F0] hover:border-[#106EBE]/60'
+                    ? 'border-[#106EBE] bg-[#106EBE]/15 shadow-[0_2px_10px_rgba(16,110,190,0.25)]'
+                    : 'border-[#FECDD3] bg-gradient-to-r from-[#FFF1F2] to-white hover:border-[#F87171]/60 hover:shadow-[0_2px_10px_rgba(248,113,113,0.18)]'
                 }`}
               >
-                <span className="min-w-0">
-                  <span className="block truncate text-[14px] font-medium text-[#0F172A]" title={h.name}>
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FB7185] to-[#E11D48] shadow-[0_2px_6px_rgba(225,29,72,0.35)]">
+                  <HeartPulse className="h-4 w-4 text-white" aria-hidden="true" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[14px] font-semibold text-[#0F172A]" title={h.name}>
                     {h.name}
                   </span>
                   <span className="block text-[13px] text-[#64748B]">
                     {h.kind === 'clinic' ? 'Clinic' : 'Hospital'}
                   </span>
                 </span>
-                <span className="shrink-0 text-[14px] font-medium whitespace-nowrap text-[#64748B]">
+                <span className="shrink-0 rounded-full bg-[#FFE4E6] px-2.5 py-1 text-[13px] font-bold whitespace-nowrap text-[#BE123C]">
                   {h.distanceKm.toFixed(1)} km
                 </span>
               </button>
