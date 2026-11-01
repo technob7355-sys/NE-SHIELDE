@@ -66,3 +66,4 @@ export type TabId =
   | 'map'
   | 'history'
   | 'report'
+  | 'datasources'

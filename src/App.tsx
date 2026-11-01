@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   ArrowLeft,
   ClipboardList,
+  Database,
   History,
   Home,
   LayoutDashboard,
@@ -33,9 +34,11 @@ import Landing from './components/Landing'
 import MapView from './components/MapView'
 import HistoricalExplorer from './components/HistoricalExplorer'
 import ReportView from './components/ReportView'
+import Incidents from './components/Incidents'
+import DataSources from './components/DataSources'
 import ZoneDetail from './components/ZoneDetail'
 import TopBar from './components/dashboard/TopBar'
-import SideNav from './components/dashboard/SideNav'
+import SideNav, { RoleSwitcher } from './components/dashboard/SideNav'
 import OverviewDashboard from './components/dashboard/OverviewDashboard'
 import AlertsPanel from './components/dashboard/AlertsPanel'
 import type { TabId, ZoneLocation, ZoneWeather, ZoneWithScore } from './components/types'
@@ -48,6 +51,7 @@ const TABS: { id: TabId; label: string; title: string; icon: typeof LayoutDashbo
   { id: 'alerts', label: 'Alerts', title: 'Alerts & Warnings', icon: AlertTriangle },
   { id: 'history', label: 'History', title: 'Historical Events', icon: History },
   { id: 'report', label: 'Report Hazard', title: 'Report Hazard', icon: ClipboardList },
+  { id: 'datasources', label: 'Data Sources', title: 'Data Sources', icon: Database },
 ]
 
 export default function App() {
@@ -159,14 +163,6 @@ export default function App() {
   const handleSelectZone = useCallback((zone: ZoneWithScore) => {
     setSelectedId(zone.location.id)
   }, [])
-
-  const handleSelectZoneId = useCallback(
-    (zoneId: string) => {
-      const zone = zones.find((z) => z.location.id === zoneId)
-      if (zone) handleSelectZone(zone)
-    },
-    [zones, handleSelectZone],
-  )
 
   const [tabHistory, setTabHistory] = useState<TabId[]>([])
 
@@ -383,7 +379,7 @@ export default function App() {
             </span>
           </div>
           <nav
-            className="flex gap-1 overflow-x-auto px-3 pb-3 whitespace-nowrap"
+            className="flex gap-1 overflow-x-auto px-3 pb-2 whitespace-nowrap"
             aria-label="Main mobile"
           >
             {TABS.map((tab) => {
@@ -405,6 +401,9 @@ export default function App() {
               )
             })}
           </nav>
+          <div className="flex items-center justify-end px-4 pb-3">
+            <RoleSwitcher variant="compact" />
+          </div>
         </div>
 
         <div className="flex items-start">
@@ -444,6 +443,7 @@ export default function App() {
                   onOpenMap={() => handleTabChange('map')}
                   onOpenAlerts={() => handleTabChange('alerts')}
                   onOpenHistory={() => handleTabChange('history')}
+                  onOpenDataSources={() => handleTabChange('datasources')}
                 />
               ) : null}
               {activeTab === 'overview' ? (
@@ -454,6 +454,7 @@ export default function App() {
                   alerts={alerts}
                   onSelectZone={handleSelectZone}
                   onDeselectZone={handleDeselectZone}
+                  onOpenAlerts={() => handleTabChange('alerts')}
                   onOpenMap={() => {
                     handleTabChange('map')
                     if (focusZone) handleSelectZone(focusZone)
@@ -471,11 +472,15 @@ export default function App() {
               ) : null}
               {activeTab === 'history' ? <HistoricalExplorer /> : null}
               {activeTab === 'alerts' ? (
-                <AlertsPanel alerts={alerts} zones={zones} onSelectZone={handleSelectZoneId} />
+                <div className="flex flex-col gap-5">
+                  <AlertsPanel alerts={alerts} zones={zones} onSelectZone={handleOpenLocation} />
+                  <Incidents alerts={alerts} zones={zones} />
+                </div>
               ) : null}
               {activeTab === 'report' ? (
-                <ReportView onReportSubmitted={handleReportSubmitted} />
+                <ReportView onReportSubmitted={handleReportSubmitted} zones={zones} />
               ) : null}
+              {activeTab === 'datasources' ? <DataSources /> : null}
             </div>
           </main>
 

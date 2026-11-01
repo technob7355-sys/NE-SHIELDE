@@ -9,6 +9,9 @@ import DataQualityBadge from './DataQualityBadge'
 interface StatCardsProps {
   zones: ZoneWithScore[]
   alerts: Alert[]
+  /** Click-through handlers. Cards with no real destination stay non-clickable (no dead buttons). */
+  onSelectZone?: (zone: ZoneWithScore) => void
+  onOpenAlerts?: () => void
 }
 
 function Card({
@@ -19,6 +22,7 @@ function Card({
   value,
   sub,
   right,
+  onClick,
 }: {
   icon: typeof Activity
   iconBg: string
@@ -27,10 +31,28 @@ function Card({
   value: string
   sub: React.ReactNode
   right?: React.ReactNode
+  onClick?: () => void
 }) {
   const Icon = icon
   return (
-    <div className="rounded-[15px] border border-[#d9d9d9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+    <div
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={
+        onClick
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault()
+                onClick()
+              }
+            }
+          : undefined
+      }
+      title={onClick ? 'View details' : undefined}
+      className={`rounded-[15px] border border-[#d9d9d9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)] ${
+        onClick ? 'cursor-pointer transition-all hover:border-[#106EBE]/40 hover:shadow-[0_1px_3px_rgba(15,23,42,0.08),0_10px_28px_rgba(16,110,190,0.18)] active:scale-[0.99]' : ''
+      }`}>
       <div className="mb-3 flex items-center justify-between gap-3">
         <span
           className="inline-flex h-10 w-10 items-center justify-center rounded-lg"
@@ -48,7 +70,7 @@ function Card({
 }
 
 /** Operational KPI cards — every value computed from live zone data. */
-export default function StatCards({ zones, alerts }: StatCardsProps) {
+export default function StatCards({ zones, alerts, onSelectZone, onOpenAlerts }: StatCardsProps) {
   const scored = zones.filter((z) => z.prediction)
   const highRisk = scored.filter(
     (z) => z.prediction!.level === 'Critical' || z.prediction!.level === 'High',
@@ -71,6 +93,7 @@ export default function StatCards({ zones, alerts }: StatCardsProps) {
   const fresh = qualities.filter((q) => q.status === 'fresh').length
   const stale = qualities.filter((q) => q.status === 'stale').length
   const unavailable = qualities.filter((q) => q.status === 'unavailable').length
+  const firstBadZone = zones[qualities.findIndex((q) => q.status === 'stale' || q.status === 'unavailable')] ?? null
 
   const worst = [...scored].sort(
     (a, b) => (b.prediction?.score ?? 0) - (a.prediction?.score ?? 0),
@@ -96,6 +119,7 @@ export default function StatCards({ zones, alerts }: StatCardsProps) {
         value={String(highRisk.length)}
         sub={rising > 0 ? `↑ ${rising} rising in 3-day outlook` : 'No rising trend in outlook'}
         right={worst ? <LevelBadge level={worst.prediction!.level} /> : undefined}
+        onClick={onSelectZone && worst ? () => onSelectZone(worst) : undefined}
       />
       <Card
         icon={BellRing}
@@ -104,6 +128,7 @@ export default function StatCards({ zones, alerts }: StatCardsProps) {
         title="Critical Alerts"
         value={String(criticalAlerts.length)}
         sub={`${alerts.length} total active alerts`}
+        onClick={onOpenAlerts}
       />
       <Card
         icon={CloudRain}
@@ -112,6 +137,7 @@ export default function StatCards({ zones, alerts }: StatCardsProps) {
         title="Max 24h Rainfall"
         value={`${maxRain.toFixed(0)} mm`}
         sub={maxRainZone ? `at ${maxRainZone.location.name}` : 'Waiting for live data'}
+        onClick={onSelectZone && maxRainZone ? () => onSelectZone(maxRainZone) : undefined}
       />
       <Card
         icon={Activity}
@@ -130,6 +156,7 @@ export default function StatCards({ zones, alerts }: StatCardsProps) {
             ) : null}
           </>
         }
+        onClick={onSelectZone && firstBadZone ? () => onSelectZone(firstBadZone) : undefined}
       />
       <Card
         icon={RefreshCw}

@@ -45,6 +45,7 @@ export interface ThresholdInputs {
   rainfall: number
   rainfall3d: number
   rainfall30d: number
+  /** Open-Meteo model estimate (% of saturation) — not a sensor reading. */
   soilMoisture: number
   slope: number
 }
@@ -183,7 +184,7 @@ export function computeTriggers(
                 title: `${zone.location.name} entered Critical risk`,
                 body:
                   `Risk rose from ${prevLevel} (${prevScore}) to Critical (${score}). ` +
-                  `24h rain ${inputs.rainfall.toFixed(1)} mm, soil ${inputs.soilMoisture.toFixed(0)}%, slope ${inputs.slope}°.`,
+                  `24h rain ${inputs.rainfall.toFixed(1)} mm, soil ${inputs.soilMoisture.toFixed(0)}% (est.), slope ${inputs.slope}°.`,
                 zoneId: zid,
                 zoneName: zone.location.name,
                 prevLevel,

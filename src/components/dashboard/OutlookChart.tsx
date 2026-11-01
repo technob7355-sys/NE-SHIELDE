@@ -41,7 +41,7 @@ export default function OutlookChart({ days }: OutlookChartProps) {
         ))}
       </defs>
       <text x={2} y={PAD_T - 8} fill="#64748B" fontSize="12">
-        Score
+        Score (0–100)
       </text>
       {[0.25, 0.5, 0.75].map((f) => (
         <line

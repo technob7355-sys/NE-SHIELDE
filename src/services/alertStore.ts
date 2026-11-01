@@ -33,8 +33,15 @@ export const LIFECYCLE_FLOW: Record<LifecycleStatus, LifecycleStatus[]> = {
   new: ['pending_verification', 'acknowledged', 'rejected', 'duplicate', 'invalid'],
   pending_verification: ['acknowledged', 'under_investigation', 'rejected', 'duplicate', 'invalid'],
   acknowledged: ['under_investigation', 'action_required', 'resolved'],
-  under_investigation: ['action_required', 'acknowledged', 'resolved'],
-  action_required: ['under_investigation', 'resolved'],
+  under_investigation: [
+    'action_required',
+    'acknowledged',
+    'resolved',
+    'rejected',
+    'duplicate',
+    'invalid',
+  ],
+  action_required: ['under_investigation', 'resolved', 'rejected', 'duplicate', 'invalid'],
   resolved: [],
   rejected: [],
   duplicate: [],
@@ -155,4 +162,33 @@ export function getLog(): ActionLogEntry[] {
 
 export function getLogFor(targetId: string): ActionLogEntry[] {
   return getLog().filter((e) => e.targetId === targetId)
+}
+
+const TERMINAL_STATES: ReadonlySet<LifecycleStatus> = new Set([
+  'resolved',
+  'rejected',
+  'duplicate',
+  'invalid',
+])
+
+/**
+ * Drop lifecycle records that reached a terminal state for ids that are no
+ * longer active (neither a live alert nor a known hazard report). Without
+ * this, a genuinely re-raised alert would inherit the old episode's
+ * "Resolved"/"Rejected" status and look already handled. Non-terminal
+ * records are kept on purpose: a brief data blip that drops and re-raises
+ * an alert must not wipe in-progress operator work. Action history
+ * (getLog) is never pruned here.
+ */
+export function pruneStaleRecords(activeIds: string[]): void {
+  const active = new Set(activeIds)
+  const all = readJSON<Record<string, AlertRecord>>(RECORDS_KEY, {})
+  let changed = false
+  for (const [id, rec] of Object.entries(all)) {
+    if (!active.has(id) && TERMINAL_STATES.has(rec.status)) {
+      delete all[id]
+      changed = true
+    }
+  }
+  if (changed) writeJSON(RECORDS_KEY, all)
 }

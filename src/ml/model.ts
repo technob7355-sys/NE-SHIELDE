@@ -14,7 +14,10 @@
 //          (ISRO coefficients scaled x0.1; raw values saturate on cumulative
 //          sums — see ml/formula.py header)
 //   score = round(0.8*base + 20*P), capped 0..100
-//   Levels: >=80 Critical, >=65 High, >=40 Moderate, else Low
+//   Levels: bands from src/config/thresholds.ts
+//   (Critical ≥ critical, High ≥ high, Moderate ≥ moderate, else Low)
+
+import { RISK_THRESHOLDS } from '../config/thresholds'
 
 export interface RiskInput {
   rainfall: number;
@@ -39,9 +42,9 @@ export interface RiskResult {
 }
 
 export function levelOf(score: number): RiskLevel {
-  if (score >= 80) return 'Critical';
-  if (score >= 65) return 'High';
-  if (score >= 40) return 'Moderate';
+  if (score >= RISK_THRESHOLDS.critical) return 'Critical';
+  if (score >= RISK_THRESHOLDS.high) return 'High';
+  if (score >= RISK_THRESHOLDS.moderate) return 'Moderate';
   return 'Low';
 }
 
@@ -126,6 +129,11 @@ export function worstLevel(levels: (string | null | undefined)[]): RiskLevel | n
 
 // Mirrors ml/metrics.json (values filled in after training — see
 // src/data/modelInfo.ts, which is the generated copy the UI reads).
+//
+// HONESTY WARNING: levelAccuracy 97.5 is FORMULA-FIDELITY on easy train/test
+// splits, NOT real-world landslide prediction accuracy. NEVER surface this
+// number in the UI as "model accuracy" — the honest evaluated figure is 68.3%
+// on wet-day grouped time-split (see docs/model-card.md).
 export const MODEL_INFO = {
   version: 'V4',
   bestModel: 'GradientBoosting',

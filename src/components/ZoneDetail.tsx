@@ -35,7 +35,7 @@ export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
     { label: 'Rain 24h', value: weather ? `${weather.rainfall.toFixed(1)} mm` : '—' },
     { label: 'Rain 3-day', value: weather ? `${weather.rainfall3d.toFixed(1)} mm` : '—' },
     { label: 'Rain 30-day', value: weather ? `${weather.rainfall30d.toFixed(1)} mm` : '—' },
-    { label: 'Soil', value: weather ? `${weather.soilMoisture.toFixed(1)} %` : '—' },
+    { label: 'Soil (estimated)', value: weather ? `${weather.soilMoisture.toFixed(1)} %` : '—' },
     { label: 'Slope', value: `${location.slope} °` },
   ]
 
@@ -111,7 +111,7 @@ export default function ZoneDetail({ zone, alerts, onClose }: ZoneDetailProps) {
               </table>
             </div>
             <p className="mt-2 text-[14px] leading-relaxed text-[#64748B]">
-              Weather: Open-Meteo (fetched {weather ? formatTimeIST(weather.fetchedAt) : '—'}) • Slope:
+              Weather: Open-Meteo (fetched {weather ? formatTimeIST(weather.fetchedAt) : '—'}) • Soil: model estimate (not a sensor) • Slope:
               terrain attribute
             </p>
           </div>
