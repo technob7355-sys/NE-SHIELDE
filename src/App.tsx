@@ -467,7 +467,7 @@ export default function App() {
             </div>
           </main>
 
-          {panelZone ? (
+          {panelZone && activeTab !== 'overview' ? (
             <aside
               aria-hidden={!panelVisible}
               className={`sticky top-0 h-screen w-[min(380px,92vw)] shrink-0 overflow-hidden bg-white transition-all duration-300 ease-out md:top-16 md:h-[calc(100vh-4rem)] max-md:fixed max-md:inset-y-0 max-md:right-0 max-md:z-[1200] max-md:h-full max-md:shadow-2xl ${
