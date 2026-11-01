@@ -25,6 +25,8 @@ interface DashboardMapProps {
   evacRoutes?: EvacRoute[]
   evacHospital?: Hospital | null
   evacFrom?: { lat: number; lng: number } | null
+  /** Stretch the map to fill its parent height (overview layout). */
+  fillHeight?: boolean
 }
 
 const LAYERS = [
@@ -62,6 +64,7 @@ export default function DashboardMap({
   evacRoutes = [],
   evacHospital = null,
   evacFrom = null,
+  fillHeight = false,
 }: DashboardMapProps) {
   // Layer options stay hidden behind the floating button until the user asks.
   const [open, setOpen] = useState(false)
@@ -112,8 +115,8 @@ export default function DashboardMap({
   )
 
   return (
-    <div className="flex flex-col gap-3">
-      <div className="flex flex-col gap-1.5">
+    <div className={fillHeight ? 'flex h-full flex-col gap-3' : 'flex flex-col gap-3'}>
+      <div className="flex shrink-0 flex-col gap-1.5">
         <p className="text-[13px] font-medium text-[#64748B]">Show zones:</p>
         <RiskFilterChips
           value={riskFilter}
@@ -121,14 +124,20 @@ export default function DashboardMap({
           containerClass="grid grid-cols-3 gap-1.5"
         />
       </div>
-    <div className="relative overflow-hidden rounded-[15px] border border-[#D9D9D9]">
+    <div
+      className={
+        fillHeight
+          ? 'relative min-h-[480px] flex-1 overflow-hidden rounded-[15px] border border-[#D9D9D9]'
+          : 'relative overflow-hidden rounded-[15px] border border-[#D9D9D9]'
+      }
+    >
       <MapContainer
         center={[26.8, 92.5]}
         zoom={6}
         scrollWheelZoom={false}
         zoomControl={false}
         attributionControl={false}
-        className="h-[320px] w-full md:h-[420px]"
+        className={fillHeight ? 'h-full w-full' : 'h-[320px] w-full md:h-[420px]'}
       >
         <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}" />
         {layers.labels ? (

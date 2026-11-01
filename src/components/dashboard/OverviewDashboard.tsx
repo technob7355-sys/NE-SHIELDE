@@ -378,10 +378,10 @@ export default function OverviewDashboard({
           </div>
         )}
 
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-3">
+      <div className="grid grid-cols-1 items-stretch gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">
-          <div className="overflow-hidden rounded-[15px] border border-[#D9D9D9] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#D9D9D9] bg-white px-5 py-4">
+          <div className="flex h-full flex-col overflow-hidden rounded-[15px] border border-[#D9D9D9] bg-white shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">
+            <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-[#D9D9D9] bg-white px-5 py-4">
               <div>
                 <p className="text-[18px] font-bold text-[#0F172A]">Live Risk Map</p>
                 <p className="mt-0.5 text-[13px] text-[#64748B]">
@@ -396,14 +396,17 @@ export default function OverviewDashboard({
                 Open full live map →
               </button>
             </div>
-            <DashboardMap
-              zones={zones}
-              onSelectZone={onSelectZone}
-              onDeselectZone={onDeselectZone}
-              evacRoutes={routes}
-              evacHospital={selectedHospital}
-              evacFrom={evacFrom}
-            />
+            <div className="flex-1 p-4 md:p-5">
+              <DashboardMap
+                zones={zones}
+                onSelectZone={onSelectZone}
+                onDeselectZone={onDeselectZone}
+                evacRoutes={routes}
+                evacHospital={selectedHospital}
+                evacFrom={evacFrom}
+                fillHeight
+              />
+            </div>
           </div>
         </div>
         <LocationDetails
