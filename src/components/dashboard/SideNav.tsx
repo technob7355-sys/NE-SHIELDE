@@ -18,7 +18,7 @@ const GROUPS: { label: string; items: { id: TabId; label: string; icon: typeof L
   {
     label: 'Monitoring',
     items: [
-      { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+      { id: 'overview', label: 'Dashboard', icon: LayoutDashboard },
       { id: 'map', label: 'Risk Map', icon: MapIcon },
       { id: 'alerts', label: 'Alerts & Warnings', icon: AlertTriangle },
       { id: 'history', label: 'History', icon: History },
