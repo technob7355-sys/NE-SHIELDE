@@ -113,9 +113,13 @@ export default function DashboardMap({
 
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center gap-3">
-        <p className="text-[14px] font-medium text-[#64748B]">Show zones:</p>
-        <RiskFilterChips value={riskFilter} onChange={setRiskFilter} />
+      <div className="flex flex-col gap-1.5">
+        <p className="text-[13px] font-medium text-[#64748B]">Show zones:</p>
+        <RiskFilterChips
+          value={riskFilter}
+          onChange={setRiskFilter}
+          containerClass="grid grid-cols-3 gap-1.5"
+        />
       </div>
     <div className="relative overflow-hidden rounded-[15px] border border-[#D9D9D9]">
       <MapContainer

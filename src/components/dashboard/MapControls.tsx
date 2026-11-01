@@ -108,12 +108,14 @@ export function ZoneSearch({
 export function RiskFilterChips({
   value,
   onChange,
+  containerClass,
 }: {
   value: RiskFilter
   onChange: (f: RiskFilter) => void
+  containerClass?: string
 }) {
   return (
-    <div className="flex flex-wrap gap-1.5" role="group" aria-label="Filter zones by risk level">
+    <div className={containerClass ?? 'flex flex-wrap gap-1.5'} role="group" aria-label="Filter zones by risk level">
       {RISK_FILTERS.map((f) => {
         const active = value === f
         return (
@@ -122,7 +124,7 @@ export function RiskFilterChips({
             type="button"
             onClick={() => onChange(f)}
             aria-pressed={active}
-            className={`rounded-full border px-2.5 py-1 text-[13px] font-medium whitespace-nowrap backdrop-blur-sm transition-all ${
+            className={`rounded-full border px-2.5 py-1 text-center text-[13px] font-medium whitespace-nowrap backdrop-blur-sm transition-all ${
               active
                 ? 'border-[#106EBE] bg-[#106EBE]/25 text-[#0F172A]'
                 : 'border-[#D9D9D9] bg-white/85 text-[#64748B] hover:text-[#0F172A]'

@@ -371,9 +371,6 @@ export default function Landing({
               ))}
             </div>
           )}
-          <p className="mt-3 text-[13px] leading-relaxed text-[#64748B]">
-            Model-generated bulletin — not an official government warning.
-          </p>
         </PortalPanel>
 
         {/* Live susceptibility map */}

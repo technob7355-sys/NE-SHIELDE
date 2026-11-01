@@ -182,6 +182,7 @@ export default function App() {
       // Moving to another tab dismisses the zone panel (it slides out).
       setSelectedId(null)
       setActiveTab(tab)
+      window.scrollTo(0, 0)
       window.history.pushState({ tab, stack: nextStack }, '')
     },
     [activeTab, tabHistory],
