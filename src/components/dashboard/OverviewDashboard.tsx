@@ -11,7 +11,10 @@ import type { HospitalsState, RoutesState } from './SafetyPanel'
 import RainfallChart from './RainfallChart'
 import OutlookChart from './OutlookChart'
 import { LevelBadge, riskColor } from '../risk'
-import { zoneQuality } from '../../services/dataQuality'
+import { nearestEvents, zoneQuality } from '../../services/dataQuality'
+import { countNearbyEvents } from '../../data/historicalEvents'
+import { HeartPulse, History, MapPin } from 'lucide-react'
+import SafetyPanel from './SafetyPanel'
 import DataQualityBadge from './DataQualityBadge'
 
 interface OverviewDashboardProps {
@@ -22,6 +25,114 @@ interface OverviewDashboardProps {
   onSelectZone: (zone: ZoneWithScore) => void
   onDeselectZone: () => void
   onOpenMap: () => void
+}
+
+const CARD_CLASS =
+  'flex flex-col rounded-[15px] border border-[#D9D9D9] bg-white p-6 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]'
+
+/**
+ * Zone intel cards rendered below the risk map: nearest historical events
+ * and nearby hospitals for the focused zone. Professional two-card layout
+ * with consistent typography and spacing — no overlap, no size mismatch.
+ */
+function ZoneIntelCards({
+  zone,
+  safety,
+}: {
+  zone: ZoneWithScore | null
+  safety: SafetyPanelData
+}) {
+  const nearest = zone ? nearestEvents(zone.location.lat, zone.location.lng, 3, 60) : []
+  const nearbyCount = zone ? countNearbyEvents(zone.location.lat, zone.location.lng, 25) : 0
+
+  return (
+    <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
+      {/* Nearest past events */}
+      <div className={CARD_CLASS}>
+        <div className="mb-1 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#60A5FA] to-[#1D4ED8] shadow-[0_2px_6px_rgba(29,78,216,0.35)]">
+            <History className="h-4 w-4 text-white" aria-hidden="true" />
+          </span>
+          <div>
+            <p className="text-[17px] font-bold text-[#0F172A]">Nearest Past Events</p>
+            <p className="text-[13px] text-[#64748B]">
+              {zone
+                ? `${nearbyCount} records within 25 km · NASA GLC/COOLR (2007–2018)`
+                : 'Historical landslide inventory'}
+            </p>
+          </div>
+        </div>
+        {!zone ? (
+          <div className="flex flex-1 items-center justify-center py-8">
+            <p className="flex items-center gap-2 text-[14px] text-[#64748B]">
+              <MapPin className="h-4 w-4" aria-hidden="true" />
+              Tap a zone on the map above to see its nearest past events.
+            </p>
+          </div>
+        ) : nearest.length === 0 ? (
+          <p className="py-6 text-center text-[14px] text-[#64748B]">
+            No recorded landslides within 60 km of {zone.location.name}.
+          </p>
+        ) : (
+          <div className="mt-3 flex flex-col gap-2.5">
+            {nearest.map((e, i) => (
+              <div
+                key={i}
+                className="flex items-center justify-between gap-4 rounded-xl border border-[#E2E8F0] bg-[#F8FAFC] px-4 py-3 transition-colors hover:border-[#93C5FD]"
+              >
+                <span className="flex min-w-0 items-center gap-3">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#DBEAFE] text-[13px] font-bold text-[#1D4ED8]">
+                    {i + 1}
+                  </span>
+                  <span className="truncate text-[15px] font-medium text-[#0F172A]" title={e.name}>
+                    {e.name}
+                  </span>
+                </span>
+                <span className="shrink-0 rounded-full bg-white px-2.5 py-1 text-[13px] font-medium whitespace-nowrap text-[#475569] ring-1 ring-[#E2E8F0]">
+                  {e.date} · {e.distanceKm.toFixed(0)} km
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Nearby hospitals */}
+      <div className={CARD_CLASS}>
+        <div className="mb-1 flex items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#FB7185] to-[#E11D48] shadow-[0_2px_6px_rgba(225,29,72,0.35)]">
+            <HeartPulse className="h-4 w-4 text-white" aria-hidden="true" />
+          </span>
+          <div>
+            <p className="text-[17px] font-bold text-[#0F172A]">Nearby Hospitals</p>
+            <p className="text-[13px] text-[#64748B]">
+              {zone ? `Within 20 km of ${zone.location.name}` : 'Real data · OpenStreetMap'}
+            </p>
+          </div>
+        </div>
+        {!zone ? (
+          <div className="flex flex-1 items-center justify-center py-8">
+            <p className="flex items-center gap-2 text-[14px] text-[#64748B]">
+              <MapPin className="h-4 w-4" aria-hidden="true" />
+              Tap a zone on the map above to find nearby hospitals.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-2">
+            <SafetyPanel
+              hospitals={safety.hospitals}
+              hospitalsState={safety.hospitalsState}
+              selectedHospital={safety.selectedHospital}
+              routes={safety.routes}
+              routesState={safety.routesState}
+              onSelectHospital={safety.onSelectHospital}
+              onClearHospital={safety.onClearHospital}
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  )
 }
 
 /**
@@ -298,10 +409,11 @@ export default function OverviewDashboard({
         <LocationDetails
           zone={focusZone}
           onViewOnMap={onOpenMap}
-          safety={safety}
           alerts={focusZone ? (zoneAlerts.get(focusZone.location.id) ?? []) : []}
         />
       </div>
+
+      <ZoneIntelCards zone={focusZone} safety={safety} />
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div className="flex flex-col rounded-[15px] border border-[#D9D9D9] bg-white p-5 shadow-[0_1px_3px_rgba(15,23,42,0.06),0_6px_20px_rgba(15,23,42,0.09)]">

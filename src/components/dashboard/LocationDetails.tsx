@@ -3,12 +3,12 @@ import type { ZoneWithScore } from '../types'
 import type { Alert } from '../../services/alerts'
 import { LevelBadge, formatTimeIST, riskColor } from '../risk'
 import { countNearbyEvents } from '../../data/historicalEvents'
-import { nearestEvents, zoneQuality } from '../../services/dataQuality'
-import DataQualityBadge from './DataQualityBadge'
-import Recommendations from './Recommendations'
-import SafetyPanel, { type HospitalsState, type RoutesState } from './SafetyPanel'
+import { zoneQuality } from '../../services/dataQuality'
+import type { HospitalsState, RoutesState } from './SafetyPanel'
 import type { Hospital } from '../../services/places'
 import type { EvacRoute } from '../../services/routes'
+import DataQualityBadge from './DataQualityBadge'
+import Recommendations from './Recommendations'
 import { worstLevel, levelRank } from '../../ml/model'
 
 export interface SafetyPanelData {
@@ -24,7 +24,6 @@ export interface SafetyPanelData {
 interface LocationDetailsProps {
   zone: ZoneWithScore | null
   onViewOnMap: () => void
-  safety: SafetyPanelData | null
   alerts: Alert[]
 }
 
@@ -51,7 +50,7 @@ function SectionLabel({ children }: { children: string }) {
 }
 
 /** Operational location panel: risk, data quality, forecast, alerts, guidance. */
-export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: LocationDetailsProps) {
+export default function LocationDetails({ zone, onViewOnMap, alerts }: LocationDetailsProps) {
   if (!zone) {
     return (
       <div className="flex h-full items-center justify-center rounded-xl border border-[#D9D9D9] bg-white p-6">
@@ -62,7 +61,6 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
   const { location, weather, prediction } = zone
   const quality = zoneQuality(zone)
   const nearby = countNearbyEvents(location.lat, location.lng, 25)
-  const nearest = nearestEvents(location.lat, location.lng, 3, 60)
 
   const worstOutlook =
     zone.outlook && zone.outlook.length > 0
@@ -153,43 +151,10 @@ export default function LocationDetails({ zone, onViewOnMap, safety, alerts }: L
           <Row label="Last Updated" value={weather ? formatTimeIST(weather.fetchedAt) : '—'} />
         </div>
 
-        {nearest.length > 0 ? (
-          <>
-            <SectionLabel>Nearest Past Events</SectionLabel>
-            <div className="flex flex-col gap-1.5">
-              {nearest.map((e, i) => (
-                <div
-                  key={i}
-                  className="flex items-center justify-between gap-3 text-[14px]"
-                >
-                  <span className="min-w-0 text-[#0F172A]">{e.name}</span>
-                  <span className="shrink-0 text-[#64748B]">
-                    {e.date} · {e.distanceKm.toFixed(0)} km
-                  </span>
-                </div>
-              ))}
-            </div>
-          </>
-        ) : null}
-
         <div className="mt-4">
           <Recommendations level={prediction?.level ?? null} quality={quality.status} />
         </div>
 
-        {safety ? (
-          <>
-            <SectionLabel>Safety</SectionLabel>
-            <SafetyPanel
-              hospitals={safety.hospitals}
-              hospitalsState={safety.hospitalsState}
-              selectedHospital={safety.selectedHospital}
-              routes={safety.routes}
-              routesState={safety.routesState}
-              onSelectHospital={safety.onSelectHospital}
-              onClearHospital={safety.onClearHospital}
-            />
-          </>
-        ) : null}
       </div>
 
       <button
