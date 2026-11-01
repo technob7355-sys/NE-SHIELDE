@@ -294,23 +294,26 @@ export default function OverviewDashboard({
       <div className="relative z-10 flex flex-col gap-5">
         {loading ? <p className="text-[14px] text-[#64748B]">Loading live data…</p> : null}
 
-        <StatCards zones={zones} alerts={alerts} />
-
-        {/* Image banner — Himachal slope scar, official-portal accent */}
+        {/* Hero banner — landslide photo with the 5 KPI cards overlaid on it */}
         <div
           className="relative overflow-hidden rounded-[15px] border border-[#003A66] bg-[#004F88] bg-cover bg-center"
           style={{ backgroundImage: `url("https://upload.wikimedia.org/wikipedia/commons/thumb/5/5b/Landslides_in_Himachal_Pradesh.jpg/1920px-Landslides_in_Himachal_Pradesh.jpg")` }}
         >
           <div
-            className="absolute inset-0 bg-[linear-gradient(100deg,rgba(0,79,136,0.92)_20%,rgba(0,79,136,0.45)_60%,rgba(0,79,136,0.15))]"
+            className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,40,70,0.82)_0%,rgba(0,79,136,0.45)_40%,rgba(0,25,45,0.72)_100%)]"
             aria-hidden="true"
           />
-          <div className="relative z-10 flex flex-col gap-1 p-5 md:p-6">
-            <p className="text-[18px] font-bold text-white">Live monitoring across 20 Northeast zones</p>
-            <p className="max-w-xl text-[14px] leading-relaxed text-white/85">
+          <div className="relative z-10 p-6 md:p-8 md:pb-6">
+            <p className="text-[22px] font-bold text-white md:text-[26px]">
+              Live monitoring across 20 Northeast zones
+            </p>
+            <p className="mt-1.5 max-w-2xl text-[14px] leading-relaxed text-white/85 md:text-[15px]">
               Open-Meteo rainfall and soil data, refreshed every 12 minutes — every zone scored,
               every miss shown honestly.
             </p>
+          </div>
+          <div className="relative z-10 px-6 pb-6 md:px-8 md:pb-8">
+            <StatCards zones={zones} alerts={alerts} />
           </div>
         </div>
 
